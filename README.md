@@ -1,5 +1,5 @@
 # patient-portal
 This is a web project for CS 546 Web programming  Fall2022
 
-#Description
+# Description
 This web app will provide a convenient and efficient way for patients to view/manage their medical procedures. It will also allow the clinic to keep track of their patients and all the activities related to every patient. The clinic web app will provide a patient portal, to all the patients, where the patient will be able to view their upcoming appointments, timeline, treatments, reports, etc. They will also be able to book new appointments and add it to their calendar. The app will remind patients of their upcoming appointments. There will be multiple pages like dashboard, profile, timeline, appointments to track their reports and surgeries, to update their personal information, to view all the activities with time, manage/schedule appointments. The clinical staff will be able to manage patients, upload reports, and schedule treatments and appointments. They will also be able to filter patients based on several filters that can be applied on patients' details.
