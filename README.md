@@ -1,5 +1,6 @@
-# patient-portal
-This is a web project for CS 546 Web programming  Fall2022
+# UInvite
+This is a web project for CS 546 Web programming Fall2022
 
 # Description
-This web app will provide a convenient and efficient way for patients to view/manage their medical procedures. It will also allow the clinic to keep track of their patients and all the activities related to every patient. The clinic web app will provide a patient portal, to all the patients, where the patient will be able to view their upcoming appointments, timeline, treatments, reports, etc. They will also be able to book new appointments and add it to their calendar. The app will remind patients of their upcoming appointments. There will be multiple pages like dashboard, profile, timeline, appointments to track their reports and surgeries, to update their personal information, to view all the activities with time, manage/schedule appointments. The clinical staff will be able to manage patients, upload reports, and schedule treatments and appointments. They will also be able to filter patients based on several filters that can be applied on patients' details.
+This web app will provide a new approach to event rsvp. There are many apps that let users send rsvp invitations and nothing more that could make invitations and events more enticing. This application will act as a social media platform for people to post events and others to rsvp, obviously events could be set to only being visible to a certain group. This would not only make spreading news about events simpler and would also allow guests to comment on any concerns they have about the events. This application will hold the aspect of family and friends event planning at heart but social media features are a massive plus. This targets small event registrations but this could also spread to massive events planned by big companies as well. 
+
