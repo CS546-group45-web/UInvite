@@ -11,7 +11,7 @@ router
       const users = await userData.getAllUsers();
       res.json(users);
     } catch (e) {
-      res.status(500).json({ error: e });
+      return res.status(500).json({ error: e });
     }
   })
   .post(async (req, res) => {
@@ -28,7 +28,7 @@ router
       req.body.dob = validation.checkDate(user.dob);
       req.body.gender = validation.checkGender(user.gender);
     } catch (e) {
-      res.status(400).json({ error: e });
+      return res.status(400).json({ error: e });
     }
     try {
       const newUser = await userData.createUser(
@@ -40,9 +40,11 @@ router
         user.dob,
         user.gender
       );
-      res.json(newUser);
+      return res.status(201).json({
+        message: `User ${user.first_name} ${user.last_name} created successfully`,
+      });
     } catch (e) {
-      res.status(500).json({ error: e });
+      return res.status(500).json({ error: e });
     }
   });
 

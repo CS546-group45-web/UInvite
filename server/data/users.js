@@ -40,8 +40,7 @@ const createUser = async (
   const insertInfo = await user_collection.insertOne(newuUser);
   if (insertInfo.insertedCount === 0) throw 'Could not add user';
   const newId = insertInfo.insertedId;
-  const user = await this.getUserById(newId);
-  return user;
+  return newId;
 };
 
 const getAllUsers = async () => {
@@ -50,7 +49,17 @@ const getAllUsers = async () => {
   return user_list;
 };
 
+const getUserById = async (id) => {
+  validation.checkObjectId(id);
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(id) });
+  if (!user) throw 'User not found';
+  user._id = user._id.toString();
+  return user;
+};
+
 module.exports = {
   createUser,
   getAllUsers,
+  getUserById,
 };
