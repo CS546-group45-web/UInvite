@@ -9,13 +9,14 @@ const opts = {
   secretOrKey: process.env.JWT_SECRET,
 };
 
-const strategy = new JWTStrategy(opts, (payload, next) => {
+const strategy = new JWTStrategy(opts, (payload, done) => {
+  console.log('payload received', payload);
   users.getUserById(payload.id).then((user) => {
     console.log(user);
     if (user) {
-      next(null, user);
+      done(null, user);
     } else {
-      next(null, false);
+      done(null, false);
     }
   });
 });

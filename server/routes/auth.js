@@ -24,7 +24,7 @@ router.route('/').post(async (req, res) => {
         found_user.hashed_password
       );
       if (match) {
-        const payload = { id: found_user.id };
+        const payload = { id: found_user._id };
         const token = jwt.sign(payload, process.env.JWT_SECRET);
         return res.json({ token });
       } else {

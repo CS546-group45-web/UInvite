@@ -8,8 +8,8 @@ const strategy = require('./utils/passportStrategy');
 const port = process.env.NODE_PORT || 4000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-passport.use('strategy', strategy);
-passport.initialize();
+passport.use(strategy);
+app.use(passport.initialize());
 
 configRoutes(app);
 app.listen(port, () => {
