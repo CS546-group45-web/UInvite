@@ -58,8 +58,18 @@ const getUserById = async (id) => {
   return user;
 };
 
+const getUserByEmail = async (email) => {
+  email = validation.checkEmail(email);
+  const user_collection = await users();
+  const user = await user_collection.findOne({ email });
+  if (!user) throw 'User not found';
+  user._id = user._id.toString();
+  return user;
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
+  getUserByEmail,
 };
