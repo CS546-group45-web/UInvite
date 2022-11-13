@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data');
 const userData = data.users;
-const validation = require('../utils/validation');
 
 router.route('/').get(async (req, res) => {
   try {
