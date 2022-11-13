@@ -2,10 +2,14 @@ const express = require('express');
 const app = express();
 const configRoutes = require('./routes');
 const dotenv = require('dotenv');
+const passport = require('passport');
 dotenv.config();
+const strategy = require('./utils/passportStrategy');
 const port = process.env.NODE_PORT || 4000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+passport.use('strategy', strategy);
+passport.initialize();
 
 configRoutes(app);
 app.listen(port, () => {
