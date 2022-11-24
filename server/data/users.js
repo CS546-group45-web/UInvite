@@ -67,9 +67,48 @@ const getUserByEmail = async (email) => {
   return user;
 };
 
+const updateUser = async (
+  id,
+  first_name,
+  last_name,
+  email,
+  phone,
+  dob,
+  gender
+) => {
+  validation.checkObjectId(id);
+  const user_collection = await users();
+  first_name = validation.checkNames(first_name, 'first_name');
+  last_name = validation.checkNames(last_name, 'last_name');
+  email = validation.checkEmail(email);
+  dob = validation.checkDate(dob);
+  phone = validation.checkPhone(phone);
+  gender = validation.checkGender(gender);
+
+  const updatedUser = {
+    first_name: first_name,
+    last_name: last_name,
+    email: email,
+    dob: dob,
+    phone: phone,
+    gender: gender,
+  };
+
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(id) },
+    { $set: updatedUser }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+
+  return await getUserById(id);
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   getUserByEmail,
+  updateUser,
 };
