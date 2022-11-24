@@ -3,7 +3,7 @@ const router = express.Router();
 const data = require('../data');
 const userData = data.users;
 const validation = require('../utils/validation');
-
+const passport = require('passport');
 router
   .route('/edit')
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
