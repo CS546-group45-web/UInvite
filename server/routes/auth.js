@@ -21,21 +21,30 @@ router.route('/signup').post(async (req, res) => {
   } catch (e) {
     return res.status(400).json({ error: e });
   }
+
+  // Check if user already exists with email
   try {
-    const newUser = await userData.createUser(
-      user.first_name,
-      user.last_name,
-      user.email,
-      user.password,
-      user.phone,
-      user.dob,
-      user.gender
-    );
-    return res.status(201).json({
-      message: `User ${user.first_name} ${user.last_name} created successfully`,
-    });
-  } catch (e) {
-    return res.status(500).json({ error: e });
+    const userWithEmail = await userData.getUserByEmail(req.body.email);
+    if (userWithEmail) {
+      return res.status(409).json({ error: 'User already exists' });
+    }
+  } catch {
+    try {
+      const newUser = await userData.createUser(
+        user.first_name,
+        user.last_name,
+        user.email,
+        user.password,
+        user.phone,
+        user.dob,
+        user.gender
+      );
+      return res.status(201).json({
+        message: `User ${user.first_name} ${user.last_name} created successfully`,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
   }
 });
 
