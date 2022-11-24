@@ -22,7 +22,7 @@ const createUser = async (
   gender = validation.checkGender(gender);
 
   const user_collection = await users();
-  hashed_password = await bcrypt.hash(password, 16);
+  hashed_password = await bcrypt.hash(password, 10);
 
   const newuUser = {
     first_name: first_name,
