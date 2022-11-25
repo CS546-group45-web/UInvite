@@ -16,4 +16,5 @@ const getCollectionFn = (collection) => {
 module.exports = {
   users: getCollectionFn('users'),
   events: getCollectionFn('events'),
+  tokens: getCollectionFn('tokens'),
 };

@@ -32,6 +32,7 @@ const createUser = async (
     phone: phone,
     hashed_password: hashed_password,
     gender: gender,
+    is_verified: false,
     rsvped_events: [],
     profile_photo_url: '',
     events_created: [],
@@ -50,7 +51,7 @@ const getAllUsers = async () => {
 };
 
 const getUserById = async (id) => {
-  validation.checkObjectId(id);
+  // validation.checkObjectId(id);
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(id) });
   if (!user) throw 'User not found';
@@ -105,10 +106,23 @@ const updateUser = async (
   return await getUserById(id);
 };
 
+const verifyUser = async (id) => {
+  const user_collection = await users();
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(id) },
+    { $set: { is_verified: true } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+  return await getUserById(id);
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   getUserByEmail,
   updateUser,
+  verifyUser,
 };
