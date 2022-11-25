@@ -1,6 +1,9 @@
 const nodemailer = require('nodemailer');
+const handelbars = require('handlebars');
+const fs = require('fs');
+const path = require('path');
 
-const sendEmail = (email, subject, text) => {
+const sendEmail = (email, subject, text, name) => {
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -9,11 +12,24 @@ const sendEmail = (email, subject, text) => {
     },
   });
 
+  const source = fs
+    .readFileSync(
+      path.join(__dirname, '../emails/welcome-template.html'),
+      'utf8'
+    )
+    .toString();
+  const template = handelbars.compile(source);
+  const replacements = {
+    name: name,
+  };
+  const htmlToSend = template(replacements);
+
   let mailOptions = {
     from: '"UInvite" <' + process.env.EMAIL + '>',
     to: email,
     subject: subject,
     text: text,
+    html: htmlToSend,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {

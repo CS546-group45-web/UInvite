@@ -42,7 +42,12 @@ router.route('/signup').post(async (req, res) => {
       );
       // Send email
       const message = `Welcome to Uinvite, ${user.first_name} ${user.last_name}!`;
-      sendEmail(user.email, 'Welcome to Uinvite!', message);
+      sendEmail(
+        user.email,
+        'Welcome to Uinvite!',
+        message,
+        user.first_name + ' ' + user.last_name
+      );
       return res.status(201).json({
         message: `User ${user.first_name} ${user.last_name} created successfully`,
       });
