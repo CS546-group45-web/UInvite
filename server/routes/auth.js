@@ -7,6 +7,7 @@ const passport = require('passport');
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('../utils/sendEmail');
 
 router.route('/signup').post(async (req, res) => {
   const user = req.body;
@@ -39,6 +40,9 @@ router.route('/signup').post(async (req, res) => {
         user.dob,
         user.gender
       );
+      // Send email
+      const message = `Welcome to Uinvite, ${user.first_name} ${user.last_name}!`;
+      sendEmail(user.email, 'Welcome to Uinvite!', message);
       return res.status(201).json({
         message: `User ${user.first_name} ${user.last_name} created successfully`,
       });
