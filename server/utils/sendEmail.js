@@ -3,7 +3,7 @@ const handelbars = require('handlebars');
 const fs = require('fs');
 const path = require('path');
 
-const sendEmail = (email, subject, text, name, url) => {
+const sendEmail = (email, subject, message, url, headline, buttonText) => {
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -20,8 +20,10 @@ const sendEmail = (email, subject, text, name, url) => {
     .toString();
   const template = handelbars.compile(source);
   const replacements = {
-    name: name,
     url: url,
+    message: message,
+    buttonText: buttonText,
+    headline: headline,
   };
   const htmlToSend = template(replacements);
 
@@ -29,7 +31,6 @@ const sendEmail = (email, subject, text, name, url) => {
     from: '"UInvite" <' + process.env.EMAIL + '>',
     to: email,
     subject: subject,
-    text: text,
     html: htmlToSend,
   };
 

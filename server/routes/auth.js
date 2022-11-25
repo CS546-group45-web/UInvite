@@ -46,14 +46,18 @@ router.route('/signup').post(async (req, res) => {
         newUser,
         crypto.randomBytes(32).toString('hex')
       );
-      const url = `http://localhost:3000/verify/${token}`;
-      const message = `Welcome to Uinvite, ${user.first_name} ${user.last_name}!`;
+      const url = `${process.e.BASE_URL}/verify/${token}`;
+
+      const message = `Hello, ${user.first_name} ${user.last_name} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
+      const buttonText = 'Verify Email';
+      headline = 'Verify your email address';
       sendEmail(
         user.email,
         'Welcome to Uinvite!',
         message,
-        user.first_name + ' ' + user.last_name,
-        url
+        url,
+        headline,
+        buttonText
       );
       return res.status(201).json({
         message: `User ${user.first_name} ${user.last_name} created successfully`,
@@ -117,6 +121,34 @@ router.route('/verify/:token').get(async (req, res) => {
     await userData.verifyUser(user._id);
     await tokenData.deleteToken(token.token);
     return res.status(200).json({ message: 'User verified successfully' });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
+router.route('/forgot').post(async (req, res) => {
+  const user = req.body;
+  console.log(user);
+  try {
+    req.body.email = validation.checkEmail(user.email);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  try {
+    const found_user = await userData.getUserByEmail(user.email);
+    if (!found_user) {
+      return res.status(400).json({ error: 'Email does not exist' });
+    }
+    const token = await tokenData.createToken(
+      found_user._id,
+      crypto.randomBytes(32).toString('hex')
+    );
+    const url = `${process.env.BASE_URL}/reset/${token}`;
+    const message = `Hello, ${found_user.first_name} ${found_user.last_name}! You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link to complete the process within 15 minutes of receiving it:`;
+    const buttonText = 'Forgot Password';
+    const headline = 'Forgot Password!';
+    sendEmail(user.email, 'Password Reset', message, url, headline, buttonText);
+    return res.status(200).json({ message: 'Email sent successfully' });
   } catch (e) {
     return res.status(500).json({ error: e });
   }
