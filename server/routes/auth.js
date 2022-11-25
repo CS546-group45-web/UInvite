@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data');
 const userData = data.users;
+const tokenData = data.tokens;
 const validation = require('../utils/validation');
 const passport = require('passport');
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
+const crypto = require('crypto');
 
 router.route('/signup').post(async (req, res) => {
   const user = req.body;
@@ -41,12 +42,18 @@ router.route('/signup').post(async (req, res) => {
         user.gender
       );
       // Send email
+      const token = await tokenData.createToken(
+        newUser,
+        crypto.randomBytes(32).toString('hex')
+      );
+      const url = `http://localhost:3000/verify/${token}`;
       const message = `Welcome to Uinvite, ${user.first_name} ${user.last_name}!`;
       sendEmail(
         user.email,
         'Welcome to Uinvite!',
         message,
-        user.first_name + ' ' + user.last_name
+        user.first_name + ' ' + user.last_name,
+        url
       );
       return res.status(201).json({
         message: `User ${user.first_name} ${user.last_name} created successfully`,
@@ -93,5 +100,26 @@ router
       return res.status(500).json({ error: e });
     }
   });
+
+router.route('/verify/:token').get(async (req, res) => {
+  try {
+    const token = await tokenData.getTokenByToken(req.params.token);
+    if (!token) {
+      return res.status(400).json({ error: 'Invalid token' });
+    }
+    const user = await userData.getUserById(token.user_id);
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid token' });
+    }
+    if (user.is_verified) {
+      return res.status(400).json({ error: 'User already verified' });
+    }
+    await userData.verifyUser(user._id);
+    await tokenData.deleteToken(token.token);
+    return res.status(200).json({ message: 'User verified successfully' });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
 
 module.exports = router;

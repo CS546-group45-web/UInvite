@@ -3,7 +3,7 @@ const handelbars = require('handlebars');
 const fs = require('fs');
 const path = require('path');
 
-const sendEmail = (email, subject, text, name) => {
+const sendEmail = (email, subject, text, name, url) => {
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -21,6 +21,7 @@ const sendEmail = (email, subject, text, name) => {
   const template = handelbars.compile(source);
   const replacements = {
     name: name,
+    url: url,
   };
   const htmlToSend = template(replacements);
 
