@@ -7,7 +7,7 @@ function EventsList() {
       This page will have sample details of events listing and details about the
       page like title of the page, header, body, footer
       <footer>Footer</footer>
-      <header>Header</header>
+      {/* <header>Header</header>
       This page will have sample details of events listing and details about the
       page like title of the page, header, body, footer
       <footer>Footer</footer>
@@ -182,7 +182,7 @@ function EventsList() {
       <header>Header</header>
       This page will have sample details of events listing and details about the
       page like title of the page, header, body, footer
-      <footer>Footer</footer>
+      <footer>Footer</footer> */}
     </div>
   );
 }

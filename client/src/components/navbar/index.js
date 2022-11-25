@@ -10,11 +10,6 @@ import { Divider } from "@mui/material";
 
 const navOptions = [
   {
-    name: "Create event",
-    icon: AddAlertIcon,
-    path: "/create-event",
-  },
-  {
     name: "Home",
     icon: HomeIcon,
     path: "/",
@@ -30,46 +25,52 @@ const navOptions = [
     path: "/my-events",
   },
   {
+    name: "Create event",
+    icon: AddAlertIcon,
+    path: "/create-event",
+  },
+  {
     name: "Profile",
     icon: AccountCircleIcon,
     path: "/profile",
   },
 ];
 
-function Nav({ auth }) {
-  return (
-    auth && (
-      <div className="flex flex-col justify-between h-screen pl-4 pr-2 py-8 border-r-gray-200 border-r-2 col-span-2 bg-white">
-        <div>
-          <div className="h-20 flex justify-center items-center">
-            <span className="text-3xl">UInvite</span>
-          </div>
+function Nav() {
+  const signOutUser = () => {
+    localStorage.setItem("auth", false);
+    window.location.href = "/login";
+  };
 
-          <div>
-            {navOptions.map((item, key) => (
-              <Link to={item.path}>
-                <div
-                  className="w-full px-2 py-4 my-3 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-zinc-200"
-                  key={key}
-                >
-                  <item.icon />
-                  <span className="ml-2 sm:invisible md:visible">
-                    {item.name}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
+  return (
+    <div className="flex flex-col justify-between h-screen pl-4 pr-2 py-8 border-r-gray-200 border-r-2 col-span-2 bg-white">
+      <div>
+        <div className="h-20 flex justify-center items-center">
+          <span className="text-3xl">UInvite</span>
         </div>
+
         <div>
-          <Divider />
-          <div className="w-full px-2 py-4 my-3 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-gray-200 cursor-pointer">
-            <LogoutIcon />
-            <span className="ml-2 sm:invisible md:visible">Sign out</span>
-          </div>
+          {navOptions.map((item, key) => (
+            <Link to={item.path} key={key}>
+              <div className="w-full px-2 py-4 my-3 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-zinc-200">
+                <item.icon />
+                <span className="ml-2">{item.name}</span>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
-    )
+      <div>
+        <Divider />
+        <div
+          className="w-full px-2 py-4 my-3 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-gray-200 cursor-pointer"
+          onClick={signOutUser}
+        >
+          <LogoutIcon />
+          <span className="ml-2 sm:invisible md:visible">Sign out</span>
+        </div>
+      </div>
+    </div>
   );
 }
 

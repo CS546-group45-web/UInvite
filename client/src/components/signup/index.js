@@ -4,32 +4,24 @@ import { genderOptions } from "../../constants";
 import {
   validateDate,
   emailValidation,
-  formatPhoneNumber,
   nameValidation,
   passwordValidation,
 } from "../../utils/helper";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import SVGComponent from "../common/Logo";
-
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DesktopDateTimePicker } from "@mui/x-date-pickers";
 import "./styles.css";
-
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
 function SignUp() {
-  const [data, setData] = React.useState({
-    // firstName: "",
-    // lastName: "",
-    // phone: "",
-    // dob: "",
-    // gender: "",
-    // email: "",
-    // password: "",
-    // cpassword: "",
-  });
+  const [data, setData] = React.useState({});
   const [errors, setErrors] = React.useState({});
 
   const validateData = () => {
     if (Object.keys(data).length === 0) {
-      setErrors({
+      return setErrors({
         firstName: true,
         lastName: true,
         phone: true,
@@ -39,6 +31,21 @@ function SignUp() {
         password: true,
         cpassword: true,
       });
+    }
+
+    const errorObj = {};
+    if (!data?.firstName) errorObj.firstName = true;
+    if (!data?.lastName) errorObj.lastName = true;
+    if (!data?.email) errorObj.email = true;
+    if (!data?.phone) errorObj.phone = true;
+    if (!data?.dob) errorObj.dob = true;
+    if (!data?.gender) errorObj.gender = true;
+    if (!data?.password) errorObj.password = true;
+    if (!data?.cpassword) errorObj.cpassword = true;
+
+    if (Object.keys(errorObj).length !== 0) setErrors(errorObj);
+    else {
+      setErrors({});
     }
   };
 
@@ -146,6 +153,7 @@ function SignUp() {
               type="email"
               fullWidth
               margin="dense"
+              value={data?.email ?? ""}
               name="email"
               placeholder="johndoe@example.com"
               helperText={
@@ -181,8 +189,8 @@ function SignUp() {
                   margin="dense"
                   name="phone"
                   error={errors?.phone}
-                  placeholder="+1 123 456-7899"
-                  value={data.phone}
+                  placeholder="1234567899"
+                  value={data?.phone ?? ""}
                   helperText={
                     errors?.phone ? (
                       <span className="text-base flex items-center">
@@ -198,15 +206,17 @@ function SignUp() {
                     value = value.trim();
                     if (value === "") setError(name);
                     else {
-                      value = formatPhoneNumber(value);
-                      console.log(value);
+                      if (value.length < 10 || value.length > 10)
+                        setError(name);
+                      else removeError(name);
                       setValues(name, value);
                     }
                   }}
                 />
               </div>
               <div className="ml-1 w-6/12">
-                <TextField
+                {/* <TextField
+                  // ref={ref}
                   id="dob"
                   label="Date of birth"
                   variant="outlined"
@@ -216,7 +226,7 @@ function SignUp() {
                   name="dob"
                   placeholder="07/27/1998"
                   value={data?.dob ?? ""}
-                  error={errors.dob}
+                  error={errors?.dob}
                   helperText={
                     errors?.dob ? (
                       <span className="text-base flex items-center">
@@ -228,15 +238,21 @@ function SignUp() {
                     )
                   }
                   onChange={(e) => {
+                    console.log(e);
                     let { name, value } = e.target;
                     if (value.trim() === "") setError(name);
-                    if (value.length === 2) value = value + "/";
-                    if (value.length === 5) value = value + "/";
+
                     if (!validateDate(value)) setError(name);
                     else removeError(name);
+                    if (value.length > 2) value += "/";
+                    if (value.length > 5) value += "/";
                     setValues(name, value);
                   }}
-                />
+                /> */}
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDateTimePicker inputFormat="MM/DD/YYYY" />
+                </LocalizationProvider>
+                {/* <input ref={ref} /> */}
               </div>
             </div>
           </div>
@@ -286,6 +302,7 @@ function SignUp() {
               margin="dense"
               name="password"
               placeholder="********"
+              value={data?.password ?? ""}
               error={errors?.password}
               onChange={(e) => {
                 let { name, value } = e.target;
@@ -375,6 +392,7 @@ function SignUp() {
               margin="dense"
               type="password"
               name="cpassword"
+              value={data?.cpassword ?? ""}
               error={errors?.cpassword}
               placeholder="********"
               helperText={

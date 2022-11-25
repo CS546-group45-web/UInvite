@@ -37,7 +37,7 @@ function Login() {
     let errorObj = {};
     if (!emailValidation(email)) errorObj.email = true;
 
-    if (passwordValidation(password) !== "valid") errorObj.password = true;
+    if (passwordValidation(password)) errorObj.password = true;
 
     setErrors(errorObj);
     if (Object.keys(errorObj).length === 0) {
