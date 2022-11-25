@@ -6,36 +6,40 @@ import SignUp from "./components/signup";
 import CreateEvent from "./components/events/createEvent";
 import EventsList from "./components/events/lists";
 import Nav from "./components/navbar";
+import ForgotPassword from "./components/forgotPassword";
 
 function App() {
   const isAuthenticated = () => {
-    return localStorage.getItem("auth");
+    return localStorage.getItem("auth") === "true" ? true : false;
   };
 
+  const styles = () =>
+    isAuthenticated() ? "col-span-10 px-5 py-5" : "col-span-12 px-5 py-5";
+
   return (
-    <div className="App bg-gray-50">
+    <div className="App bg-gray-50 h-screen">
       <BrowserRouter>
-        <div className="grid grid-cols-12">
-          <Nav auth={isAuthenticated()} />
-          <div className="col-span-10 px-5 py-5 bg-gray-50">
+        <div className="grid grid-cols-12 h-full">
+          {isAuthenticated() && <Nav />}
+          <div className={styles()}>
             <Routes>
-              <Route
-                path="/create-event"
-                exact
-                element={
-                  isAuthenticated() ? (
-                    <CreateEvent />
-                  ) : (
-                    <Navigate to="/login" replace />
-                  )
-                }
-              />
               <Route
                 path="/"
                 exact
                 element={
                   isAuthenticated() ? (
                     <EventsList />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+              <Route
+                path="/create-event"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <CreateEvent />
                   ) : (
                     <Navigate to="/login" replace />
                   )
@@ -52,6 +56,16 @@ function App() {
                 path="/login"
                 element={
                   isAuthenticated() ? <Navigate to="/" replace /> : <Login />
+                }
+              />
+              <Route
+                path="/forgot-password"
+                element={
+                  isAuthenticated() ? (
+                    <Navigate to="/" replace />
+                  ) : (
+                    <ForgotPassword />
+                  )
                 }
               />
               {/* NOTE: do we need a 404 Not Found page or redirect to login if not logged-in */}

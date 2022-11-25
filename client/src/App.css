@@ -3,3 +3,13 @@ body {
   /* TODO: decide font for the app */
   /* font-family: monospace; */
 }
+
+.btn_default {
+  width: auto;
+  padding: 8px 20px;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 4px;
+  background-color: #393e46;
+}

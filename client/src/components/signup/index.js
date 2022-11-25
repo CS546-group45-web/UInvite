@@ -1,23 +1,29 @@
 import React from "react";
-import { Button, Divider, Link, MenuItem, TextField } from "@mui/material";
+import { Divider, Link, MenuItem, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
 import {
+  validateDate,
   emailValidation,
   formatPhoneNumber,
   nameValidation,
   passwordValidation,
 } from "../../utils/helper";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import SVGComponent from "../common/Logo";
+
+import "./styles.css";
 
 function SignUp() {
   const [data, setData] = React.useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    dob: "",
-    gender: "",
-    email: "",
-    password: "",
-    cpassword: "",
+    // firstName: "",
+    // lastName: "",
+    // phone: "",
+    // dob: "",
+    // gender: "",
+    // email: "",
+    // password: "",
+    // cpassword: "",
   });
   const [errors, setErrors] = React.useState({});
 
@@ -25,6 +31,13 @@ function SignUp() {
     if (Object.keys(data).length === 0) {
       setErrors({
         firstName: true,
+        lastName: true,
+        phone: true,
+        dob: true,
+        gender: true,
+        email: true,
+        password: true,
+        cpassword: true,
       });
     }
   };
@@ -36,6 +49,7 @@ function SignUp() {
   const setError = (name) => {
     setErrors({ ...errors, [name]: true });
   };
+
   const removeError = (name) => {
     const errorObj = errors;
     delete errorObj[name];
@@ -45,210 +59,357 @@ function SignUp() {
   // FIXME: This form needs more CSS fixes
 
   return (
-    <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-4">
-        <div>
-          <img
-            className="mx-auto h-12 w-auto"
-            src="https://tailwindui.com"
-            alt="UInvite Logo"
-          />
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+    <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-center">
+        <div className="flex items-center flex-col p-16">
+          <div className="w-60">
+            <SVGComponent />
+          </div>
+          <h2 className="mt-3 text-center text-3xl font-bold tracking-tight text-gray-900">
             Create your account
           </h2>
         </div>
-        <div className="space-y-4">
-          <div className="space-y rounded-md shadow-sm">
-            <div className="flex justify-between">
-              <div className="">
-                <TextField
-                  id="firstName"
-                  label="First Name"
-                  variant="outlined"
-                  error={errors?.firstName}
-                  required
-                  type="text"
-                  value={data?.firstName}
-                  name="firstName"
-                  margin="normal"
-                  onChange={(e) => {
-                    let { name, value } = e.target;
-                    value = value.trim();
-                    if (value === "") setError(name);
-                    if (!nameValidation(value)) setError(name);
-                    else removeError(name);
-                    setValues(name, value.trim());
-                  }}
-                />
-              </div>
-              <div className="ml-2">
-                <TextField
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  error={errors?.lastName}
-                  variant="outlined"
-                  required
-                  type="text"
-                  margin="normal"
-                  value={data?.lastName}
-                  onChange={(e) => {
-                    let { name, value } = e.target;
-                    value = value.trim();
-                    if (value === "") setError(name);
-                    if (!nameValidation(value)) setError(name);
-                    else removeError(name);
-                    setValues(name, value.trim());
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="">
+        <div className="rounded-md px-4">
+          <div className="flex justify-between">
+            <div className="mr-1 w-6/12">
               <TextField
-                id="email"
-                label="Email"
+                id="firstName"
+                label="First Name"
                 variant="outlined"
+                error={errors?.firstName}
                 required
-                type="email"
                 fullWidth
-                margin="normal"
-                name="email"
-                error={errors?.email}
+                type="text"
+                value={data?.firstName}
+                name="firstName"
+                margin="dense"
+                placeholder="John"
+                helperText={
+                  errors?.firstName ? (
+                    <span className="text-base flex items-center">
+                      <CloseIcon fontSize="small" />
+                      Enter a valid First Name
+                    </span>
+                  ) : (
+                    false
+                  )
+                }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  value = value.trim();
                   if (value === "") setError(name);
-                  if (!emailValidation(value)) setError(name);
+                  if (!nameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
                 }}
               />
             </div>
-            <div className="my-3">
+            <div className="ml-1 w-6/12">
               <TextField
-                id="phone"
-                label="Phone"
+                id="lastName"
+                label="Last Name"
+                name="lastName"
+                error={errors?.lastName}
                 variant="outlined"
                 required
                 fullWidth
                 type="text"
                 margin="dense"
-                name="phone"
-                error={errors?.phone}
-                value={data.phone}
+                value={data?.lastName}
+                placeholder="Doe"
+                helperText={
+                  errors?.lastName ? (
+                    <span className="text-base flex items-center">
+                      <CloseIcon fontSize="small" />
+                      Enter a valid Last Name
+                    </span>
+                  ) : (
+                    false
+                  )
+                }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  value = value.trim();
                   if (value === "") setError(name);
-                  else {
-                    value = formatPhoneNumber(value);
-                    console.log(value);
-                    setValues(name, value);
-                  }
+                  if (!nameValidation(value)) setError(name);
+                  else removeError(name);
+                  setValues(name, value);
                 }}
               />
             </div>
+          </div>
 
-            <div className="my-3">
-              <TextField
-                id="dob"
-                label="Date of birth"
-                variant="outlined"
-                required
-                fullWidth
-                margin="dense"
-                name="dob"
-                error={errors.dob}
-                onChange={(e) => {}}
-              />
-            </div>
-            <div className="my-3">
-              <TextField
-                id="gender"
-                select
-                label="Select gender"
-                fullWidth
-                required
-                value={""}
-                name="gender"
-                error={errors?.gender}
-                onChange={(e) => {}}
-              >
-                {genderOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </div>
-
-            <div className="my-3">
-              <div className="flex justify-between">
-                <div className="mr-2">
-                  <TextField
-                    id="password"
-                    label="Password"
-                    variant="outlined"
-                    required
-                    fullWidth
-                    type="password"
-                    margin="dense"
-                    name="password"
-                    error={errors?.password}
-                    // USEFUL: can use helpertext to display errors while logging in
-                    // helperText={<h1 className="mt-20">Incorrect entry</h1>}
-                    onChange={(e) => {
-                      // password will come here
-                      let { name, value } = e.target;
-                      value = value.trim();
-                      if (value === "") setError(name);
-                      if (passwordValidation(value) !== "valid") setError(name);
-                      else removeError(name);
+          <div>
+            <TextField
+              id="email"
+              label="Email"
+              variant="outlined"
+              required
+              type="email"
+              fullWidth
+              margin="dense"
+              name="email"
+              placeholder="johndoe@example.com"
+              helperText={
+                errors?.email ? (
+                  <span className="text-base flex items-center">
+                    <CloseIcon fontSize="small" />
+                    Enter a valid email
+                  </span>
+                ) : (
+                  false
+                )
+              }
+              error={errors?.email}
+              onChange={(e) => {
+                let { name, value } = e.target;
+                if (value === "") setError(name);
+                if (!emailValidation(value)) setError(name);
+                else removeError(name);
+                setValues(name, value);
+              }}
+            />
+          </div>
+          <div className="my-1">
+            <div className="flex justify-between">
+              <div className="mr-1 w-6/12">
+                <TextField
+                  id="phone"
+                  label="Phone"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  type="text"
+                  margin="dense"
+                  name="phone"
+                  error={errors?.phone}
+                  placeholder="+1 123 456-7899"
+                  value={data.phone}
+                  helperText={
+                    errors?.phone ? (
+                      <span className="text-base flex items-center">
+                        <CloseIcon fontSize="small" />
+                        Enter a valid phone number
+                      </span>
+                    ) : (
+                      false
+                    )
+                  }
+                  onChange={(e) => {
+                    let { name, value } = e.target;
+                    value = value.trim();
+                    if (value === "") setError(name);
+                    else {
+                      value = formatPhoneNumber(value);
+                      console.log(value);
                       setValues(name, value);
-                    }}
-                  />
-                </div>
-                <div className="ml-2">
-                  <TextField
-                    id="cpassword"
-                    label="Confirm Password"
-                    variant="outlined"
-                    required
-                    fullWidth
-                    margin="dense"
-                    type="password"
-                    name="cpassword"
-                    error={errors?.cpassword}
-                    // USEFUL: can use helpertext to display errors while logging in
-                    // helperText={<h1 className="mt-20">Incorrect entry</h1>}
-                    onChange={(e) => {
-                      // password will come here
-                      let { name, value } = e.target;
-                      value = value.trim();
-                      if (value === "") setError(name);
-                      if (passwordValidation(value) !== "valid") setError(name);
-                      else removeError(name);
-                      setValues(name, value);
-                    }}
-                  />
-                </div>
+                    }
+                  }}
+                />
+              </div>
+              <div className="ml-1 w-6/12">
+                <TextField
+                  id="dob"
+                  label="Date of birth"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  margin="dense"
+                  name="dob"
+                  placeholder="07/27/1998"
+                  value={data?.dob ?? ""}
+                  error={errors.dob}
+                  helperText={
+                    errors?.dob ? (
+                      <span className="text-base flex items-center">
+                        <CloseIcon fontSize="small" />
+                        Enter a valid date
+                      </span>
+                    ) : (
+                      false
+                    )
+                  }
+                  onChange={(e) => {
+                    let { name, value } = e.target;
+                    if (value.trim() === "") setError(name);
+                    if (value.length === 2) value = value + "/";
+                    if (value.length === 5) value = value + "/";
+                    if (!validateDate(value)) setError(name);
+                    else removeError(name);
+                    setValues(name, value);
+                  }}
+                />
               </div>
             </div>
           </div>
-          <div className="flex justify-center mt-5">
-            <Button variant="contained" onClick={validateData}>
-              Sign up
-            </Button>
+
+          <div className="my-1">
+            <TextField
+              id="gender"
+              select
+              label="Select gender"
+              fullWidth
+              required
+              margin="dense"
+              value={data?.gender ?? ""}
+              name="gender"
+              placeholder="select a gender"
+              error={errors?.gender}
+              onChange={(e) => {
+                const { name, value } = e.target;
+                if (value !== "") {
+                  setValues(name, value);
+                  removeError(name);
+                } else setError(name);
+              }}
+            >
+              {genderOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+            {errors?.gender && (
+              <span className="helperText__gender text-base flex items-center ">
+                <CloseIcon fontSize="small" />
+                Choose a gender
+              </span>
+            )}
           </div>
-        </div>
-        <div>
-          <Divider />
-          <div className="text-xl">
-            Have a account? &nbsp;
-            <Link href="/login" underline="hover">
-              Sign in
-            </Link>
+
+          <div className="my-1">
+            <TextField
+              id="password"
+              label="Password"
+              variant="outlined"
+              required
+              fullWidth
+              type="password"
+              margin="dense"
+              name="password"
+              placeholder="********"
+              error={errors?.password}
+              onChange={(e) => {
+                let { name, value } = e.target;
+                if (value === "") setError(name);
+                if (!passwordValidation(value)) setError(name);
+                else removeError(name);
+                setValues(name, value);
+              }}
+            />
+            <div className="flex flex-col text-base">
+              <span
+                className={`${
+                  !data?.password
+                    ? "password__blank"
+                    : !/[a-z]/g.test(data.password)
+                    ? "password__error"
+                    : "password__correct"
+                }`}
+              >
+                {!data?.password ? null : !/[a-z]/g.test(data.password) ? (
+                  <CloseIcon />
+                ) : (
+                  <CheckIcon />
+                )}
+                Password must contain atleast one lowercase letter e.g. a,b,c..
+              </span>
+              <span
+                className={`${
+                  !data?.password
+                    ? "password__blank"
+                    : !/[A-Z]/g.test(data.password)
+                    ? "password__error"
+                    : "password__correct"
+                }`}
+              >
+                {!data?.password ? null : !/[A-Z]/g.test(data.password) ? (
+                  <CloseIcon />
+                ) : (
+                  <CheckIcon />
+                )}
+                Password must contain atleast one uppercase letter e.g. A,B,C..
+              </span>
+              <span
+                className={`${
+                  !data?.password
+                    ? "password__blank"
+                    : !/[0-9]/g.test(data.password)
+                    ? "password__error"
+                    : "password__correct"
+                }`}
+              >
+                {!data?.password ? null : !/[0-9]/g.test(data.password) ? (
+                  <CloseIcon />
+                ) : (
+                  <CheckIcon />
+                )}
+                Password must contain atleast one number e.g. 1,2,3...
+              </span>
+              <span
+                className={`${
+                  !data?.password
+                    ? "password__blank"
+                    : data?.password?.length < 8 || data?.password?.length > 20
+                    ? "password__error"
+                    : "password__correct"
+                }`}
+              >
+                {!data?.password ? null : data?.password?.length < 8 ||
+                  data?.password?.length > 20 ? (
+                  <CloseIcon />
+                ) : (
+                  <CheckIcon />
+                )}
+                Password must contain atleast 8 or more characters and less than
+                20 characters
+              </span>
+            </div>
+          </div>
+
+          <div className="my-1">
+            <TextField
+              id="cpassword"
+              label="Confirm Password"
+              variant="outlined"
+              required
+              fullWidth
+              margin="dense"
+              type="password"
+              name="cpassword"
+              error={errors?.cpassword}
+              placeholder="********"
+              helperText={
+                errors?.cpassword ? (
+                  <span className="text-base flex items-center">
+                    <CloseIcon fontSize="small" />
+                    Confirm password should match the password
+                  </span>
+                ) : (
+                  false
+                )
+              }
+              onChange={(e) => {
+                let { name, value } = e.target;
+                if (value === "") setError(name);
+                if (data?.password !== value) setError(name);
+                else removeError(name);
+                setValues(name, value);
+              }}
+            />
+          </div>
+
+          <div className="flex justify-center">
+            <button onClick={validateData} className="btn_default">
+              Sign up
+            </button>
+          </div>
+          <div className="mt-3">
+            <Divider />
+            <div className="text-xl text-black">
+              Have a account? &nbsp;
+              <Link href="/login" underline="hover" color="#393e46">
+                Sign in
+              </Link>
+            </div>
           </div>
         </div>
       </div>
