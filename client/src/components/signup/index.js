@@ -1,20 +1,19 @@
-import React from "react";
-import { Divider, Link, MenuItem, TextField } from "@mui/material";
-import { genderOptions } from "../../constants";
+import React from 'react';
+import { Divider, Link, MenuItem, TextField } from '@mui/material';
+import { genderOptions } from '../../constants';
 import {
   validateDate,
   emailValidation,
   nameValidation,
   passwordValidation,
-} from "../../utils/helper";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import SVGComponent from "../common/Logo";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DesktopDateTimePicker } from "@mui/x-date-pickers";
-import "./styles.css";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
+} from '../../utils/helper';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import SVGComponent from '../common/Logo';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
+import './styles.css';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 function SignUp() {
   const [data, setData] = React.useState({});
   const [errors, setErrors] = React.useState({});
@@ -103,7 +102,7 @@ function SignUp() {
                 }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!nameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -135,7 +134,7 @@ function SignUp() {
                 }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!nameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -153,7 +152,7 @@ function SignUp() {
               type="email"
               fullWidth
               margin="dense"
-              value={data?.email ?? ""}
+              value={data?.email ?? ''}
               name="email"
               placeholder="johndoe@example.com"
               helperText={
@@ -169,7 +168,7 @@ function SignUp() {
               error={errors?.email}
               onChange={(e) => {
                 let { name, value } = e.target;
-                if (value === "") setError(name);
+                if (value === '') setError(name);
                 if (!emailValidation(value)) setError(name);
                 else removeError(name);
                 setValues(name, value);
@@ -190,7 +189,7 @@ function SignUp() {
                   name="phone"
                   error={errors?.phone}
                   placeholder="1234567899"
-                  value={data?.phone ?? ""}
+                  value={data?.phone ?? ''}
                   helperText={
                     errors?.phone ? (
                       <span className="text-base flex items-center">
@@ -204,7 +203,7 @@ function SignUp() {
                   onChange={(e) => {
                     let { name, value } = e.target;
                     value = value.trim();
-                    if (value === "") setError(name);
+                    if (value === '') setError(name);
                     else {
                       if (value.length < 10 || value.length > 10)
                         setError(name);
@@ -250,7 +249,17 @@ function SignUp() {
                   }}
                 /> */}
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DesktopDateTimePicker inputFormat="MM/DD/YYYY" />
+                  <DatePicker
+                    inputFormat="MM/DD/YYYY"
+                    value={data?.dob ?? null}
+                    renderInput={(params) => <TextField {...params} />}
+                    onChange={(e) => {
+                      setValues('dob', e);
+                    }}
+                    maxDate={new Date().toISOString()}
+                    minDate={new Date('01/01/1950').toISOString()}
+                    openTo={'day'}
+                  />
                 </LocalizationProvider>
                 {/* <input ref={ref} /> */}
               </div>
@@ -265,13 +274,13 @@ function SignUp() {
               fullWidth
               required
               margin="dense"
-              value={data?.gender ?? ""}
+              value={data?.gender ?? ''}
               name="gender"
               placeholder="select a gender"
               error={errors?.gender}
               onChange={(e) => {
                 const { name, value } = e.target;
-                if (value !== "") {
+                if (value !== '') {
                   setValues(name, value);
                   removeError(name);
                 } else setError(name);
@@ -302,11 +311,11 @@ function SignUp() {
               margin="dense"
               name="password"
               placeholder="********"
-              value={data?.password ?? ""}
+              value={data?.password ?? ''}
               error={errors?.password}
               onChange={(e) => {
                 let { name, value } = e.target;
-                if (value === "") setError(name);
+                if (value === '') setError(name);
                 if (!passwordValidation(value)) setError(name);
                 else removeError(name);
                 setValues(name, value);
@@ -316,10 +325,10 @@ function SignUp() {
               <span
                 className={`${
                   !data?.password
-                    ? "password__blank"
+                    ? 'password__blank'
                     : !/[a-z]/g.test(data.password)
-                    ? "password__error"
-                    : "password__correct"
+                    ? 'password__error'
+                    : 'password__correct'
                 }`}
               >
                 {!data?.password ? null : !/[a-z]/g.test(data.password) ? (
@@ -332,10 +341,10 @@ function SignUp() {
               <span
                 className={`${
                   !data?.password
-                    ? "password__blank"
+                    ? 'password__blank'
                     : !/[A-Z]/g.test(data.password)
-                    ? "password__error"
-                    : "password__correct"
+                    ? 'password__error'
+                    : 'password__correct'
                 }`}
               >
                 {!data?.password ? null : !/[A-Z]/g.test(data.password) ? (
@@ -348,10 +357,10 @@ function SignUp() {
               <span
                 className={`${
                   !data?.password
-                    ? "password__blank"
+                    ? 'password__blank'
                     : !/[0-9]/g.test(data.password)
-                    ? "password__error"
-                    : "password__correct"
+                    ? 'password__error'
+                    : 'password__correct'
                 }`}
               >
                 {!data?.password ? null : !/[0-9]/g.test(data.password) ? (
@@ -364,10 +373,10 @@ function SignUp() {
               <span
                 className={`${
                   !data?.password
-                    ? "password__blank"
+                    ? 'password__blank'
                     : data?.password?.length < 8 || data?.password?.length > 20
-                    ? "password__error"
-                    : "password__correct"
+                    ? 'password__error'
+                    : 'password__correct'
                 }`}
               >
                 {!data?.password ? null : data?.password?.length < 8 ||
@@ -392,7 +401,7 @@ function SignUp() {
               margin="dense"
               type="password"
               name="cpassword"
-              value={data?.cpassword ?? ""}
+              value={data?.cpassword ?? ''}
               error={errors?.cpassword}
               placeholder="********"
               helperText={
@@ -407,7 +416,7 @@ function SignUp() {
               }
               onChange={(e) => {
                 let { name, value } = e.target;
-                if (value === "") setError(name);
+                if (value === '') setError(name);
                 if (data?.password !== value) setError(name);
                 else removeError(name);
                 setValues(name, value);
