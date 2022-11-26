@@ -7,6 +7,7 @@ const createToken = async (user_id, token) => {
   const newToken = {
     user_id: user_id,
     token: token,
+    created_at: new Date().toISOString(),
   };
   const insertInfo = await token_collection.insertOne(newToken);
   if (insertInfo.insertedCount === 0) throw 'Could not add token';

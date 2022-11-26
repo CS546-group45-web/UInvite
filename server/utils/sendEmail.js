@@ -36,7 +36,8 @@ const sendEmail = (email, subject, message, url, headline, buttonText) => {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      return console.log(error);
+      console.log(error);
+      throw error;
     }
     console.log('Message sent: %s', info.messageId);
   });

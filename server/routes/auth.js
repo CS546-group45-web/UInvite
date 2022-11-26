@@ -46,11 +46,11 @@ router.route('/signup').post(async (req, res) => {
         newUser,
         crypto.randomBytes(32).toString('hex')
       );
-      const url = `${process.e.BASE_URL}/verify/${token}`;
-
+      const url = `${process.env.BASE_URL}/verify/${token}`;
       const message = `Hello, ${user.first_name} ${user.last_name} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
       const buttonText = 'Verify Email';
-      headline = 'Verify your email address';
+      const headline = 'Verify your email address';
+      console.log(url);
       sendEmail(
         user.email,
         'Welcome to Uinvite!',
@@ -149,6 +149,40 @@ router.route('/forgot').post(async (req, res) => {
     const headline = 'Forgot Password!';
     sendEmail(user.email, 'Password Reset', message, url, headline, buttonText);
     return res.status(200).json({ message: 'Email sent successfully' });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
+router.route('/reset/:token').post(async (req, res) => {
+  try {
+    const token = await tokenData.getTokenByToken(req.params.token);
+    if (!token) {
+      return res.status(400).json({ error: 'Invalid token' });
+    }
+    const user = await userData.getUserById(token.user_id);
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid token' });
+    }
+    // Check if token is expired
+    const now = new Date();
+    const created_at = token.created_at;
+    const diff = Math.abs(now.getTime() - created_at.getTime());
+    const diffMins = Math.ceil(diff / (1000 * 60));
+    if (diffMins > 15) {
+      // Delete token
+      await tokenData.deleteToken(token.token);
+      return res.status(400).json({ error: 'Token expired' });
+    }
+    const password = req.body.password;
+    try {
+      req.body.password = validation.checkPassword(password);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+    const updatedUser = await userData.updateUserPassword(user._id, password);
+    await tokenData.deleteToken(token.token);
+    return res.status(200).json({ message: 'Password updated successfully' });
   } catch (e) {
     return res.status(500).json({ error: e });
   }

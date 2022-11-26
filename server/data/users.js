@@ -118,6 +118,19 @@ const verifyUser = async (id) => {
   return await getUserById(id);
 };
 
+const updatePassword = async (id, password) => {
+  const user_collection = await users();
+  password = validation.checkPassword(password);
+  hashed_password = await bcrypt.hash(password, 10);
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(id) },
+    { $set: { hashed_password: hashed_password } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+  return await getUserById(id);
+};
 module.exports = {
   createUser,
   getAllUsers,
@@ -125,4 +138,5 @@ module.exports = {
   getUserByEmail,
   updateUser,
   verifyUser,
+  updatePassword,
 };
