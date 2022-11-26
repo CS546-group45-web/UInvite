@@ -180,6 +180,7 @@ router.route('/reset/:token').post(async (req, res) => {
     }
     const updatedUser = await userData.updateUserPassword(user._id, password);
     await tokenData.deleteToken(token.token);
+
     return res.status(200).json({ message: 'Password updated successfully' });
   } catch (e) {
     return res.status(500).json({ error: e });
