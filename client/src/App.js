@@ -7,6 +7,8 @@ import CreateEvent from "./components/events/createEvent";
 import EventsList from "./components/events/lists";
 import Nav from "./components/navbar";
 import ForgotPassword from "./components/forgotPassword";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const isAuthenticated = () => {
@@ -82,6 +84,15 @@ function App() {
             </Routes>
           </div>
         </div>
+
+        <ToastContainer
+          autoClose={3000}
+          hideProgressBar={true}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          theme="colored"
+        />
       </BrowserRouter>
     </div>
   );

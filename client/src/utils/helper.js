@@ -11,7 +11,7 @@ export const emailValidation = (email) => {
 // NOTE: Think about more cases to make password strong
 export const passwordValidation = (password) => {
   if (!password) return false;
-  password = password.trim();
+  // password = password.trim();
   if (password === "") return false;
   if (password.length < 8 || password.length > 20)
     // return "Password must contain more than 8 and less than 20 characters!";

@@ -10,9 +10,11 @@ import { emailValidation, passwordValidation } from "../../utils/helper";
 
 import CloseIcon from "@mui/icons-material/Close";
 import SVGComponent from "../common/Logo";
+import { auth } from "../../utils/apis";
+import { toast } from "react-toastify";
 
 function Login() {
-  const [data, setData] = React.useState({ email: "", password: "" });
+  const [userData, setUserData] = React.useState({ email: "", password: "" });
   // const [passwordVisibility, setPasswordVisibility] = React.useState(false);
   const [errors, setErrors] = React.useState({ email: false, password: false });
 
@@ -27,27 +29,33 @@ function Login() {
   };
 
   const setValues = (name, value) => {
-    setData({ ...data, [name]: value });
+    setUserData({ ...userData, [name]: value });
   };
 
-  const validateData = (e) => {
+  const validateData = async (e) => {
     e.preventDefault();
-    const { email, password } = data;
+    const { email, password } = userData;
 
     let errorObj = {};
     if (!emailValidation(email)) errorObj.email = true;
 
-    if (passwordValidation(password)) errorObj.password = true;
+    if (!passwordValidation(password)) errorObj.password = true;
 
     setErrors(errorObj);
     if (Object.keys(errorObj).length === 0) {
       // TODO: configure the post login procedure
-      localStorage.setItem("auth", true);
 
-      window.location.href = "/";
-      // FIXME: fix the redirect issue
-    } // redirect("/");
-    // navigate("/");
+      const loginData = await auth.login("api/auth", "post", userData);
+
+      const { data, status } = loginData;
+      if (status !== 200) toast.error(data?.error);
+      else {
+        localStorage.setItem("auth", true);
+        localStorage.setItem("token", data?.token);
+        window.location.href = "/";
+      } // redirect("/");
+      // navigate("/");
+    }
   };
 
   // const handleClickShowPassword = () => {
@@ -99,7 +107,7 @@ function Login() {
                     false
                   )
                 }
-                value={data?.email}
+                value={userData?.email}
                 onChange={(e) => {
                   // TODO: confirm if the error should be displayed as soon as the user starts to enter the email or after clicking on submit
                   let { name, value } = e.target;
@@ -125,7 +133,7 @@ function Login() {
                 name="password"
                 placeholder="********"
                 error={errors?.password}
-                value={data?.password}
+                value={userData?.password}
                 helperText={
                   errors?.password ? (
                     <span className="text-base flex items-center">
