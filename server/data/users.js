@@ -117,7 +117,7 @@ const verifyUser = async (id) => {
   return await getUserById(id);
 };
 
-const updatePassword = async (id, password) => {
+const updateUserPassword = async (id, password) => {
   const user_collection = await users();
   password = validation.checkPassword(password);
   hashed_password = await bcrypt.hash(password, 10);
@@ -137,5 +137,5 @@ module.exports = {
   getUserByEmail,
   updateUser,
   verifyUser,
-  updatePassword,
+  updateUserPassword,
 };
