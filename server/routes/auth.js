@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
 const crypto = require('crypto');
-
+const diff_minutes = require('../utils/diff_minutes');
 router.route('/signup').post(async (req, res) => {
   const user = req.body;
   try {
@@ -42,10 +42,8 @@ router.route('/signup').post(async (req, res) => {
         user.gender
       );
       // Send email
-      const token = await tokenData.createToken(
-        newUser,
-        crypto.randomBytes(32).toString('hex')
-      );
+      const token = crypto.randomBytes(32).toString('hex');
+      const token_created = await tokenData.createToken(newUser, token);
       const url = `${process.env.BASE_URL}/verify/${token}`;
       const message = `Hello, ${user.first_name} ${user.last_name} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
       const buttonText = 'Verify Email';
@@ -139,10 +137,10 @@ router.route('/forgot').post(async (req, res) => {
     if (!found_user) {
       return res.status(400).json({ error: 'Email does not exist' });
     }
-    const token = await tokenData.createToken(
-      found_user._id,
-      crypto.randomBytes(32).toString('hex')
-    );
+    const token = crypto.randomBytes(32).toString('hex');
+    const token_created = await tokenData.createToken(found_user._id, token);
+    // time compare with token_created
+
     const url = `${process.env.BASE_URL}/reset/${token}`;
     const message = `Hello, ${found_user.first_name} ${found_user.last_name}! You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link to complete the process within 15 minutes of receiving it:`;
     const buttonText = 'Forgot Password';
@@ -166,10 +164,10 @@ router.route('/reset/:token').post(async (req, res) => {
     }
     // Check if token is expired
     const now = new Date();
-    const created_at = token.created_at;
-    const diff = Math.abs(now.getTime() - created_at.getTime());
-    const diffMins = Math.ceil(diff / (1000 * 60));
-    if (diffMins > 15) {
+    const created_at = new Date(token.created_at);
+    const diff = diff_minutes(now, created_at);
+    // time difrence
+    if (diff > 15) {
       // Delete token
       await tokenData.deleteToken(token.token);
       return res.status(400).json({ error: 'Token expired' });
