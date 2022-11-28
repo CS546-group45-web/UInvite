@@ -35,6 +35,11 @@ const navOptions = [
     icon: AccountCircleIcon,
     path: "/profile",
   },
+  {
+    name: "Calendar",
+    icon: InsertInvitationIcon,
+    path: "/profile",
+  },
 ];
 
 function Nav() {
