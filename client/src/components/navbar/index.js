@@ -38,7 +38,7 @@ const navOptions = [
   {
     name: "Calendar",
     icon: InsertInvitationIcon,
-    path: "/profile",
+    path: "/calendar",
   },
 ];
 
