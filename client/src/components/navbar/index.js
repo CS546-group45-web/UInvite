@@ -39,6 +39,7 @@ const navOptions = [
 
 function Nav() {
   const signOutUser = () => {
+    localStorage.setItem("token", null);
     localStorage.setItem("auth", false);
     window.location.href = "/login";
   };
