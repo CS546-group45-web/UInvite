@@ -1,12 +1,12 @@
 import React from "react";
 
-function EventsList() {
+function EventsListInvited() {
   return (
     <div className="w-full">
       <h2 className="mt-6 text-center text-5xl font-bold tracking-tight text-gray-900">
-        Home
+        Your Invitations
       </h2>
-      <header className="mt-6 text-left text-2xl text-center  tracking-tight text-gray-900">Browse through public events listed here on our home page</header>
+      <header className="mt-6 text-left text-2xl  tracking-tight text-gray-900">Search through Events that you have been invited to here!</header>
       
       
       {/* <header>Header</header>
@@ -189,4 +189,4 @@ function EventsList() {
   );
 }
 
-export default EventsList;
+export default EventsListInvited;

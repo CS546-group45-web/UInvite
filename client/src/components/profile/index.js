@@ -7,7 +7,7 @@ import {
   TextField,
 } from "@mui/material";
 
-function CreateEvent() {
+function Profile() {
   return <div className="flex min-h-full justify-center py-12 px-4 sm:px-6 lg:px-8">
   <div className="w-full max-w-md space-y-4">
     <div className="flex items-center flex-col">
@@ -16,7 +16,7 @@ function CreateEvent() {
       </div>
 
       <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-        Create an Event!
+        Your Profile!
       </h2>
     </div>
     <div className="space-y-4 p-4">
@@ -24,15 +24,15 @@ function CreateEvent() {
         <div>
           <TextField
             className="my-2"
-            id="Event Name"
-            label="Event Name:"
+            id="avi"
+            label="Profile Picture:"
             variant="outlined"
             required
             type="text"
             fullWidth
-            placeholder="John Doe's Birthday Party"
+            placeholder=""
             margin="dense"
-            name="Event Name"
+            name="avi"
             // error={errors?.email}
             // helperText={
             //   errors?.email ? (
@@ -59,15 +59,15 @@ function CreateEvent() {
         <div>
           <TextField
             className="my-2"
-            id="location"
-            label="Event Location (Optional):"
+            id="bio"
+            label="Biography:"
             variant="outlined"
            
             type="text"
             fullWidth
-            placeholder="31 Hartwell Road"
+            placeholder="Hi, I am a senior medical student from chicago attending school at Rutgers University, I live in new brunswick"
             margin="dense"
-            name="location"
+            name="bio"
             // error={errors?.email}
             // helperText={
             //   errors?.email ? (
@@ -94,15 +94,15 @@ function CreateEvent() {
         <div>
           <TextField
             className="my-2"
-            id="date"
-            label="Event Date:"
+            id="instagram"
+            label="Instagram:"
             variant="outlined"
             required
             type="text"
             fullWidth
-            placeholder="06/19/2022"
+            placeholder="@JohnDoe48"
             margin="dense"
-            name="date"
+            name="instagram"
             // error={errors?.email}
             // helperText={
             //   errors?.email ? (
@@ -130,14 +130,14 @@ function CreateEvent() {
           <TextField
             className="my-2"
             id="time"
-            label="Event Time:"
+            label="Twitter:"
             variant="outlined"
             required
             type="text"
             fullWidth
-            placeholder="7:00 pm - 11:00 pm"
+            placeholder="@johndoe48"
             margin="dense"
-            name="time"
+            name="twitter"
             // error={errors?.email}
             // helperText={
             //   errors?.email ? (
@@ -167,14 +167,50 @@ function CreateEvent() {
           <TextField
             className="my-2"
             id="email"
-            label="Age Restrictions:"
+            label="Email Adress:"
             variant="outlined"
             required
             type="text"
             fullWidth
-            placeholder="15+"
+            placeholder="johndoe@gmail.com"
             margin="dense"
             name="email"
+            // error={errors?.email}
+            // helperText={
+            //   errors?.email ? (
+            //     <span className="text-base flex items-center">
+            //       <CloseIcon fontSize="small" />
+            //       Please enter a valid email
+            //     </span>
+            //   ) : (
+            //     false
+            //   )
+            // }
+            // value={userData?.email}
+            // onChange={(e) => {
+            //   // TODO: confirm if the error should be displayed as soon as the user starts to enter the email or after clicking on submit
+            //   let { name, value } = e.target;
+            //   value = value.trim();
+            //   if (value === "") setError(name);
+            //   if (!emailValidation(value)) setError(name);
+            //   else removeError(name);
+            //   setValues(name, value);
+            // }}
+          />
+        </div>
+        
+        <div>
+          <TextField
+            className="my-2"
+            id="email"
+            label="Phone Number:"
+            variant="outlined"
+            required
+            type="text"
+            fullWidth
+            placeholder="732-610-7448"
+            margin="dense"
+            name="phone"
             // error={errors?.email}
             // helperText={
             //   errors?.email ? (
@@ -205,31 +241,12 @@ function CreateEvent() {
         <div className="flex items-center">
           <FormControlLabel
             control={<Checkbox defaultChecked />}
-            label="Pictures allowed?"
+            label="Private profile?"
           />
         </div>
         
 
       
-      </div>
-      <div className="flex items-center justify-between text-logoBlue">
-        <div className="flex items-center">
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label="Comments Allowed?"
-          />
-        </div>
-        
-
-      
-      </div>
-      <div className="flex items-center justify-between text-logoBlue">
-        <div className="flex items-center">
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label="Public Event?"
-          />
-        </div>
         
 
       
@@ -241,7 +258,7 @@ function CreateEvent() {
           // onClick={validateData}
           // disabled={errors?.password || errors?.email}
         >
-          Create Event
+          Update Profile
         </button>
       </div>
     </div>
@@ -251,4 +268,4 @@ function CreateEvent() {
 
 }
 
-export default CreateEvent;
+export default Profile;

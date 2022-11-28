@@ -5,6 +5,10 @@ import { Route, BrowserRouter, Routes, Navigate } from "react-router-dom";
 import SignUp from "./components/signup";
 import CreateEvent from "./components/events/createEvent";
 import EventsList from "./components/events/lists";
+import EventsListInvited from "./components/events/invitedEvents";
+import EventsListRSVP from "./components/events/rsvpEvents";
+import Profile from "./components/profile";
+import Calendar from "./components/Calendar";
 import Nav from "./components/navbar";
 import ForgotPassword from "./components/forgotPassword";
 import { ToastContainer } from "react-toastify";
@@ -42,6 +46,51 @@ function App() {
                 element={
                   isAuthenticated() ? (
                     <CreateEvent />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+              
+              <Route
+                path="/profile"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <Profile />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+              <Route
+                path="/my-events"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <EventsListRSVP />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+              <Route
+                path="/calendar"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <Calendar />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+              <Route
+                path="/invites"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <EventsListInvited/>
                   ) : (
                     <Navigate to="/login" replace />
                   )
