@@ -1,22 +1,24 @@
 import React from "react";
 import {
-  Checkbox,
   Divider,
-  FormControlLabel,
   Link,
   TextField,
 } from "@mui/material";
 import { emailValidation, passwordValidation } from "../../utils/helper";
-
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import CloseIcon from "@mui/icons-material/Close";
 import SVGComponent from "../common/Logo";
-import { auth } from "../../utils/apis";
+import { login } from "../../utils/apis/auth";
 import { toast } from "react-toastify";
+import Loading from "../common/Loading";
+import "./styles.css";
 
 function Login() {
   const [userData, setUserData] = React.useState({ email: "", password: "" });
-  // const [passwordVisibility, setPasswordVisibility] = React.useState(false);
+  const [passwordVisibility, setPasswordVisibility] = React.useState(false);
   const [errors, setErrors] = React.useState({ email: false, password: false });
+  const [loading, setLoading] = React.useState(false);
 
   const setError = (name) => {
     setErrors({ ...errors, [name]: true });
@@ -34,6 +36,7 @@ function Login() {
 
   const validateData = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const { email, password } = userData;
 
     let errorObj = {};
@@ -43,10 +46,8 @@ function Login() {
 
     setErrors(errorObj);
     if (Object.keys(errorObj).length === 0) {
-      // TODO: configure the post login procedure
-
-      const loginData = await auth.login("api/auth", "post", userData);
-
+      const loginData = await login(userData);
+      console.log({ loginData });
       const { data, status } = loginData;
       if (status !== 200) toast.error(data?.error);
       else {
@@ -56,23 +57,17 @@ function Login() {
       } // redirect("/");
       // navigate("/");
     }
+    setLoading(false);
   };
 
-  // const handleClickShowPassword = () => {
-  //   setPasswordVisibility(!passwordVisibility);
-  // };
-
-  // const handleMouseDownPassword = (event) => {
-  //   event.preventDefault();
-
-  //   setPasswordVisibility(!passwordVisibility);
-  // };
+  const handleClickShowPassword = () =>
+    setPasswordVisibility(!passwordVisibility);
 
   React.useEffect(() => {}, []);
 
   return (
-    <div className="flex min-h-full justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-4">
+    <div className="flex min-h-full justify-center items-center py-8 lg:py-6 md:py-5 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
         <div className="flex items-center flex-col">
           <div className="w-40">
             <SVGComponent />
@@ -82,53 +77,49 @@ function Login() {
             Sign in to your account
           </h2>
         </div>
-        <div className="space-y-4 p-4">
-          <div className="-space-y-px rounded-md">
-            <div>
-              <TextField
-                className="my-2"
-                id="email"
-                label="Email"
-                variant="outlined"
-                required
-                type="text"
-                fullWidth
-                placeholder="johndoe@example.com"
-                margin="dense"
-                name="email"
-                error={errors?.email}
-                helperText={
-                  errors?.email ? (
-                    <span className="text-base flex items-center">
-                      <CloseIcon fontSize="small" />
-                      Please enter a valid email
-                    </span>
-                  ) : (
-                    false
-                  )
-                }
-                value={userData?.email}
-                onChange={(e) => {
-                  // TODO: confirm if the error should be displayed as soon as the user starts to enter the email or after clicking on submit
-                  let { name, value } = e.target;
-                  value = value.trim();
-                  if (value === "") setError(name);
-                  if (!emailValidation(value)) setError(name);
-                  else removeError(name);
-                  setValues(name, value);
-                }}
-              />
-            </div>
-            <div>
-              {/* TODO: add eye button to toggle for password */}
+        <div className="p-4">
+          <div className="rounded-md">
+            <TextField
+              className="my-2"
+              id="email"
+              label="Email"
+              variant="outlined"
+              required
+              type="text"
+              fullWidth
+              placeholder="johndoe@example.com"
+              margin="dense"
+              name="email"
+              error={errors?.email}
+              helperText={
+                errors?.email ? (
+                  <span className="flex items-center">
+                    <CloseIcon fontSize="small" />
+                    Please enter a valid email
+                  </span>
+                ) : (
+                  false
+                )
+              }
+              value={userData?.email}
+              onChange={(e) => {
+                let { name, value } = e.target;
+                value = value.trim();
+                if (value === "") setError(name);
+                if (!emailValidation(value)) setError(name);
+                else removeError(name);
+                setValues(name, value);
+              }}
+            />
+
+            <div className="relative">
               <TextField
                 id="password"
                 label="Password"
                 variant="outlined"
                 required
                 fullWidth
-                type="password"
-                // type={passwordVisibility ? "text" : "password"}
+                type={passwordVisibility ? "text" : "password"}
                 margin="dense"
                 name="password"
                 placeholder="********"
@@ -136,7 +127,7 @@ function Login() {
                 value={userData?.password}
                 helperText={
                   errors?.password ? (
-                    <span className="text-base flex items-center">
+                    <span className="flex items-center">
                       <CloseIcon fontSize="small" />
                       Password cannot be less than 8 characters
                     </span>
@@ -154,33 +145,39 @@ function Login() {
                   setValues(name, value);
                 }}
               />
+              <div className="show_pass_btn" onClick={handleClickShowPassword}>
+                {passwordVisibility ? (
+                  <VisibilityIcon fontSize="medium" />
+                ) : (
+                  <VisibilityOffIcon fontSize="medium" />
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-logoBlue">
-            <div className="flex items-center">
+          <div className="flex items-center justify-end text-logoBlue text-xl">
+            {/* <div className="flex items-center">
               <FormControlLabel
                 control={<Checkbox defaultChecked />}
                 label="Remember me"
               />
-            </div>
+            </div> */}
 
-            <div className="text-lg">
+            <div>
               <Link href="/forgot-password" underline="hover" color="#393e46">
                 Forgot your password?
               </Link>
             </div>
           </div>
 
-          <div>
-            <button
-              className="btn_default"
-              onClick={validateData}
-              disabled={errors?.password || errors?.email}
-            >
-              Sign in
-            </button>
-          </div>
+          <button
+            className="btn_default flex items-center mt-2"
+            onClick={validateData}
+            disabled={errors?.password || errors?.email || loading}
+          >
+            <Loading loading={loading} width={18} />
+            Sign in
+          </button>
         </div>
         <div>
           <Divider />
