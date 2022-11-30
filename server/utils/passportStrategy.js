@@ -10,7 +10,6 @@ const opts = {
 };
 
 const strategy = new JWTStrategy(opts, (payload, done) => {
-  console.log('payload received', payload);
   users.getUserById(payload.id).then((user) => {
     console.log(user);
     if (user) {

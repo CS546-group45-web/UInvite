@@ -27,14 +27,28 @@ const checkEmail = (input) => {
   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(input)) {
     throw 'Email must be a valid email address';
   }
+  input = input.toLowerCase();
   return input;
 };
 
 const checkPassword = (input) => {
-  input = checkInputString(input, 'password');
-  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(input)) {
+  if (!input)
     throw 'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 number';
-  }
+  if (input === '')
+    throw 'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 number';
+  if (input.length < 8)
+    // return "Password must contain more than 8 and less than 20 characters!";
+    throw 'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 number';
+
+  if (!/[0-9]/g.test(input))
+    throw 'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 number';
+  // return "Password must contain atleast one number!";
+  if (!/[A-Z]/g.test(input))
+    throw 'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 number';
+  // return "Password must contain atleast one uppercase letter!";
+  if (!/[a-z]/g.test(input))
+    throw 'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 number';
+  // return "Password must contain atleast one lowercase letter!";
   return input;
 };
 
