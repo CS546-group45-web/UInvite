@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  Divider,
-  Link,
-  TextField,
-} from "@mui/material";
+import { Divider, Link, TextField } from "@mui/material";
 import { emailValidation, passwordValidation } from "../../utils/helper";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
