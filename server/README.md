@@ -88,6 +88,58 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Verify user email token
+
+`GET /api/auth/verify/:token`
+
+##### Response
+
+```json
+{
+  "message": "User verified successfully"
+}
+```
+
+#### Forgot Password
+
+`POST /api/auth/forgot`
+
+##### Request Body
+
+```json
+{
+  "email": "luffy@gmail.com"
+}
+```
+
+##### Response
+
+```json
+{
+  "message": "Email sent successfully"
+}
+```
+
+#### Reset Password
+
+`POST /api/auth/reset/:token`
+
+##### Request Body
+
+```json
+{
+  "password": "IamKing@123"
+}
+```
+
+##### Response
+
+```json
+{
+  "message": "Password reset successfully"
+}
+```
+
 ## Update API Docs when changes are made
 
 When changes are made to the API, it is important to update the documentation to reflect those changes. Doing so will help keep team up to date on the latest features and changes, and ensure that they are using the API correctly.
