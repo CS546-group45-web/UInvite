@@ -5,7 +5,8 @@ const validation = require('../utils/validation');
 
 const createEvent = (
     title,
-    settings
+    settings,
+    people
 ) => {
 
 }
@@ -15,6 +16,14 @@ const getAllEvents = () => {
 }
 
 const getEventById = (id) =>{
+
+}
+
+const getEventsByUser = (username) => {
+
+}
+
+const getEventsByDate = (date) => {
 
 }
 
