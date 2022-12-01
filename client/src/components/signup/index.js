@@ -48,7 +48,11 @@ function SignUp() {
     if (!signupData?.dob) errorObj.dob = true;
     if (!signupData?.gender) errorObj.gender = true;
     if (!signupData?.password) errorObj.password = true;
-    if (!signupData?.cpassword) errorObj.cpassword = true;
+    if (
+      !signupData?.cpassword ||
+      signupData?.password !== signupData?.cpassword
+    )
+      errorObj.cpassword = true;
 
     if (Object.keys(errorObj).length !== 0) return setErrors(errorObj);
     else setErrors({});
@@ -385,7 +389,10 @@ size="small"
               }}
             />
 
-            <div className="show_pass_btn__signup" onClick={handleClickShowPassword}>
+            <div
+              className="show_pass_btn__signup"
+              onClick={handleClickShowPassword}
+            >
               {passwordVisibility ? (
                 <VisibilityIcon fontSize="medium" />
               ) : (

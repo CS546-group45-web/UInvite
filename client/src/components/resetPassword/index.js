@@ -17,7 +17,7 @@ function ResetPassword() {
   const [errors, setErrors] = React.useState({});
   const [passwordVisibility, setPasswordVisibility] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [resetStatus, setResetStatus] = React.useState(true);
+  const [resetStatus, setResetStatus] = React.useState(false);
 
   const params = useParams();
 
@@ -45,7 +45,8 @@ function ResetPassword() {
 
     const errorObj = {};
     if (!resetData?.password) errorObj.password = true;
-    if (!resetData?.cpassword) errorObj.cpassword = true;
+    if (!resetData?.cpassword || resetData?.cpassword !== resetData?.password)
+      errorObj.cpassword = true;
 
     if (Object.keys(errorObj).length !== 0) return setErrors(errorObj);
     else setErrors({});
@@ -78,7 +79,7 @@ function ResetPassword() {
         {resetStatus ? (
           <div className="text-xl text-black">
             Password has changed. Please go to&nbsp;
-            <Link href="/forgot-password" underline="hover" color="#393e46">
+            <Link href="/login" underline="hover" color="#393e46">
               login page
             </Link>
             &nbsp;to login to your account
