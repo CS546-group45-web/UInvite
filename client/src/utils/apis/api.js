@@ -18,14 +18,14 @@ export const makeApiCall = async (endpoint, method, body, headers = null) => {
           }
         : headers,
     }).then((res) => {
-      console.log({ res });
+      // console.log({ res });
       const { data, status } = res;
       results.data = data;
       results.status = status;
     });
     return results;
   } catch (err) {
-    console.log({ err });
+    // console.log({ err });
     const { response } = err;
     if (
       response?.status === 500 ||

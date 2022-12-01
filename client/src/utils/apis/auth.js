@@ -7,3 +7,8 @@ export const signup = async (data) =>
 export const signout = async () => {
   await makeApiCall("");
 };
+
+export const verifyUser = async (token) => {
+  const url = "api/auth/verify/" + token;
+  return await makeApiCall(url, "get");
+};

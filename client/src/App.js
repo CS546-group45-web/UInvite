@@ -15,10 +15,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyUser from "./components/verifyUser";
 
-// import dotenv from "dotenv";
-
-// dotenv.config();
-
 function App() {
   const isAuthenticated = () => {
     return localStorage.getItem("auth") === "true" ? true : false;
@@ -45,7 +41,7 @@ function App() {
                   )
                 }
               />
-              <Route path="/verify/:id" exact element={<VerifyUser />} />
+              <Route path="/verify/:token" exact element={<VerifyUser />} />
 
               <Route
                 path="/create-event"
