@@ -385,7 +385,7 @@ size="small"
               }}
             />
 
-            <div className="show_pass_btn" onClick={handleClickShowPassword}>
+            <div className="show_pass_btn__signup" onClick={handleClickShowPassword}>
               {passwordVisibility ? (
                 <VisibilityIcon fontSize="medium" />
               ) : (

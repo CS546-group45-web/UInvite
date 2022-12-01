@@ -14,6 +14,7 @@ import ForgotPassword from "./components/forgotPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyUser from "./components/verifyUser";
+import ResetPassword from "./components/resetPassword";
 
 function App() {
   const isAuthenticated = () => {
@@ -63,6 +64,17 @@ function App() {
                     <Profile />
                   ) : (
                     <Navigate to="/login" replace />
+                  )
+                }
+              />
+              <Route
+                path="/reset/:token"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <Navigate to="/login" replace />
+                  ) : (
+                    <ResetPassword />
                   )
                 }
               />
