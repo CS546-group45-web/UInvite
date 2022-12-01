@@ -2,24 +2,32 @@ import React from "react";
 import { Divider, Link, MenuItem, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
 import {
-  validateDate,
+  // validateDate,
   emailValidation,
   nameValidation,
   passwordValidation,
 } from "../../utils/helper";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SVGComponent from "../common/Logo";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers";
 import "./styles.css";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-function SignUp() {
-  const [data, setData] = React.useState({});
-  const [errors, setErrors] = React.useState({});
+import { toast } from "react-toastify";
+import { signup } from "../../utils/apis/auth";
+import Loading from "../common/Loading";
 
-  const validateData = () => {
-    if (Object.keys(data).length === 0) {
+function SignUp() {
+  const [signupData, setSignupData] = React.useState({});
+  const [errors, setErrors] = React.useState({});
+  const [passwordVisibility, setPasswordVisibility] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+
+  const validateData = async () => {
+    if (Object.keys(signupData).length === 0) {
       return setErrors({
         firstName: true,
         lastName: true,
@@ -33,25 +41,59 @@ function SignUp() {
     }
 
     const errorObj = {};
-    if (!data?.firstName) errorObj.firstName = true;
-    if (!data?.lastName) errorObj.lastName = true;
-    if (!data?.email) errorObj.email = true;
-    if (!data?.phone) errorObj.phone = true;
-    if (!data?.dob) errorObj.dob = true;
-    if (!data?.gender) errorObj.gender = true;
-    if (!data?.password) errorObj.password = true;
-    if (!data?.cpassword) errorObj.cpassword = true;
+    if (!signupData?.firstName) errorObj.firstName = true;
+    if (!signupData?.lastName) errorObj.lastName = true;
+    if (!signupData?.email) errorObj.email = true;
+    if (!signupData?.phone) errorObj.phone = true;
+    if (!signupData?.dob) errorObj.dob = true;
+    if (!signupData?.gender) errorObj.gender = true;
+    if (!signupData?.password) errorObj.password = true;
+    if (!signupData?.cpassword) errorObj.cpassword = true;
 
-    if (Object.keys(errorObj).length !== 0) setErrors(errorObj);
+    if (Object.keys(errorObj).length !== 0) return setErrors(errorObj);
+    else setErrors({});
+
+    setLoading(true);
+    const { firstName, lastName, email, phone, dob, gender, password } =
+      signupData;
+
+    const today = new Date(dob);
+    const yyyy = today.getFullYear();
+    let mm = today.getMonth() + 1; // Months start at 0!
+    let dd = today.getDate();
+
+    if (dd < 10) dd = "0" + dd;
+    if (mm < 10) mm = "0" + mm;
+
+    const formattedToday = mm + "/" + dd + "/" + yyyy;
+
+    console.log(dob.$d);
+    const apiBody = {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      password: password,
+      phone: phone
+        .substr(0, 3)
+        .concat("-", phone.substr(3, 3) + "-", phone.substr(6)),
+      // phone: phone,
+      dob: formattedToday,
+      gender: gender,
+    };
+
+    const singupInfo = await signup(apiBody);
+
+    const { data, status } = singupInfo;
+    if (status !== 201) toast.error(data?.error);
     else {
-      setErrors({});
+      console.log(data, status);
+      window.location.href = "/login";
     }
-
-    console.log({ data });
+    setLoading(false);
   };
 
   const setValues = (name, value) => {
-    setData({ ...data, [name]: value });
+    setSignupData({ ...signupData, [name]: value });
   };
 
   const setError = (name) => {
@@ -64,10 +106,11 @@ function SignUp() {
     setErrors(errorObj);
   };
 
-  // FIXME: This form needs more CSS fixes
+  const handleClickShowPassword = () =>
+    setPasswordVisibility(!passwordVisibility);
 
   return (
-    <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-full py-8 lg:py-6 md:py-5 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-center">
         <div className="flex items-center flex-col p-16">
           <div className="w-60">
@@ -81,6 +124,7 @@ function SignUp() {
           <div className="flex justify-between">
             <div className="mr-1 w-6/12">
               <TextField
+                size="small"
                 id="firstName"
                 label="First Name"
                 variant="outlined"
@@ -88,7 +132,7 @@ function SignUp() {
                 required
                 fullWidth
                 type="text"
-                value={data?.firstName}
+                value={signupData?.firstName}
                 name="firstName"
                 margin="dense"
                 placeholder="John"
@@ -113,6 +157,7 @@ function SignUp() {
             </div>
             <div className="ml-1 w-6/12">
               <TextField
+                size="small"
                 id="lastName"
                 label="Last Name"
                 name="lastName"
@@ -122,7 +167,7 @@ function SignUp() {
                 fullWidth
                 type="text"
                 margin="dense"
-                value={data?.lastName}
+                value={signupData?.lastName}
                 placeholder="Doe"
                 helperText={
                   errors?.lastName ? (
@@ -146,6 +191,7 @@ function SignUp() {
           </div>
 
           <TextField
+            size="small"
             id="email"
             label="Email"
             variant="outlined"
@@ -153,7 +199,7 @@ function SignUp() {
             type="email"
             fullWidth
             margin="dense"
-            value={data?.email ?? ""}
+            value={signupData?.email ?? ""}
             name="email"
             placeholder="johndoe@example.com"
             helperText={
@@ -179,17 +225,18 @@ function SignUp() {
             <div className="flex justify-between">
               <div className="mr-1 w-6/12">
                 <TextField
+                  size="small"
                   id="phone"
                   label="Phone"
                   variant="outlined"
                   required
                   fullWidth
-                  type="text"
+                  type="phone"
                   margin="dense"
                   name="phone"
                   error={errors?.phone}
                   placeholder="1234567899"
-                  value={data?.phone ?? ""}
+                  value={signupData?.phone ?? ""}
                   helperText={
                     errors?.phone ? (
                       <span className="text-base flex items-center">
@@ -211,6 +258,7 @@ function SignUp() {
               </div>
               <div className="ml-1 w-6/12">
                 {/* <TextField
+size="small"
                   id="dob"
                   label="Date of birth"
                   variant="outlined"
@@ -219,7 +267,7 @@ function SignUp() {
                   margin="dense"
                   name="dob"
                   placeholder="07/27/1998"
-                  value={data?.dob ?? ""}
+                  value={signupData?.dob ?? ""}
                   error={errors?.dob}
                   helperText={
                     errors?.dob ? (
@@ -243,13 +291,16 @@ function SignUp() {
                     setValues(name, value);
                   }}
                 /> */}
+                {/* FIXME: Fix the date error state mgmt */}
                 <div className="mt-2">
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Date of birth"
                       inputFormat="MM/DD/YYYY"
-                      value={data?.dob ?? null}
-                      renderInput={(params) => <TextField {...params} />}
+                      value={signupData?.dob ?? null}
+                      renderInput={(params) => (
+                        <TextField size="small" {...params} />
+                      )}
                       onChange={(e) => {
                         console.log(e, typeof e);
                         if (e === null) removeError("dob");
@@ -277,13 +328,14 @@ function SignUp() {
 
           <div className="my-1">
             <TextField
+              size="small"
               id="gender"
               select
               label="Select gender"
               fullWidth
               required
               margin="dense"
-              value={data?.gender ?? ""}
+              value={signupData?.gender ?? ""}
               name="gender"
               placeholder="select a gender"
               error={errors?.gender}
@@ -309,18 +361,20 @@ function SignUp() {
             )}
           </div>
 
-          <div className="my-1">
+          <div className="my-1 relative">
             <TextField
+              size="small"
               id="password"
               label="Password"
               variant="outlined"
               required
               fullWidth
-              type="password"
+              // type="password"
+              type={passwordVisibility ? "text" : "password"}
               margin="dense"
               name="password"
               placeholder="********"
-              value={data?.password ?? ""}
+              value={signupData?.password ?? ""}
               error={errors?.password}
               onChange={(e) => {
                 let { name, value } = e.target;
@@ -330,17 +384,28 @@ function SignUp() {
                 setValues(name, value);
               }}
             />
+
+            <div className="show_pass_btn" onClick={handleClickShowPassword}>
+              {passwordVisibility ? (
+                <VisibilityIcon fontSize="medium" />
+              ) : (
+                <VisibilityOffIcon fontSize="medium" />
+              )}
+            </div>
+
             <div className="flex flex-col text-base">
               <span
                 className={`${
-                  !data?.password
+                  !signupData?.password
                     ? "password__blank"
-                    : !/[a-z]/g.test(data.password)
+                    : !/[a-z]/g.test(signupData.password)
                     ? "password__error"
                     : "password__correct"
                 }`}
               >
-                {!data?.password ? null : !/[a-z]/g.test(data.password) ? (
+                {!signupData?.password ? null : !/[a-z]/g.test(
+                    signupData.password
+                  ) ? (
                   <CloseIcon />
                 ) : (
                   <CheckIcon />
@@ -349,14 +414,16 @@ function SignUp() {
               </span>
               <span
                 className={`${
-                  !data?.password
+                  !signupData?.password
                     ? "password__blank"
-                    : !/[A-Z]/g.test(data.password)
+                    : !/[A-Z]/g.test(signupData.password)
                     ? "password__error"
                     : "password__correct"
                 }`}
               >
-                {!data?.password ? null : !/[A-Z]/g.test(data.password) ? (
+                {!signupData?.password ? null : !/[A-Z]/g.test(
+                    signupData.password
+                  ) ? (
                   <CloseIcon />
                 ) : (
                   <CheckIcon />
@@ -365,14 +432,16 @@ function SignUp() {
               </span>
               <span
                 className={`${
-                  !data?.password
+                  !signupData?.password
                     ? "password__blank"
-                    : !/[0-9]/g.test(data.password)
+                    : !/[0-9]/g.test(signupData.password)
                     ? "password__error"
                     : "password__correct"
                 }`}
               >
-                {!data?.password ? null : !/[0-9]/g.test(data.password) ? (
+                {!signupData?.password ? null : !/[0-9]/g.test(
+                    signupData.password
+                  ) ? (
                   <CloseIcon />
                 ) : (
                   <CheckIcon />
@@ -381,15 +450,16 @@ function SignUp() {
               </span>
               <span
                 className={`${
-                  !data?.password
+                  !signupData?.password
                     ? "password__blank"
-                    : data?.password?.length < 8 || data?.password?.length > 20
+                    : signupData?.password?.length < 8 ||
+                      signupData?.password?.length > 20
                     ? "password__error"
                     : "password__correct"
                 }`}
               >
-                {!data?.password ? null : data?.password?.length < 8 ||
-                  data?.password?.length > 20 ? (
+                {!signupData?.password ? null : signupData?.password?.length <
+                    8 || signupData?.password?.length > 20 ? (
                   <CloseIcon />
                 ) : (
                   <CheckIcon />
@@ -402,6 +472,7 @@ function SignUp() {
 
           <div className="my-1">
             <TextField
+              size="small"
               id="cpassword"
               label="Confirm Password"
               variant="outlined"
@@ -410,7 +481,7 @@ function SignUp() {
               margin="dense"
               type="password"
               name="cpassword"
-              value={data?.cpassword ?? ""}
+              value={signupData?.cpassword ?? ""}
               error={errors?.cpassword}
               placeholder="********"
               helperText={
@@ -426,7 +497,7 @@ function SignUp() {
               onChange={(e) => {
                 let { name, value } = e.target;
                 if (value === "") setError(name);
-                if (data?.password !== value) setError(name);
+                if (signupData?.password !== value) setError(name);
                 else removeError(name);
                 setValues(name, value);
               }}
@@ -434,7 +505,12 @@ function SignUp() {
           </div>
 
           <div className="flex justify-center">
-            <button onClick={validateData} className="btn_default">
+            <button
+              onClick={validateData}
+              className="btn_default flex items-center"
+              disabled={loading}
+            >
+              <Loading loading={loading} width={18} />
               Sign up
             </button>
           </div>

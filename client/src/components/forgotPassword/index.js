@@ -1,7 +1,6 @@
 import React from "react";
 import { Divider, Link, TextField } from "@mui/material";
 import { emailValidation } from "../../utils/helper";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CloseIcon from "@mui/icons-material/Close";
 import "./styles.css";
 import SVGComponent from "../common/Logo";
@@ -25,7 +24,7 @@ function ForgotPassword() {
   React.useEffect(() => {}, []);
 
   return (
-    <div className="flex min-h-full justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-full justify-center items-center py-8 lg:py-6 md:py-5 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-lg space-y-4">
         <div className="flex items-center flex-col">
           <div className="w-40">
@@ -91,7 +90,7 @@ function ForgotPassword() {
               className="flex items-center"
               color="#393e46"
             >
-              <KeyboardBackspaceIcon color="primary" />
+              {/* <KeyboardBackspaceIcon color="primary" /> */}
               <div className="text-xl ml-1"> back to login</div>
             </Link>
           </div>

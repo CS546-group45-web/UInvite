@@ -32,7 +32,7 @@ export const nameValidation = (name) => {
   return regex.test(name);
 };
 
-export const phoneNumber = () => {};
+export const phoneNumber = (phone) => {};
 
 export const formatPhoneNumber = (value) => {
   if (value.length === 1) return "+1 (" + value;

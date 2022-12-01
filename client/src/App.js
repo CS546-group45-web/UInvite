@@ -13,6 +13,11 @@ import Nav from "./components/navbar";
 import ForgotPassword from "./components/forgotPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import VerifyUser from "./components/verifyUser";
+
+// import dotenv from "dotenv";
+
+// dotenv.config();
 
 function App() {
   const isAuthenticated = () => {
@@ -40,6 +45,8 @@ function App() {
                   )
                 }
               />
+              <Route path="/verify/:id" exact element={<VerifyUser />} />
+
               <Route
                 path="/create-event"
                 exact
@@ -51,7 +58,7 @@ function App() {
                   )
                 }
               />
-              
+
               <Route
                 path="/profile"
                 exact
@@ -90,7 +97,7 @@ function App() {
                 exact
                 element={
                   isAuthenticated() ? (
-                    <EventsListInvited/>
+                    <EventsListInvited />
                   ) : (
                     <Navigate to="/login" replace />
                   )

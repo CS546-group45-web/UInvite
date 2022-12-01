@@ -52,3 +52,11 @@
 div.css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
   width: 100%;
 }
+
+.show_pass_btn {
+  position: absolute;
+  right: 10px;
+  top: 14px;
+  cursor: pointer;
+  color: #393e46cf;
+}
