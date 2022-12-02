@@ -1,0 +1,7 @@
+.show_pass_btn {
+  position: absolute;
+  right: 10px;
+  top: 22px !important;
+  cursor: pointer;
+  color: #393e46cf;
+}
