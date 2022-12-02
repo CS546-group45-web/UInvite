@@ -6,9 +6,9 @@ This web app will provide a new approach to event rsvp. There are many apps that
 
 # Collaboration 
 
-1. Make sure you checkout the main branch.
+1. Make sure you checkout the dev branch.
 
-2. Create a new branch off of the main branch with a descriptive name.
+2. Create a new branch off of the dev branch with a descriptive name.
 
 3. Make your changes in your new branch.
 
