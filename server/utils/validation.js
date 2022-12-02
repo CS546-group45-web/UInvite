@@ -1,10 +1,10 @@
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require("mongodb");
 
 const checkInputString = (input, name) => {
   if (!input) {
     throw `You must provide a ${name}`;
   }
-  if (typeof input !== 'string') {
+  if (typeof input !== "string") {
     throw `${name} must be a string`;
   }
   input = input.trim();
@@ -13,61 +13,165 @@ const checkInputString = (input, name) => {
   }
   return input;
 };
+const checkInputNumber = (input, name) => {
+  if (isNaN(Number(input))) throw `${name} should be a number`;
+};
 
 const checkNames = (input, name) => {
   input = checkInputString(input, name);
   if (!/^[a-zA-Z ]+$/.test(input)) {
     throw `${name} must only contain letters`;
   }
+  if (input.length < 4) throw `${name} should be of length 4 or greater`;
   return input;
 };
 
 const checkEmail = (input) => {
-  input = checkInputString(input, 'email');
+  input = checkInputString(input, "email");
   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(input)) {
-    throw 'Email must be a valid email address';
+    throw "Email must be a valid email address";
   }
   return input;
 };
 
 const checkPassword = (input) => {
-  input = checkInputString(input, 'password');
+  input = checkInputString(input, "password");
   if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(input)) {
-    throw 'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 number';
+    throw "Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 number";
   }
   return input;
 };
 
 const checkPhone = (input) => {
-  input = checkInputString(input, 'phone');
+  input = checkInputString(input, "phone");
   if (!/^\d{3}-\d{3}-\d{4}$/.test(input)) {
-    throw 'Phone must be in the format XXX-XXX-XXXX';
+    throw "Phone must be in the format XXX-XXX-XXXX";
   }
   return input;
 };
 
 const checkDate = (input) => {
-  input = checkInputString(input, 'date');
+  input = checkInputString(input, "date");
   if (!/^(0[1-9]|1[012])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d\d$/.test(input)) {
-    throw 'Date must be in the format MM/DD/YYYY';
+    throw "Date must be in the format MM/DD/YYYY";
   }
   return input;
 };
 
 const checkGender = (input) => {
-  input = checkInputString(input, 'Gender');
+  input = checkInputString(input, "Gender");
   input = input.toLowerCase();
   if (!/^(male|female|other)$/.test(input)) {
-    throw 'Gender should be male/female or others';
+    throw "Gender should be male/female or others";
   }
   return input;
 };
 
-const checkObjectId = (input, name = 'object id') => {
+const checkObjectId = (input, name = "object id") => {
   checkInputString(input, name);
   if (!ObjectId.isValid(input)) {
     throw `${name} must be a valid ObjectId`;
   }
+  return input;
+};
+
+const checkAdress = (input, name = "address") => {
+  if (typeof input !== "object") throw `${name} should be an object`;
+  if (Object.keys(input).length !== 4)
+    throw `${name} should have atleast 4 keys`;
+  for (i of Object.keys(input)) {
+    if (!["City", "State", "Country", "Zipcode"].includes(i))
+      throw `${name} should have a City,State,Country,Zipcode`;
+  }
+  checkNames(input["City"]);
+  checkNames(input["State"]);
+  checkNames(input["Country"]);
+  // checkAdress(input["Zipcode"]);
+  if (input["Zipcode"].length !== 5) throw "Zipcode should be a 5 digit number";
+  if (isNaN(Number(input["Zipcode"])))
+    throw `${input["Zipcode"]} should be a Number`;
+};
+
+const checkEventDate = (input, name = "start date") => {
+  console.log("inside checkEventDate");
+  checkInputString(input, name);
+  console.log("after checkInput String");
+  const dateParsed = new Date(Date.parse(input));
+  console.log(dateParsed);
+  console.log("In checkEventDate");
+  console.log(dateParsed.toISOString());
+  if (dateParsed.toISOString() != input) throw "Date format should be in ISO";
+  return input;
+};
+
+const checkRsvpCount = (input, name = "rsvp") => {
+  checkInputString(input, name);
+  checkInputNumber(input, name);
+  return input;
+};
+
+const checkEventType = (input, name = "event type") => {
+  checkInputString(input, name);
+  return input;
+};
+
+const checkArrayObjectId = (input, name = "countRsvp") => {
+  // For rsvps and waitlist
+  // checkInputString(input, name);
+  // array of object ids
+  if (!Array.isArray(input)) throw `${name} should be an array`;
+  // input.forEach((elem) => checkObjectId(elem, name));
+  return input;
+};
+
+const checkTags = (input, name = "tags") => {
+  if (!Array.isArray(input)) throw `${name} should be an array`;
+  input.forEach((elem) => checkInputString(elem, name));
+  return input;
+};
+
+const checkEventURl = (input, name = "eventUrl") => {
+  try {
+    let checkURL = new URL(input);
+  } catch (e) {
+    throw `${name} should be valid Url`;
+  }
+  return input;
+};
+
+const checkComments = (input, name = "comments") => {
+  if (typeof input !== "object") throw `${name} should be of type object `;
+  Object.keys(input).forEach((elem) => checkInputString(elem));
+  if (
+    !Object.keys(input).forEach((elem) =>
+      ["user_id", "Name", "Comment", "Date"].includes(elem)
+    )
+  )
+    throw `${name} should be user_id,Name,Comment,Date `;
+  checkObjectId(input["user_id"]);
+  checkNames(input["Name"]);
+  checkInputString(input["Comment"]);
+  checkDate(input["Date"]);
+  return input;
+};
+
+const checkReviews = (input, name = "Reviews") => {
+  if (typeof input !== "object") throw `${name} should be of type object `;
+  Object.keys(input).forEach((elem) => checkInputString(elem));
+  if (
+    !Object.keys(input).forEach((elem) =>
+      ["user_id", "Name", "Review", "Date", "Rating"].includes(elem)
+    )
+  )
+    throw `${name} should be user_id,Name,Comment,Date `;
+  checkObjectId(input["user_id"]);
+  checkNames(input["Name"]);
+  checkInputString(input["Review"]);
+  checkDate(input["Date"]);
+  checkInputNumber(input["Rating"]);
+  if (Number(input["Rating"]) < 0) return "Rating cannot be less than 0";
+  if (Number(input["Rating"]) > 5) return "Rating cannot be greater than 5";
+  return input;
 };
 
 module.exports = {
@@ -79,4 +183,13 @@ module.exports = {
   checkDate,
   checkGender,
   checkObjectId,
+  checkAdress,
+  checkEventDate,
+  checkRsvpCount,
+  checkEventType,
+  checkArrayObjectId,
+  checkTags,
+  checkEventURl,
+  checkComments,
+  checkReviews,
 };
