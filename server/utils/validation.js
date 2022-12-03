@@ -82,10 +82,13 @@ const checkGender = (input) => {
 };
 
 const checkObjectId = (input, name = "object id") => {
+  //console.log("Inside checkObject");
   checkInputString(input, name);
+  //console.log("after checkInputString");
   if (!ObjectId.isValid(input)) {
     throw `${name} must be a valid ObjectId`;
   }
+  //console.log("after check Object");
   return input;
 };
 
@@ -100,20 +103,15 @@ const checkAdress = (input, name = "address") => {
   checkNames(input["City"]);
   checkNames(input["State"]);
   checkNames(input["Country"]);
-  // checkAdress(input["Zipcode"]);
   if (input["Zipcode"].length !== 5) throw "Zipcode should be a 5 digit number";
   if (isNaN(Number(input["Zipcode"])))
     throw `${input["Zipcode"]} should be a Number`;
+  return input;
 };
 
 const checkEventDate = (input, name = "start date") => {
-  console.log("inside checkEventDate");
   checkInputString(input, name);
-  console.log("after checkInput String");
   const dateParsed = new Date(Date.parse(input));
-  console.log(dateParsed);
-  console.log("In checkEventDate");
-  console.log(dateParsed.toISOString());
   if (dateParsed.toISOString() != input) throw "Date format should be in ISO";
   return input;
 };
@@ -130,11 +128,7 @@ const checkEventType = (input, name = "event type") => {
 };
 
 const checkArrayObjectId = (input, name = "countRsvp") => {
-  // For rsvps and waitlist
-  // checkInputString(input, name);
-  // array of object ids
   if (!Array.isArray(input)) throw `${name} should be an array`;
-  // input.forEach((elem) => checkObjectId(elem, name));
   return input;
 };
 

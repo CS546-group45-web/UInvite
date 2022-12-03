@@ -3,12 +3,13 @@ const router = express.Router();
 const data = require("../data");
 const userData = data.users;
 const eventData = data.events;
+const validation = require("../utils/validation");
 
 router
   .route("/create")
   .post(async (req, res) => {
     try {
-      const {
+      let {
         user_id,
         event_title,
         organizer_name,
@@ -20,6 +21,7 @@ router
         type,
         tags,
       } = req.body;
+
       user_id = validation.checkObjectId(user_id);
       event_title = validation.checkNames(event_title, "event_title");
       organizer_name = validation.checkNames(organizer_name, "organizer_name");
@@ -36,6 +38,10 @@ router
       );
       type = validation.checkEventType(type, "type");
       tags = validation.checkTags(tags, "tags");
+    } catch {
+      return res.status(400).json({ error: e });
+    }
+    try {
       const event = await eventData.createEvent(
         user_id,
         event_title,
@@ -48,9 +54,9 @@ router
         type,
         tags
       );
-      if (!event.inserted) throw res.sendStatus(500);
+      return res.status(200).json({ message: "Event added successfully" });
     } catch (e) {
-      return res.status(400).json({ error: e });
+      return res.status(500).json({ error: e });
     }
   })
   .get(async (req, res) => {
