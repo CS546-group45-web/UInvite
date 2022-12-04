@@ -22,6 +22,14 @@ const checkNames = (input, name) => {
   return input;
 };
 
+const checkTitle = (input) => {
+  input = checkInputString(input);
+  if (!/^[a-zA-Z0-9 ]+$/.test(input)) {
+    throw `Title must only contain letters`;
+  }
+  return input;
+};
+
 const checkEmail = (input) => {
   input = checkInputString(input, 'email');
   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(input)) {
@@ -84,6 +92,15 @@ const checkObjectId = (input, name = 'object id') => {
   }
 };
 
+const checkId = (id) => {
+  if (!id) throw 'Error: You must provide an id to search for';
+  if (typeof id !== 'string') throw 'Error: id must be a string';
+  id = id.trim();
+  if (id.length === 0) throw 'Error: id cannot be an empty string or just spaces';
+  if (!ObjectId.isValid(id)) throw new Error("Invalid Id");
+  return id;
+}
+
 module.exports = {
   checkInputString,
   checkNames,
@@ -93,4 +110,6 @@ module.exports = {
   checkDate,
   checkGender,
   checkObjectId,
+  checkId,
+  checkTitle,
 };
