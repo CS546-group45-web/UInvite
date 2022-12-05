@@ -13,7 +13,7 @@ const createEvent = async(
     comt_permit,
     public_event,
 ) => {
-
+    
 }
 
 const getAllEvents = async () => {
