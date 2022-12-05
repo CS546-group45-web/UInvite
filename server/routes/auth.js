@@ -8,8 +8,8 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
-const crypto = require('crypto');
 const diff_minutes = require('../utils/diff_minutes');
+const { v4: uuidv4 } = require('uuid');
 router.route('/signup').post(async (req, res) => {
   const user = req.body;
   try {
@@ -41,8 +41,7 @@ router.route('/signup').post(async (req, res) => {
         user.dob,
         user.gender
       );
-      // Send email
-      const token = crypto.randomBytes(32).toString('hex');
+      const token = uuidv4();
       const token_created = await tokenData.createToken(newUser, token);
       const url = `${process.env.BASE_URL}/verify/${token}`;
       const message = `Hello, ${user.first_name} ${user.last_name} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
@@ -137,10 +136,9 @@ router.route('/forgot').post(async (req, res) => {
     if (!found_user) {
       return res.status(400).json({ error: 'Email does not exist' });
     }
-    const token = crypto.randomBytes(32).toString('hex');
+    const token = uuidv4();
     const token_created = await tokenData.createToken(found_user._id, token);
     // time compare with token_created
-
     const url = `${process.env.BASE_URL}/reset/${token}`;
     const message = `Hello, ${found_user.first_name} ${found_user.last_name}! You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link to complete the process within 15 minutes of receiving it:`;
     const buttonText = 'Forgot Password';
