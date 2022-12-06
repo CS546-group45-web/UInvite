@@ -1,9 +1,8 @@
 const { ObjectId } = require("mongodb");
 const bcrypt = require("bcryptjs");
 const mongoCollections = require("../config/mongoCollections");
-const users = mongoCollections.events;
+const events = mongoCollections.events;
 const validation = require("../utils/validation");
-const { events } = require("../config/mongoCollections");
 
 const createEvent = async(
     user_id,
@@ -53,11 +52,15 @@ const createEvent = async(
     like_count: 0,
     Comments: [],
     reviews: [],
+    overallRating : 0,
   };
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw "Could not add event";
+  return {Event : "Inserted Successfully."}
+}
 
-  const updateOverallRating = async (user_id) => {
+
+const updateOverallRating = async (user_id) => {
     let oRating = 0;
     const event_collection = await events();
     const getReviews = await event_collection.findOne({
@@ -74,7 +77,6 @@ const createEvent = async(
       },
       { $set: { overallRating: Number(oRating) } }
     );
-  };
 };
 
 
@@ -146,6 +148,7 @@ module.exports = {
     createEvent,
     getAllEvents,
     getEventById,
+    updateOverallRating,
     removeEvent,
     updateEvent,
     getEventsByDate,
