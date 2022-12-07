@@ -73,7 +73,7 @@ function SignUp() {
 
     const formattedToday = mm + "/" + dd + "/" + yyyy;
 
-    console.log(dob.$d);
+    // console.log(dob.$d);
     const apiBody = {
       first_name: firstName,
       last_name: lastName,
@@ -92,7 +92,7 @@ function SignUp() {
     const { data, status } = singupInfo;
     if (status !== 201) toast.error(data?.error);
     else {
-      console.log(data, status);
+      // console.log(data, status);
       window.location.href = "/login";
     }
     setLoading(false);
@@ -115,8 +115,8 @@ function SignUp() {
   const handleClickShowPassword = () =>
     setPasswordVisibility(!passwordVisibility);
 
-  const populateDate = (currentYear) => {
-    let validYear = currentYear - 13;
+  const populateDate = (currentYear, diff) => {
+    let validYear = currentYear - diff;
     return new Date(validYear.toString()).toISOString();
   };
 
@@ -315,7 +315,7 @@ size="small"
                         <TextField size="small" {...params} />
                       )}
                       onChange={(e) => {
-                        console.log(e, typeof e);
+                        // console.log(e, typeof e);
                         if (e === null) removeError("dob");
                         setValues("dob", e);
                       }}
@@ -323,9 +323,8 @@ size="small"
                         if (e === "invalidDate") setError("dob");
                         if (e === null) removeError("dob");
                       }}
-                      maxDate={new Date().toISOString()}
-                      //FIXME: date for dob should be more than 13 years old
-                      minDate={populateDate(new Date().getFullYear())}
+                      maxDate={populateDate(new Date().getFullYear(), 13)}
+                      minDate={populateDate(new Date().getFullYear(), 100)}
                       openTo={"day"}
                     />
                   </LocalizationProvider>
@@ -521,18 +520,16 @@ size="small"
             />
           </div>
 
-          <div>
-            <div className="flex items-center">
-              <Checkbox
-                checked={signupData?.agreedTerms}
-                onChange={(e) => {
-                  setValues("agreedTerms", e.target.checked);
-                  removeError("agreedTerms");
-                }}
-              />
-              <div className={`${errors.agreedTerms && "text-[#d32f2f]"}`}>
-                I have read and agreed to the terms and privacy policy.
-              </div>
+          <div className="flex items-center">
+            <Checkbox
+              checked={signupData?.agreedTerms}
+              onChange={(e) => {
+                setValues("agreedTerms", e.target.checked);
+                removeError("agreedTerms");
+              }}
+            />
+            <div className={`${errors.agreedTerms && "text-[#d32f2f]"}`}>
+              I have read and agreed to the terms and privacy policy.
             </div>
           </div>
 
