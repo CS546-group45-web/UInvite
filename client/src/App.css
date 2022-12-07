@@ -1,8 +1,11 @@
-html,
-body {
+html {
   /* TODO: decide font for the app */
   /* font-family: monospace; */
   /* font-size: 20px; */
+}
+
+body {
+  overflow: hidden;
 }
 
 .btn_default {

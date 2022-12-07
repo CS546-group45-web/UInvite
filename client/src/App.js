@@ -17,12 +17,14 @@ import VerifyUser from "./components/verifyUser";
 import ResetPassword from "./components/resetPassword";
 
 function App() {
-  const isAuthenticated = () => {
-    return localStorage.getItem("auth") === "true" ? true : false;
-  };
-
   const styles = () =>
-    isAuthenticated() ? "col-span-10 px-5 py-5" : "col-span-12 px-5 py-5";
+    isAuthenticated()
+      ? "col-span-10 px-5 py-5 overflow-auto"
+      : "col-span-12 px-5 py-5";
+
+  const isAuthenticated = () => {
+    return JSON.parse(localStorage.getItem("auth") === "true");
+  };
 
   return (
     <div className="App bg-gray-50 h-screen">
