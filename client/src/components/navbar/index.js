@@ -50,9 +50,9 @@ function Nav() {
   };
 
   return (
-    <div className="max-w-[280px] flex flex-col justify-between px-6 pr-2 pt-8 pb-2 text-[#ffffff] border-r-logoBlue border-r-2 col-span-2 bg-logoBlue">
+    <div className="max-w-[280px] flex flex-col justify-between pl-2 pr-4 pt-8 pb-2 text-[#ffffff] border-r-logoBlue border-r-2 col-span-2 bg-logoBlue">
       <div>
-        <div className="h-20 flex items-center text-ellipsis overflow-hidden whitespace-nowrap">
+        <div className="h-20 pl-4 flex items-center text-ellipsis overflow-hidden whitespace-nowrap">
           {/* <img src={HomepageLogo} alt="HomepageLogo" /> */}
           <svg
             style={{ margin: "0px -25px -15px" }}
@@ -149,7 +149,7 @@ function Nav() {
         <div>
           {navOptions.map((item, key) => (
             <Link to={item.path} key={key}>
-              <div className="flex items-center w-full group pl-2 pr-6 py-4 my-2 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-[#0000001f] hover:border-1 hover:shadow-[#000] hover:font-medium">
+              <div className="flex items-center w-full group pl-4 pr-6 py-4 my-2 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-[#0000001f] hover:border-1 hover:shadow-[#000] hover:font-medium">
                 <div className="group-hover:scale-110">
                   <item.icon />
                 </div>
@@ -162,7 +162,7 @@ function Nav() {
       <div>
         <Divider />
         <div
-          className="flex items-center group w-full pl-2 pr-6 py-4 my-3 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-[#0000001f] hover:border-1 hover:shadow-[#000] hover:font-medium cursor-pointer"
+          className="flex items-center group w-full pl-4 pr-6 py-4 my-3 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-[#0000001f] hover:border-1 hover:shadow-[#000] hover:font-medium cursor-pointer"
           onClick={signOutUser}
         >
           <div className="group-hover:scale-110">
