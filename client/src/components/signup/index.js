@@ -133,7 +133,7 @@ function SignUp() {
             Create your account
           </h2>
         </div>
-        <div className="rounded-md px-4">
+        <div className="rounded-md px-4 height_signup_form">
           <div className="flex justify-between">
             <div className="mr-1 w-6/12">
               <TextField

@@ -76,3 +76,9 @@ div.css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
 .dobInput.css-9xw4gu-MuiInputBase-root-MuiOutlinedInput-root {
   border: 1px solid red;
 }
+
+.height_signup_form {
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
