@@ -19,7 +19,7 @@ import ResetPassword from "./components/resetPassword";
 function App() {
   const styles = () =>
     isAuthenticated()
-      ? "col-span-10 px-5 py-5 overflow-auto"
+      ? "col-span-10 px-5 py-5 overflow-auto scroller"
       : "col-span-12 px-5 py-5";
 
   const isAuthenticated = () => {

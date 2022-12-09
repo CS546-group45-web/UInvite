@@ -123,7 +123,7 @@ function SignUp() {
   // console.log(populateDate(2022));
 
   return (
-    <div className="min-h-full py-8 lg:py-6 md:py-5 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-full py-8 lg:py-2 md:py-5 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-center">
         <div className="flex items-center flex-col p-16">
           <div className="w-60">
@@ -304,18 +304,34 @@ size="small"
                     setValues(name, value);
                   }}
                 /> */}
-                {/* FIXME: Fix the date error state mgmt */}
                 <div className="mt-2">
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Date of birth"
+                      disableFuture
                       inputFormat="MM/DD/YYYY"
                       value={signupData?.dob ?? null}
                       renderInput={(params) => (
-                        <TextField size="small" {...params} />
+                        // FIXME: Fix the date error styling
+                        <TextField
+                          size="small"
+                          required
+                          onKeyDown={(e) => e.preventDefault()}
+                          error={errors?.dob}
+                          helperText={
+                            errors?.dob ? (
+                              <span className="helperText__dob text-base flex items-center">
+                                <CloseIcon fontSize="small" />
+                                Enter a valid date
+                              </span>
+                            ) : (
+                              false
+                            )
+                          }
+                          {...params}
+                        />
                       )}
                       onChange={(e) => {
-                        // console.log(e, typeof e);
                         if (e === null) removeError("dob");
                         setValues("dob", e);
                       }}
@@ -328,12 +344,6 @@ size="small"
                       openTo={"day"}
                     />
                   </LocalizationProvider>
-                  {errors?.dob && (
-                    <span className="helperText__gender text-base flex items-center ">
-                      <CloseIcon fontSize="small" />
-                      Enter a valid date
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
@@ -528,7 +538,11 @@ size="small"
                 removeError("agreedTerms");
               }}
             />
-            <div className={`${errors.agreedTerms && "text-[#d32f2f]"}`}>
+            <div
+              className={`text-xl${
+                errors.agreedTerms ? " text-[#d32f2f]" : ""
+              }`}
+            >
               I have read and agreed to the terms and privacy policy.
             </div>
           </div>
