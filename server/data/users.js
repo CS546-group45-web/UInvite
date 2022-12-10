@@ -8,6 +8,7 @@ const createUser = async (
   firstName,
   lastName,
   email,
+  username,
   password,
   phone,
   dob,
@@ -16,6 +17,7 @@ const createUser = async (
   firstName = validation.checkNames(firstName, 'firstName');
   lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
+  username =  validation.checkUsername(username)
   dob = validation.checkDate(dob);
   phone = validation.checkPhone(phone);
   password = validation.checkPassword(password);
@@ -28,6 +30,7 @@ const createUser = async (
     firstName: firstName,
     lastName: lastName,
     email: email,
+    username: username,
     dob: dob,
     phone: phone,
     hashed_password: hashed_password,
@@ -72,6 +75,7 @@ const updateUser = async (
   firstName,
   lastName,
   email,
+  username,
   phone,
   dob,
   gender
@@ -81,6 +85,7 @@ const updateUser = async (
   firstName = validation.checkNames(firstName, 'firstName');
   lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
+  username =  validation.checkUsername(username)
   dob = validation.checkDate(dob);
   phone = validation.checkPhone(phone);
   gender = validation.checkGender(gender);
@@ -89,6 +94,7 @@ const updateUser = async (
     firstName: firstName,
     lastName: lastName,
     email: email,
+    username: username,
     dob: dob,
     phone: phone,
     gender: gender,
@@ -130,6 +136,21 @@ const updateUserPassword = async (id, password) => {
   }
   return await getUserById(id);
 };
+
+const getUserByUsername = async (username) => {
+    const user_collection = await users();
+    const user = await user_collection
+      .findOne({
+        username: username,
+      })
+
+    if (!user) throw 'User not found';
+    user._id = user._id.toString();
+    return user;
+  }
+
+
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -138,4 +159,5 @@ module.exports = {
   updateUser,
   verifyUser,
   updateUserPassword,
+  getUserByUsername
 };

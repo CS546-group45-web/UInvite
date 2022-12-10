@@ -16,7 +16,7 @@ router.route('/signup').post(async (req, res) => {
     req.body.firstName = validation.checkNames(user.firstName, 'firstName');
     req.body.lastName = validation.checkNames(user.lastName, 'lastName');
     req.body.email = validation.checkEmail(user.email);
-    req.body.username = validation. (user.username);
+    req.body.username = validation.checkUsername(user.username);
     req.body.password = validation.checkPassword(user.password);
     req.body.phone = validation.checkPhone(user.phone);
     req.body.dob = validation.checkDate(user.dob);
@@ -29,7 +29,11 @@ router.route('/signup').post(async (req, res) => {
   try {
     const userWithEmail = await userData.getUserByEmail(req.body.email);
     if (userWithEmail) {
-      return res.status(409).json({ error: 'User already exists' });
+      return res.status(409).json({ error: 'User already exists with email' });
+    }
+    const userWithUsername = await userData.getUserByUsername(req.body.username);
+    if (userWithUsername) {
+      return res.status(409).json({ error: 'Username already exists with username' });
     }
   } catch {
     try {
