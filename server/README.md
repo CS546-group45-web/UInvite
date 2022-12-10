@@ -140,6 +140,40 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Create Event
+
+`POST /api/events/create`
+
+#### Request Body
+
+```json
+{
+  "user_id": "63785b6cfd19003dcdf3c6ee",
+  "event_title": "Dance",
+  "organizer_name": "User Name",
+  "Description": "Description",
+  "start_date_time": "2022-11-06T19:58:23.464Z",
+  "end_date_time": "2022-11-06T19:58:23.464Z",
+  "address": {
+    "City": "Jersey City",
+    "State": "New Jersey",
+    "Country": "United States",
+    "Zipcode": "07306"
+  },
+  "Max_rsvps_count": "100",
+  "type": "in-person",
+  "tags": ["party"]
+}
+```
+
+#### Response
+
+```json
+{
+  "message": "Event added successfully"
+}
+```
+
 ## Update API Docs when changes are made
 
 When changes are made to the API, it is important to update the documentation to reflect those changes. Doing so will help keep team up to date on the latest features and changes, and ensure that they are using the API correctly.
