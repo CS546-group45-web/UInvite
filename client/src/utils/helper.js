@@ -56,3 +56,24 @@ export const validateDate = (date) => {
   }
   return true;
 };
+
+export const fullNameFormatter = (first, last) =>
+  first?.charAt(0).toUpperCase() +
+  first?.slice(1) +
+  " " +
+  last?.charAt(0).toUpperCase() +
+  last?.slice(1);
+
+export const phoneNumberFormatter = (phone) => {
+  // 332-260-2829
+  return "+1".concat(
+    " (",
+    phone?.slice(0, 3),
+    ") ",
+    phone?.slice(4, 7),
+    phone?.slice(7)
+  );
+};
+
+export const capitalizeFirstLetter = (str) =>
+  str?.charAt(0).toUpperCase() + str?.slice(1);

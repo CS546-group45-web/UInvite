@@ -75,16 +75,16 @@ function SignUp() {
 
     // console.log(dob.$d);
     const apiBody = {
-      first_name: firstName,
-      last_name: lastName,
-      email: email,
-      password: password,
+      firstName,
+      lastName,
+      email,
+      password,
       phone: phone
         .substr(0, 3)
         .concat("-", phone.substr(3, 3) + "-", phone.substr(6)),
       // phone: phone,
       dob: formattedToday,
-      gender: gender,
+      gender,
     };
 
     const singupInfo = await signup(apiBody);

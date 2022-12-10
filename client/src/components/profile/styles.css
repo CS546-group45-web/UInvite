@@ -1,0 +1,36 @@
+.user_profile_picture img {
+  width: 200px;
+  aspect-ratio: 1/1;
+  padding: 8px;
+  object-fit: contain;
+}
+
+.btn_default__follow {
+  width: auto;
+  height: 36px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  background-color: #393e46;
+}
+
+div.grid_spaces {
+  grid-template-columns: auto auto auto;
+}
+
+.profile_page_loader {
+  display: flex;
+  margin: auto;
+}
+
+.btn_default__cancel {
+  width: auto;
+  height: 36px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  color: #393e46;
+  font-size: 18px;
+  font-weight: 500;
+}

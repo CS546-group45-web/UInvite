@@ -29,7 +29,7 @@ function App() {
   return (
     <div className="App bg-gray-50 h-screen">
       <BrowserRouter>
-        <div className="grid grid-cols-12 h-full">
+        <div className="grid grid-cols-12 h-[101%]">
           {isAuthenticated() && <Nav />}
           <div className={styles()}>
             <Routes>
@@ -60,6 +60,18 @@ function App() {
 
               <Route
                 path="/profile"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <Profile />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+
+              <Route
+                path="/profile/:id"
                 exact
                 element={
                   isAuthenticated() ? (
