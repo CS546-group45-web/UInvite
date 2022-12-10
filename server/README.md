@@ -86,7 +86,9 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "gender": "male",
   "rsvped_events": [],
   "profile_photo_url": "",
-  "events_created": []
+  "events_created": [],
+  "followers": [],
+  "following": []
 }
 ```
 
@@ -162,7 +164,26 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "gender": "male",
   "rsvped_events": [],
   "profile_photo_url": "",
-  "events_created": []
+  "events_created": [],
+  "followers": [],
+  "following": []
+}
+```
+
+<!-- user follow -->
+
+#### Follow User
+
+`POST /api/users/follow/:user_id`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "User followed successfully",
+  "data": {}
 }
 ```
 
@@ -202,7 +223,11 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
     "dob": "06/07/2000",
     "phone": "551-344-5525",
     "gender": "male",
-  }
+    "rsvped_events": [],
+    "profile_photo_url": "",
+    "events_created": [],
+    "followers": [],
+    "following": []
 }
 ```
 

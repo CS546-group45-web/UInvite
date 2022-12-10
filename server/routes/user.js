@@ -60,7 +60,10 @@ router
         req.user._id,
         req.params.id
       );
-      return res.json(updatedUser);
+      return res.json({
+        message: 'User followed successfully',
+        data: updatedUser,
+      });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
