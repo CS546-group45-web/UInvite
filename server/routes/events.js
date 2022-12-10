@@ -60,8 +60,9 @@ router
     }
   })
   .get(async (req, res) => {
-    console.log("Get req");
-    res.json("Create event route");
+    // code for get all events
+    const event = await eventData.getAllEvents();
+    return res.json({ EventList: event });
   });
 
 module.exports = router;
