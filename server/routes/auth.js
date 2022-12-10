@@ -13,8 +13,8 @@ const { v4: uuidv4 } = require('uuid');
 router.route('/signup').post(async (req, res) => {
   const user = req.body;
   try {
-    req.body.firstName = validation.checkNames(user.firstName, 'firstName');
-    req.body.lastName = validation.checkNames(user.lastName, 'lastName');
+    req.body.first_name = validation.checkNames(user.first_name, 'first_name');
+    req.body.last_name = validation.checkNames(user.last_name, 'last_name');
     req.body.email = validation.checkEmail(user.email);
     req.body.password = validation.checkPassword(user.password);
     req.body.phone = validation.checkPhone(user.phone);
@@ -33,8 +33,8 @@ router.route('/signup').post(async (req, res) => {
   } catch {
     try {
       const newUser = await userData.createUser(
-        user.firstName,
-        user.lastName,
+        user.first_name,
+        user.last_name,
         user.email,
         user.password,
         user.phone,
@@ -44,7 +44,7 @@ router.route('/signup').post(async (req, res) => {
       const token = uuidv4();
       const token_created = await tokenData.createToken(newUser, token);
       const url = `${process.env.BASE_URL}/verify/${token}`;
-      const message = `Hello, ${user.firstName} ${user.lastName} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
+      const message = `Hello, ${user.first_name} ${user.last_name} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
       const buttonText = 'Verify Email';
       const headline = 'Verify your email address';
       console.log(url);
@@ -57,7 +57,7 @@ router.route('/signup').post(async (req, res) => {
         buttonText
       );
       return res.status(201).json({
-        message: `User ${user.firstName} ${user.lastName} created successfully`,
+        message: `User ${user.first_name} ${user.last_name} created successfully`,
       });
     } catch (e) {
       return res.status(500).json({ error: e });
@@ -92,10 +92,10 @@ router
           const token = jwt.sign(payload, process.env.JWT_SECRET);
           return res.json({ token });
         } else {
-          return res.status(400).json({ error: 'Either the email or password is invalid'' });
+          return res.status(400).json({ error: 'Invalid password' });
         }
       } else {
-        return res.status(400).json({ error: 'Either the email or password is invalid'' });
+        return res.status(400).json({ error: 'Email does not exist' });
       }
     } catch (e) {
       return res.status(500).json({ error: e });
@@ -113,7 +113,7 @@ router.route('/verify/:token').get(async (req, res) => {
       return res.status(400).json({ error: 'Invalid token' });
     }
     if (user.is_verified) {
-      return res.status(400).json({ error: 'User already verified' })
+      return res.status(400).json({ error: 'User already verified' });
     }
     await userData.verifyUser(user._id);
     await tokenData.deleteToken(token.token);
