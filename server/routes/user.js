@@ -9,10 +9,7 @@ router
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
     const user = req.body;
     try {
-      req.body.firstName = validation.checkNames(
-        user.firstName,
-        'firstName'
-      );
+      req.body.firstName = validation.checkNames(user.firstName, 'firstName');
       req.body.lastName = validation.checkNames(user.lastName, 'lastName');
       req.body.email = validation.checkEmail(user.email);
       req.body.phone = validation.checkPhone(user.phone);
@@ -39,19 +36,34 @@ router
     }
   });
 
-router
-  .route('/:username').get(
-    async (req, res) => {
-      try {
-        const user = await userData.getUserByUsername(req.params.username);
-        if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-        }
-        return res.json(user);
-      } catch (e) {
-        return res.status(500).json({ error: e });
-      }
+router.route('/:username').get(async (req, res) => {
+  try {
+    const user = await userData.getUserByUsername(req.params.username);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-  )
-module.exports = router;
+    return res.json(user);
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
 
+router
+  .route('/follow/:id')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const user = await userData.getUserById(req.params.id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      const updatedUser = await userData.followUser(
+        req.user._id,
+        req.params.id
+      );
+      return res.json(updatedUser);
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+module.exports = router;
