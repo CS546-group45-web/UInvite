@@ -92,10 +92,10 @@ router
           const token = jwt.sign(payload, process.env.JWT_SECRET);
           return res.json({ token });
         } else {
-          return res.status(400).json({ error: 'Either the email or password is invalid'' });
+          return res.status(400).json({ error: 'Either the email or password is invalid'});
         }
       } else {
-        return res.status(400).json({ error: 'Either the email or password is invalid'' });
+        return res.status(400).json({ error: 'Either the email or password is invalid'});
       }
     } catch (e) {
       return res.status(500).json({ error: e });
