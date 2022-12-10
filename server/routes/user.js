@@ -39,5 +39,19 @@ router
     }
   });
 
+router
+  .route('/:username').get(
+    async (req, res) => {
+      try {
+        const user = await userData.getUserByUsername(req.params.username);
+        if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+        return res.json(user);
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+    }
+  )
 module.exports = router;
 

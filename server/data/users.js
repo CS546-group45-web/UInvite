@@ -146,6 +146,7 @@ const getUserByUsername = async (username) => {
 
     if (!user) throw 'User not found';
     user._id = user._id.toString();
+    delete user.hashed_password;
     return user;
   }
 
