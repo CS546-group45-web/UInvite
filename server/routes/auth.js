@@ -13,8 +13,8 @@ const diff_minutes = require('../utils/diff_minutes');
 router.route('/signup').post(async (req, res) => {
   const user = req.body;
   try {
-    req.body.first_name = validation.checkNames(user.first_name, 'first_name');
-    req.body.last_name = validation.checkNames(user.last_name, 'last_name');
+    req.body.firstName = validation.checkNames(user.firstName, 'firstName');
+    req.body.lastName = validation.checkNames(user.lastName, 'lastName');
     req.body.email = validation.checkEmail(user.email);
     req.body.password = validation.checkPassword(user.password);
     req.body.phone = validation.checkPhone(user.phone);
@@ -33,8 +33,8 @@ router.route('/signup').post(async (req, res) => {
   } catch {
     try {
       const newUser = await userData.createUser(
-        user.first_name,
-        user.last_name,
+        user.firstName,
+        user.lastName,
         user.email,
         user.password,
         user.phone,
@@ -45,7 +45,7 @@ router.route('/signup').post(async (req, res) => {
       const token = crypto.randomBytes(32).toString('hex');
       const token_created = await tokenData.createToken(newUser, token);
       const url = `${process.env.BASE_URL}/verify/${token}`;
-      const message = `Hello, ${user.first_name} ${user.last_name} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
+      const message = `Hello, ${user.firstName} ${user.lastName} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
       const buttonText = 'Verify Email';
       const headline = 'Verify your email address';
       console.log(url);
@@ -58,7 +58,7 @@ router.route('/signup').post(async (req, res) => {
         buttonText
       );
       return res.status(201).json({
-        message: `User ${user.first_name} ${user.last_name} created successfully`,
+        message: `User ${user.firstName} ${user.lastName} created successfully`,
       });
     } catch (e) {
       return res.status(500).json({ error: e });
