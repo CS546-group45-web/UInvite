@@ -16,6 +16,7 @@ router.route('/signup').post(async (req, res) => {
     req.body.firstName = validation.checkNames(user.firstName, 'firstName');
     req.body.lastName = validation.checkNames(user.lastName, 'lastName');
     req.body.email = validation.checkEmail(user.email);
+    req.body.username = validation. (user.username);
     req.body.password = validation.checkPassword(user.password);
     req.body.phone = validation.checkPhone(user.phone);
     req.body.dob = validation.checkDate(user.dob);
@@ -36,6 +37,7 @@ router.route('/signup').post(async (req, res) => {
         user.firstName,
         user.lastName,
         user.email,
+        user.username,
         user.password,
         user.phone,
         user.dob,
