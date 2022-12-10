@@ -182,6 +182,14 @@ const checkReviews = (input, name = "Reviews") => {
   return input;
 };
 
+const checkUsername = (input) => {
+  input = checkInputString(input, "username");
+  if (!/^[a-zA-Z0-9]+$/.test(input)) {
+    throw "Username must contain only letters and numbers";
+  }
+  return input;
+};
+
 module.exports = {
   checkInputString,
   checkNames,
@@ -200,4 +208,5 @@ module.exports = {
   checkEventURl,
   checkComments,
   checkReviews,
+  checkUsername
 };
