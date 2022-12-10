@@ -12,6 +12,7 @@ router
       req.body.firstName = validation.checkNames(user.firstName, 'firstName');
       req.body.lastName = validation.checkNames(user.lastName, 'lastName');
       req.body.email = validation.checkEmail(user.email);
+      req.body.username = validation.checkUsername(user.username);
       req.body.phone = validation.checkPhone(user.phone);
       req.body.dob = validation.checkDate(user.dob);
       req.body.gender = validation.checkGender(user.gender);
@@ -24,12 +25,14 @@ router
         user.firstName,
         user.lastName,
         user.email,
+        user.username,
         user.phone,
         user.dob,
         user.gender
       );
       return res.status(200).json({
         message: `User ${user.firstName} ${user.lastName} updated successfully`,
+        data: updatedUser,
       });
     } catch (e) {
       return res.status(500).json({ error: e });
