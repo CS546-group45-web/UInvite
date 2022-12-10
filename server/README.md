@@ -31,7 +31,7 @@ create a `.env` file in the root directory which is similer to `.env.example`
   "email": "luffy@gmail.com",
   "username":"luffy"
   "password": "IamKing123",
-  "phone": "551-344-5525",
+  "phone": "5513445525",
   "dob": "06/07/2000",
   "gender": "male"
 }
@@ -82,7 +82,7 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "email": "luffy@gmail.com",
   "username": "luffy",
   "dob": "06/07/2000",
-  "phone": "551-344-5525",
+  "phone": "5513445525",
   "gender": "male",
   "rsvped_events": [],
   "profile_photo_url": "",
@@ -160,7 +160,7 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "email": "luffy@gmail.com",
   "username": "luffy",
   "dob": "06/07/2000",
-  "phone": "551-344-5525",
+  "phone": "5513445525",
   "gender": "male",
   "rsvped_events": [],
   "profile_photo_url": "",
@@ -204,7 +204,7 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "email": "luffy@gmail.com",
   "username": "luffy",
   "dob": "06/07/2000",
-  "phone": "551-344-5525",
+  "phone": "5513445525",
   "gender": "male"
 }
 ```
@@ -221,7 +221,7 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
     "email": "luffy@gmail.com",
     "username": "luffy",
     "dob": "06/07/2000",
-    "phone": "551-344-5525",
+    "phone": "5513445525",
     "gender": "male",
     "rsvped_events": [],
     "profile_photo_url": "",
