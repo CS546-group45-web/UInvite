@@ -5,16 +5,16 @@ const users = mongoCollections.users;
 const validation = require('../utils/validation');
 
 const createUser = async (
-  first_name,
-  last_name,
+  firstName,
+  lastName,
   email,
   password,
   phone,
   dob,
   gender
 ) => {
-  first_name = validation.checkNames(first_name, 'first_name');
-  last_name = validation.checkNames(last_name, 'last_name');
+  firstName = validation.checkNames(firstName, 'firstName');
+  lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
   dob = validation.checkDate(dob);
   phone = validation.checkPhone(phone);
@@ -25,8 +25,8 @@ const createUser = async (
   hashed_password = await bcrypt.hash(password, 10);
 
   const newuUser = {
-    first_name: first_name,
-    last_name: last_name,
+    firstName: firstName,
+    lastName: lastName,
     email: email,
     dob: dob,
     phone: phone,
@@ -69,8 +69,8 @@ const getUserByEmail = async (email) => {
 
 const updateUser = async (
   id,
-  first_name,
-  last_name,
+  firstName,
+  lastName,
   email,
   phone,
   dob,
@@ -78,16 +78,16 @@ const updateUser = async (
 ) => {
   validation.checkObjectId(id);
   const user_collection = await users();
-  first_name = validation.checkNames(first_name, 'first_name');
-  last_name = validation.checkNames(last_name, 'last_name');
+  firstName = validation.checkNames(firstName, 'firstName');
+  lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
   dob = validation.checkDate(dob);
   phone = validation.checkPhone(phone);
   gender = validation.checkGender(gender);
 
   const updatedUser = {
-    first_name: first_name,
-    last_name: last_name,
+    firstName: firstName,
+    lastName: lastName,
     email: email,
     dob: dob,
     phone: phone,

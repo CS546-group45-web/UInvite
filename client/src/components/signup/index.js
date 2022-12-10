@@ -73,8 +73,8 @@ function SignUp() {
 
     console.log(dob.$d);
     const apiBody = {
-      first_name: firstName,
-      last_name: lastName,
+      firstName: firstName,
+      lastName: lastName,
       email: email,
       password: password,
       phone: phone

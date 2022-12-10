@@ -9,11 +9,11 @@ router
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
     const user = req.body;
     try {
-      req.body.first_name = validation.checkNames(
-        user.first_name,
-        'first_name'
+      req.body.firstName = validation.checkNames(
+        user.firstName,
+        'firstName'
       );
-      req.body.last_name = validation.checkNames(user.last_name, 'last_name');
+      req.body.lastName = validation.checkNames(user.lastName, 'lastName');
       req.body.email = validation.checkEmail(user.email);
       req.body.phone = validation.checkPhone(user.phone);
       req.body.dob = validation.checkDate(user.dob);
@@ -24,15 +24,15 @@ router
     try {
       const updatedUser = await userData.updateUser(
         req.user._id,
-        user.first_name,
-        user.last_name,
+        user.firstName,
+        user.lastName,
         user.email,
         user.phone,
         user.dob,
         user.gender
       );
       return res.status(200).json({
-        message: `User ${user.first_name} ${user.last_name} updated successfully`,
+        message: `User ${user.firstName} ${user.lastName} updated successfully`,
       });
     } catch (e) {
       return res.status(500).json({ error: e });

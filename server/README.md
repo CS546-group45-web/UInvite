@@ -26,8 +26,8 @@ create a `.env` file in the root directory which is similer to `.env.example`
 
 ```json
 {
-  "first_name": "Monkey",
-  "last_name": "D Luffy",
+  "firstName": "Monkey",
+  "lastName": "D Luffy",
   "email": "luffy@gmail.com",
   "password": "IamKing123",
   "phone": "551-344-5525",
@@ -76,8 +76,8 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 ```json
 {
   "_id": "6370dfbb2a6185df6e1216a2",
-  "first_name": "Monkey",
-  "last_name": "D Luffy",
+  "firstName": "Monkey",
+  "lastName": "D Luffy",
   "email": "luffy@gmail.com",
   "dob": "06/07/2000",
   "phone": "551-344-5525",
