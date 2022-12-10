@@ -1,5 +1,5 @@
 import React from "react";
-import { MenuItem, TextField } from "@mui/material";
+import { Divider, MenuItem, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
 import { emailValidation, nameValidation } from "../../utils/helper";
 import CloseIcon from "@mui/icons-material/Close";
@@ -17,6 +17,7 @@ import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
 import "./styles.css";
 import { editUserDetails, getUserDetails } from "../../utils/apis/user";
 import { useParams } from "react-router";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
   capitalizeFirstLetter,
   fullNameFormatter,
@@ -118,32 +119,38 @@ function Profile() {
   };
 
   const ViewProfile = () => {
-    // {
-    //   "_id": "6370dfbb2a6185df6e1216a2",
-    //   "first_name": "Monkey",
-    //   "last_name": "D Luffy",
-    //   "email": "luffy@gmail.com",
-    //   "dob": "06/07/2000",
-    //   "phone": "551-344-5525",
-    //   "gender": "male",
-    //   "rsvped_events": [],
-    //   "profile_photo_url": "",
-    //   "events_created": []
-    // }
+    const data = {
+      _id: "6370dfbb2a6185df6e1216a2",
+      firstName: "Monkey",
+      lastName: "D Luffy",
+      email: "luffy@gmail.com",
+      dob: "06/07/2000",
+      phone: "551-344-5525",
+      gender: "male",
+      rsvped_events: [1, 2, 3],
+      profile_photo_url: "",
+      followers: [1, 2, 3],
+      events_created: [1, 2, 3],
+    };
 
     const {
-      first_name,
-      last_name,
+      firstName,
+      lastName,
       email,
       dob,
       phone,
       gender,
       profile_photo_url,
-    } = userData;
+      followers,
+      rsvped_events,
+      events_created,
+      // } = userData;
+    } = data;
     return (
       <div>
         <div className="grid grid_spaces text-[#1d1f23]">
           <div className="user_profile_picture">
+            {/* {profile_photo_url ? ( */}
             <img
               src={
                 profile_photo_url
@@ -152,11 +159,14 @@ function Profile() {
               }
               alt="your profile"
             />
+            {/* // ) : (
+            //   <AccountCircleIcon fontSize="inherit" />
+            // )} */}
           </div>
           <div className="py-4 px-3 text-xl">
             <div className="flex items-center text-3xl  font-bold h-[40px]">
               <span className="fullname ">
-                {fullNameFormatter(first_name, last_name)}
+                {fullNameFormatter(firstName, lastName)}
               </span>
               {editButton()}
             </div>
@@ -180,18 +190,55 @@ function Profile() {
               </div>{" "}
               <span className="pl-2">{phoneNumberFormatter(phone)}</span>
             </div>
-            <div className="flex items-center pt-4">
-              <button className="btn_default__follow">Follow</button>
-            </div>
           </div>
           <div>
             Some insights could come here like number of events, follows or
             something like that
           </div>
         </div>
-        <div>Followers</div>
-        <div>Events</div>
-        <div>RSVP</div>
+        <div className="text-2xl font-extrabold">Followers</div>
+        <Divider />
+        <div className="ml-2">
+          {followers?.length > 0 ? (
+            followers?.map((item, i) => {
+              return <div> item {i}</div>;
+            })
+          ) : (
+            <div>No followers to show!</div>
+          )}
+        </div>
+        <div className="text-2xl font-extrabold">Events</div>
+        <Divider />
+
+        <div className="ml-2">
+          {rsvped_events?.length > 0 ? (
+            rsvped_events?.map((item, i) => {
+              return (
+                <div>
+                  <a href={`/profile/${i}`}>item {i}</a>
+                </div>
+              );
+            })
+          ) : (
+            <div>No events to show!</div>
+          )}
+        </div>
+        <div className="text-2xl font-extrabold">RSVP</div>
+        <Divider />
+
+        <div className="ml-2">
+          {events_created?.length > 0 ? (
+            events_created?.map((item, i) => {
+              return (
+                <div>
+                  <a href={`/profile/${i}`}>item {i}</a>
+                </div>
+              );
+            })
+          ) : (
+            <div>No events to show!</div>
+          )}
+        </div>
       </div>
     );
   };
@@ -456,7 +503,14 @@ function Profile() {
               aria-label="upload picture"
               component="label"
             >
-              <input hidden accept="image/*" type="file" />
+              <input
+                hidden
+                accept="image/*"
+                type="file"
+                onChange={(e) => {
+                  console.log(e.target.files);
+                }}
+              />
               <PhotoCamera />
             </IconButton>
           </div>

@@ -15,6 +15,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyUser from "./components/verifyUser";
 import ResetPassword from "./components/resetPassword";
+import FollowerProfile from "./components/profile/followerProfile";
 
 function App() {
   const styles = () =>
@@ -75,7 +76,7 @@ function App() {
                 exact
                 element={
                   isAuthenticated() ? (
-                    <Profile />
+                    <FollowerProfile />
                   ) : (
                     <Navigate to="/login" replace />
                   )
