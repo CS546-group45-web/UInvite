@@ -17,7 +17,7 @@ const createUser = async (
   firstName = validation.checkNames(firstName, 'firstName');
   lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
-  username =  validation.checkUsername(username)
+  username = validation.checkUsername(username);
   dob = validation.checkDate(dob);
   phone = validation.checkPhone(phone);
   password = validation.checkPassword(password);
@@ -39,6 +39,8 @@ const createUser = async (
     rsvped_events: [],
     profile_photo_url: '',
     events_created: [],
+    followers: [],
+    following: [],
   };
 
   const insertInfo = await user_collection.insertOne(newuUser);
@@ -85,7 +87,7 @@ const updateUser = async (
   firstName = validation.checkNames(firstName, 'firstName');
   lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
-  username =  validation.checkUsername(username)
+  username = validation.checkUsername(username);
   dob = validation.checkDate(dob);
   phone = validation.checkPhone(phone);
   gender = validation.checkGender(gender);
@@ -138,19 +140,28 @@ const updateUserPassword = async (id, password) => {
 };
 
 const getUserByUsername = async (username) => {
-    const user_collection = await users();
-    const user = await user_collection
-      .findOne({
-        username: username,
-      })
+  const user_collection = await users();
+  const user = await user_collection.findOne({
+    username: username,
+  });
 
-    if (!user) throw 'User not found';
-    user._id = user._id.toString();
-    delete user.hashed_password;
-    return user;
+  if (!user) throw 'User not found';
+  user._id = user._id.toString();
+  delete user.hashed_password;
+  return user;
+};
+
+const addFollower = async (userId, followerId) => {
+  const user_collection = await users();
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $addToSet: { followers: followerId } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
   }
-
-
+  return await getUserById(userId);
+};
 
 module.exports = {
   createUser,
@@ -160,5 +171,6 @@ module.exports = {
   updateUser,
   verifyUser,
   updateUserPassword,
-  getUserByUsername
+  getUserByUsername,
+  addFollower,
 };
