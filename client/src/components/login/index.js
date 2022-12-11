@@ -43,22 +43,23 @@ function Login() {
     setErrors(errorObj);
     if (Object.keys(errorObj).length === 0) {
       const loginData = await login(userData);
+      console.log(loginData);
       const { data, status } = loginData;
       if (status !== 200) toast.error(data?.error);
       else {
         localStorage.setItem("auth", true);
         localStorage.setItem("token", data?.token);
         window.location.href = "/";
-      } // redirect("/");
-      // navigate("/");
+
+      };
     }
     setLoading(false);
-  };
+  }
 
   const handleClickShowPassword = () =>
     setPasswordVisibility(!passwordVisibility);
 
-  React.useEffect(() => {}, []);
+  React.useEffect(() => { }, []);
 
   return (
     <div className="flex min-h-full justify-center items-center py-8 lg:py-6 md:py-5 px-4 sm:px-6 lg:px-8">
@@ -187,5 +188,7 @@ function Login() {
     </div>
   );
 }
+
+
 
 export default Login;
