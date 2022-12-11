@@ -32,6 +32,7 @@ function Profile() {
   const [userData, setUserData] = React.useState({});
   const [pageLoading, setPageLoading] = React.useState(false);
   const [updateLoading, setUpdateLoading] = React.useState(false);
+  const [imageObj, setImageObj] = React.useState(null);
 
   React.useEffect(() => {
     const fetchUSerDetails = async () => {
@@ -40,7 +41,6 @@ function Profile() {
       setUserData(data.data);
       setPageLoading(false);
     };
-    console.log({ params });
     fetchUSerDetails().catch((err) => console.log({ err }));
     return () => {
       setUserData(null);
@@ -87,6 +87,9 @@ function Profile() {
     const formattedToday = mm + "/" + dd + "/" + yyyy;
 
     // console.log(dob.$d);
+    let formData = new FormData();
+    formData.append("file", imageObj);
+    console.log({ formData });
     const apiBody = {
       firstName,
       lastName,
@@ -497,6 +500,12 @@ function Profile() {
             </div>
           </div>
           <div>
+            <div className="user_profile_picture">
+              <img
+                src={imageObj ? URL.createObjectURL(imageObj) : null}
+                alt="uploaded"
+              />
+            </div>
             Upload photo
             <IconButton
               color="primary"
@@ -508,7 +517,8 @@ function Profile() {
                 accept="image/*"
                 type="file"
                 onChange={(e) => {
-                  console.log(e.target.files);
+                  console.log(e.target.files[0]);
+                  setImageObj(e.target.files[0]);
                 }}
               />
               <PhotoCamera />
