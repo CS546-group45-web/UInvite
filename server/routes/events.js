@@ -6,51 +6,50 @@ const eventData = data.events;
 const validation = require("../utils/validation");
 
 router
-  .route("/create")
+  .route("/")
   .post(async (req, res) => {
+    let {
+      userId,
+      eventTitle,
+      organizerName,
+      description,
+      startDateTime,
+      endDateTime,
+      address,
+      maxRsvpsCount,
+      type,
+      tags,
+    } = req.body;
     try {
-      let {
-        user_id,
-        event_title,
-        organizer_name,
-        Description,
-        start_date_time,
-        end_date_time,
-        address,
-        Max_rsvps_count,
-        type,
-        tags,
-      } = req.body;
-
-      user_id = validation.checkObjectId(user_id);
-      event_title = validation.checkNames(event_title, "event_title");
-      organizer_name = validation.checkNames(organizer_name, "organizer_name");
-      Description = validation.checkNames(Description, "description");
-      start_date_time = validation.checkEventDate(
-        start_date_time,
-        "start_date_time"
-      );
-      end_date_time = validation.checkEventDate(end_date_time, "end_date_time");
+      userId = validation.checkObjectId(userId);
+      eventTitle = validation.checkNames(eventTitle, "eventTitle");
+      organizerName = validation.checkNames(organizerName, "organizerName");
+      description = validation.checkNames(description, "description");
+      startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
+      endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
       address = validation.checkAdress(address, "address");
-      Max_rsvps_count = validation.checkRsvpCount(
-        Max_rsvps_count,
-        "Max_rsvps_count"
-      );
+      // console.log(maxRsvpsCount);
+      maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
       type = validation.checkEventType(type, "type");
       tags = validation.checkTags(tags, "tags");
-    } catch {
-      return res.status(400).json({ error: e });
+    } catch (e) {
+      if (typeof e === "string") return res.status(400).json({ error: e });
+      else
+        return res
+          .status(400)
+          .json({ error: "The event is missing a  parameter, try again!" });
     }
     try {
-      const event = await eventData.createEvent(
-        user_id,
-        event_title,
-        organizer_name,
-        Description,
-        start_date_time,
-        end_date_time,
+      // console.log("Before event");
+      let eventCreate = await eventData.createEvent(
+        userId,
+        eventTitle,
+        organizerName,
+        description,
+        startDateTime,
+        endDateTime,
         address,
-        Max_rsvps_count,
+        maxRsvpsCount,
         type,
         tags
       );
@@ -60,9 +59,74 @@ router
     }
   })
   .get(async (req, res) => {
-    // code for get all events
     const event = await eventData.getAllEvents();
     return res.json({ EventList: event });
   });
+
+router
+  .route("/id/:eventId")
+  .get(async (req, res) => {
+    let eventId = req.params.eventId;
+    console.log(req.body);
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+    try {
+      const event = await eventData.getEventById(eventId);
+      return res.json({ EventList: event });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  })
+  .delete(async (req, res) => {
+    let eventId = req.params.eventId;
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      const deletedEventId = await eventData.removeEvent(eventId);
+      return res.status(200).json({ message: deletedEventId });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+router.route("/title/:eventTitle").get(async (req, res) => {
+  let eventTitle = req.params.eventTitle;
+  console.log(eventTitle);
+  try {
+    title = validation.checkTitle(eventTitle);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  try {
+    const event = await eventData.getEventsByTitle(eventTitle);
+    console.log(event);
+    return res.json({ EventList: event });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
+router.route("/date/:eventDate").get(async (req, res) => {
+  let eventDate = req.params.eventDate;
+  try {
+    title = validation.checkEventDate(eventDate);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  try {
+    const event = await eventData.getEventsByDate(eventDate);
+    console.log(event);
+    return res.json({ EventList: event });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
 
 module.exports = router;

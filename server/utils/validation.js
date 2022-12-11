@@ -26,11 +26,12 @@ const checkNames = (input, name) => {
   return input;
 };
 
-const checkTitle = (input) => {
+const checkTitle = (input, name) => {
   input = checkInputString(input);
   if (!/^[a-zA-Z0-9 ]+$/.test(input)) {
-    throw `Title must only contain letters`;
+    throw `Title must only contain letters or numbers`;
   }
+  if (input.length < 4) throw `${name} should be of length 4 or greater`; //added extra validation
   return input;
 };
 
@@ -90,13 +91,10 @@ const checkGender = (input) => {
 };
 
 const checkObjectId = (input, name = "object id") => {
-  //console.log("Inside checkObject");
   checkInputString(input, name);
-  //console.log("after checkInputString");
   if (!ObjectId.isValid(input)) {
     throw `${name} must be a valid ObjectId`;
   }
-  //console.log("after check Object");
   return input;
 };
 
@@ -172,13 +170,14 @@ const checkComments = (input, name = "comments") => {
 };
 
 const checkId = (id) => {
-  if (!id) throw 'Error: You must provide an id to search for';
-  if (typeof id !== 'string') throw 'Error: id must be a string';
+  if (!id) throw "Error: You must provide an id to search for";
+  if (typeof id !== "string") throw "Error: id must be a string";
   id = id.trim();
-  if (id.length === 0) throw 'Error: id cannot be an empty string or just spaces';
+  if (id.length === 0)
+    throw "Error: id cannot be an empty string or just spaces";
   if (!ObjectId.isValid(id)) throw new Error("Invalid Id");
   return id;
-}
+};
 
 module.exports = {
   checkInputString,
@@ -199,5 +198,4 @@ module.exports = {
   checkTags,
   checkEventURl,
   checkComments,
-  checkReviews,
 };

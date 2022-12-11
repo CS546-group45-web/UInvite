@@ -148,19 +148,19 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 
 ```json
 {
-  "user_id": "63785b6cfd19003dcdf3c6ee",
-  "event_title": "Dance",
-  "organizer_name": "User Name",
-  "Description": "Description",
-  "start_date_time": "2022-11-06T19:58:23.464Z",
-  "end_date_time": "2022-11-06T19:58:23.464Z",
+  "userId": "63785b6cfd19003dcdf3c6ee",
+  "eventTitle": "Dance",
+  "organizerName": "User Name",
+  "description": "description",
+  "startDateTime": "2022-11-06T19:58:23.464Z",
+  "endDateTime": "2022-11-06T19:58:23.464Z",
   "address": {
     "City": "Jersey City",
     "State": "New Jersey",
     "Country": "United States",
     "Zipcode": "07306"
   },
-  "Max_rsvps_count": "100",
+  "maxRsvpscount": "100",
   "type": "in-person",
   "tags": ["party"]
 }
