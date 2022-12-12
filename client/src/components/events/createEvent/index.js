@@ -83,13 +83,14 @@ function CreateEvent() {
       <div className="-space-y-px rounded-md">
         <div>
           <TextField
-            size="small"
+           
             className="my-2"
             id="name"
-            label="Event Name:"
+            label="Event Name"
             variant="outlined"
             required
             type="text"
+            fullWidth
             
             placeholder="John Doe's Birthday Party"
             margin="dense"
@@ -122,7 +123,7 @@ function CreateEvent() {
             className="my-2"
             
             id="description"
-            label="Event Description:"
+            label="Event Description"
             variant="outlined"
             required
             type="text"
@@ -157,13 +158,13 @@ function CreateEvent() {
           <TextField
             className="my-2"
             id="location"
-            size="small"
-            label="Event Location:"
+           
+            label="Event Location"
             variant="outlined"
             required
             type="text"
             fullWidth
-            placeholder="31 Hartwell Road"
+            placeholder="31 Hartwell Road or zoom link"
             margin="dense"
             name="location"
             error={errors?.name}
@@ -198,8 +199,8 @@ function CreateEvent() {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
          renderInput={(props) => <TextField {...props} />}
-         label="Start time & date"
-         size="small"
+         label="Start Date & Time of the Event"
+        
          required
            value={event?.start_date_time}
            onChange={(e) => {
@@ -218,8 +219,8 @@ function CreateEvent() {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
          renderInput={(props) => <TextField {...props} />}
-         label="End time & date"
-         size="small"
+         label="End Date & Time of the event"
+        
          required
            value={event?.end_date_time}
            onChange={(e) => {
@@ -239,11 +240,12 @@ function CreateEvent() {
           <TextField
             className="my-2"
             id="tags"
-            size="small"
-            label="Hashtags:"
+            
+            label="Hashtags"
             variant="outlined"
             required
             type="text"
+            fullWidth
             
             placeholder="#18+, #public, #nyc"
             margin="dense"
@@ -253,7 +255,7 @@ function CreateEvent() {
               errors?.name ? (
                 <span className="text-base flex items-center">
                   <CloseIcon fontSize="small" />
-                  Please enter valid tags
+                  Atleast one tag is required
                 </span>
               ) : (
                 false
@@ -279,7 +281,7 @@ function CreateEvent() {
       <div className="flex items-center justify-between text-logoBlue">
         <div className="flex items-center">
           <FormControlLabel
-            control={<Checkbox defaultChecked />}
+            control={<Checkbox  />}
             label="Pictures allowed?"
             value={event?.picturesAllowed}
             onChange={(e) => {
@@ -298,7 +300,7 @@ function CreateEvent() {
       <div className="flex items-center justify-between text-logoBlue">
         <div className="flex items-center">
           <FormControlLabel
-            control={<Checkbox defaultChecked />}
+            control={<Checkbox  />}
             label="Comments Allowed?"
             value={event?.commentsAllowed}
             onChange={(e) => {
@@ -317,7 +319,7 @@ function CreateEvent() {
       <div className="flex items-center justify-between text-logoBlue">
         <div className="flex items-center">
           <FormControlLabel
-            control={<Checkbox defaultChecked />}
+            control={<Checkbox  />}
             label="Public Event?"
             value={event?.publicEvent}
             onChange={(e) => {
@@ -336,7 +338,7 @@ function CreateEvent() {
       <div className="flex items-center justify-between text-logoBlue">
         <div className="flex items-center">
           <FormControlLabel
-            control={<Checkbox defaultChecked />}
+            control={<Checkbox  />}
             label="Online/Virtual Event?"
             value={event?.type}
             onChange={(e) => {
@@ -359,7 +361,7 @@ function CreateEvent() {
           onClick={validateData}
           disabled={loading || errors?.name||errors?.type||errors?.description||errors?.location||errors?.start_date_time||errors?.end_date_time||errors?.tags||errors?.picturesAllowed|| errors?.commentsAllowed||errors?.publicEvent||errors?.dateCreated}
         >
-          Create Event
+          Create 
         </button>
       </div>
       
