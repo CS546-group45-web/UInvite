@@ -20,8 +20,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { toast } from "react-toastify";
 import { signup } from "../../utils/apis/auth";
 import Loading from "../common/Loading";
+import { useNavigate } from "react-router";
 
 function SignUp() {
+  const navigate = useNavigate();
   const [signupData, setSignupData] = React.useState({});
   const [errors, setErrors] = React.useState({});
   const [passwordVisibility, setPasswordVisibility] = React.useState(false);
@@ -144,7 +146,7 @@ function SignUp() {
         </div>
         <div className="rounded-md px-4 height_signup_form">
           <div className="flex justify-between">
-            <div className="mr-1 w-4/12">
+            <div className="mr-1 w-6/12">
               <TextField
                 size="small"
                 id="firstName"
@@ -162,7 +164,7 @@ function SignUp() {
                   errors?.firstName ? (
                     <span className="text-base flex items-center">
                       <CloseIcon fontSize="small" />
-                      Enter valid name
+                      Enter a valid first name
                     </span>
                   ) : (
                     false
@@ -177,7 +179,7 @@ function SignUp() {
                 }}
               />
             </div>
-            <div className="ml-1 mr-1 w-4/12">
+            <div className="ml-1 w-6/12">
               <TextField
                 size="small"
                 id="lastName"
@@ -195,7 +197,7 @@ function SignUp() {
                   errors?.lastName ? (
                     <span className="text-base flex items-center">
                       <CloseIcon fontSize="small" />
-                      Enter valid name
+                      Enter a valid last name
                     </span>
                   ) : (
                     false
@@ -210,7 +212,43 @@ function SignUp() {
                 }}
               />
             </div>
-            <div className="mr-1  w-4/12">
+          </div>
+
+          <div className="flex justify-between">
+            <div className="mr-1 w-6/12">
+              <TextField
+                size="small"
+                id="email"
+                label="Email"
+                variant="outlined"
+                required
+                type="email"
+                fullWidth
+                margin="dense"
+                value={signupData?.email ?? ""}
+                name="email"
+                placeholder="johndoe@example.com"
+                helperText={
+                  errors?.email ? (
+                    <span className="text-base flex items-center">
+                      <CloseIcon fontSize="small" />
+                      Enter a valid email
+                    </span>
+                  ) : (
+                    false
+                  )
+                }
+                error={errors?.email}
+                onChange={(e) => {
+                  let { name, value } = e.target;
+                  if (value === "") setError(name);
+                  if (!emailValidation(value)) setError(name);
+                  else removeError(name);
+                  setValues(name, value);
+                }}
+              />
+            </div>
+            <div className="ml-1 w-6/12">
               <TextField
                 size="small"
                 id="username"
@@ -228,7 +266,7 @@ function SignUp() {
                   errors?.username ? (
                     <span className="text-base flex items-center">
                       <CloseIcon fontSize="small" />
-                      Enter valid username
+                      Enter a valid username
                     </span>
                   ) : (
                     false
@@ -244,38 +282,6 @@ function SignUp() {
               />
             </div>
           </div>
-
-          <TextField
-            size="small"
-            id="email"
-            label="Email"
-            variant="outlined"
-            required
-            type="email"
-            fullWidth
-            margin="dense"
-            value={signupData?.email ?? ""}
-            name="email"
-            placeholder="johndoe@example.com"
-            helperText={
-              errors?.email ? (
-                <span className="text-base flex items-center">
-                  <CloseIcon fontSize="small" />
-                  Enter a valid email
-                </span>
-              ) : (
-                false
-              )
-            }
-            error={errors?.email}
-            onChange={(e) => {
-              let { name, value } = e.target;
-              if (value === "") setError(name);
-              if (!emailValidation(value)) setError(name);
-              else removeError(name);
-              setValues(name, value);
-            }}
-          />
           <div className="my-1">
             <div className="flex justify-between">
               <div className="mr-1 w-6/12">
@@ -601,11 +607,14 @@ size="small"
           </div>
           <div className="mt-3">
             <Divider />
-            <div className="text-xl text-black">
+            <div className="text-xl text-black flex">
               Have a account? &nbsp;
-              <Link href="/login" underline="hover" color="#393e46">
+              <div
+                onClick={() => navigate("/login")}
+                className="text-[#393e46] cursor-pointer hover:underline"
+              >
                 Sign in
-              </Link>
+              </div>
             </div>
           </div>
         </div>

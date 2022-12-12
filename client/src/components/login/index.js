@@ -9,8 +9,10 @@ import { login } from "../../utils/apis/auth";
 import { toast } from "react-toastify";
 import Loading from "../common/Loading";
 import "./styles.css";
+import { useNavigate } from "react-router";
 
 function Login() {
+  const navigate = useNavigate();
   const [userData, setUserData] = React.useState({ email: "", password: "" });
   const [passwordVisibility, setPasswordVisibility] = React.useState(false);
   const [errors, setErrors] = React.useState({ email: false, password: false });
@@ -48,7 +50,9 @@ function Login() {
       else {
         localStorage.setItem("auth", true);
         localStorage.setItem("token", data?.token);
-        window.location.href = "/";
+        // window.location.href = "/";
+
+        setTimeout(() => navigate("/"), 2000);
       } // redirect("/");
       // navigate("/");
     }
@@ -159,9 +163,12 @@ function Login() {
             </div> */}
 
             <div>
-              <Link href="/forgot-password" underline="hover" color="#393e46">
+              <div
+                onClick={() => navigate("/forgot-password")}
+                className="text-[#393e46] cursor-pointer hover:underline "
+              >
                 Forgot your password?
-              </Link>
+              </div>
             </div>
           </div>
 
@@ -176,11 +183,14 @@ function Login() {
         </div>
         <div>
           <Divider />
-          <div className="text-xl text-black">
+          <div className="text-xl text-black flex">
             New user?&nbsp;
-            <Link href="/signup" underline="hover" color="#393e46">
+            <div
+              onClick={() => navigate("/signup")}
+              className="text-[#393e46] cursor-pointer hover:underline "
+            >
               Create new account
-            </Link>
+            </div>
           </div>
         </div>
       </div>
