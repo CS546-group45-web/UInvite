@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import AddAlertIcon from "@mui/icons-material/AddAlert";
 import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
@@ -43,6 +43,7 @@ const navOptions = [
 ];
 
 function Nav() {
+  const navigate = useNavigate();
   const signOutUser = () => {
     localStorage.setItem("token", null);
     localStorage.setItem("auth", false);
@@ -148,14 +149,16 @@ function Nav() {
 
         <div>
           {navOptions.map((item, key) => (
-            <Link to={item.path} key={key}>
-              <div className="flex items-center w-full group pl-4 pr-6 py-4 my-2 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-[#0000001f] hover:border-1 hover:shadow-[#000] hover:font-medium">
-                <div className="group-hover:scale-110">
-                  <item.icon />
-                </div>
-                <span className="ml-2 text-lg">{item.name}</span>
+            <div
+              key={key}
+              className="cursor-pointer flex items-center w-full group pl-4 pr-6 py-4 my-2 text-ellipsis overflow-hidden whitespace-nowrap rounded-full hover:bg-[#0000001f] hover:border-1 hover:shadow-[#000] hover:font-medium"
+              onClick={() => navigate(item?.path)}
+            >
+              <div className="group-hover:scale-110">
+                <item.icon />
               </div>
-            </Link>
+              <span className="ml-2 text-lg">{item.name}</span>
+            </div>
           ))}
         </div>
       </div>

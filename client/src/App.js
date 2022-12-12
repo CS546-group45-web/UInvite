@@ -72,7 +72,7 @@ function App() {
               />
 
               <Route
-                path="/profile/:id"
+                path="/profile/:username"
                 exact
                 element={
                   isAuthenticated() ? (

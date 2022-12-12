@@ -27,8 +27,12 @@ export const passwordValidation = (password) => {
 };
 
 export const nameValidation = (name) => {
-  // NOTE: should i allow two spaces and show the error or
   const regex = /^[a-zA-Z ]{2,20}$/;
+  return regex.test(name);
+};
+
+export const usernameValidation = (name) => {
+  const regex = /^[a-zA-Z0-9+_-]{6,20}$/;
   return regex.test(name);
 };
 

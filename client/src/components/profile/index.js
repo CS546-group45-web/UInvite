@@ -1,7 +1,11 @@
 import React from "react";
-import { Divider, MenuItem, TextField } from "@mui/material";
+import { MenuItem, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
-import { emailValidation, nameValidation } from "../../utils/helper";
+import {
+  emailValidation,
+  nameValidation,
+  usernameValidation,
+} from "../../utils/helper";
 import CloseIcon from "@mui/icons-material/Close";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -10,45 +14,48 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { toast } from "react-toastify";
 import Loading from "../common/Loading";
 import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
+// import EditIcon from "@mui/icons-material/Edit";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PhoneAndroidOutlinedIcon from "@mui/icons-material/PhoneAndroidOutlined";
 import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
 import "./styles.css";
 import { editUserDetails, getUserDetails } from "../../utils/apis/user";
-import { useParams } from "react-router";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useNavigate, useParams } from "react-router";
 import {
   capitalizeFirstLetter,
   fullNameFormatter,
   phoneNumberFormatter,
 } from "../../utils/helper";
 import { PhotoCamera } from "@mui/icons-material";
+import ProfileSectionMiddle from "./profileSectionMiddle";
 
 function Profile() {
   const params = useParams();
+
+  const navigate = useNavigate();
   const [editView, setEditView] = React.useState(false);
   const [errors, setErrors] = React.useState(false);
   const [userData, setUserData] = React.useState({});
+  const [updateUserData, setUpdateUserData] = React.useState({});
   const [pageLoading, setPageLoading] = React.useState(false);
   const [updateLoading, setUpdateLoading] = React.useState(false);
   const [imageObj, setImageObj] = React.useState(null);
 
   React.useEffect(() => {
-    const fetchUSerDetails = async () => {
+    const fetchUserDetails = async () => {
       setPageLoading(true);
       const data = await getUserDetails();
       setUserData(data.data);
       setPageLoading(false);
     };
-    fetchUSerDetails().catch((err) => console.log({ err }));
+    fetchUserDetails().catch((err) => console.log({ err }));
     return () => {
       setUserData(null);
     };
   }, [params]);
 
   const validateData = async () => {
-    if (Object.keys(userData).length === 0) {
+    if (Object.keys(updateUserData).length === 0) {
       return setErrors({
         firstName: true,
         lastName: true,
@@ -61,20 +68,20 @@ function Profile() {
     }
 
     const errorObj = {};
-    if (!userData?.firstName) errorObj.firstName = true;
-    if (!userData?.lastName) errorObj.lastName = true;
-    if (!userData?.email) errorObj.email = true;
-    if (!userData?.phone) errorObj.phone = true;
-    if (!userData?.dob) errorObj.dob = true;
-    if (!userData?.gender) errorObj.gender = true;
-    if (!userData?.username) errorObj.username = true;
+    if (!updateUserData?.firstName) errorObj.firstName = true;
+    if (!updateUserData?.lastName) errorObj.lastName = true;
+    if (!updateUserData?.email) errorObj.email = true;
+    if (!updateUserData?.phone) errorObj.phone = true;
+    if (!updateUserData?.dob) errorObj.dob = true;
+    if (!updateUserData?.gender) errorObj.gender = true;
+    if (!updateUserData?.username) errorObj.username = true;
 
     if (Object.keys(errorObj).length !== 0) return setErrors(errorObj);
     else setErrors({});
 
     setUpdateLoading(true);
     const { firstName, lastName, email, phone, dob, gender, username, _id } =
-      userData;
+      updateUserData;
 
     const today = new Date(dob);
     const yyyy = today.getFullYear();
@@ -89,15 +96,12 @@ function Profile() {
     // console.log(dob.$d);
     let formData = new FormData();
     formData.append("file", imageObj);
-    console.log({ formData });
+    // console.log({ formData });
     const apiBody = {
       firstName,
       lastName,
       email,
-      phone: phone
-        .substr(0, 3)
-        .concat("-", phone.substr(3, 3) + "-", phone.substr(6)),
-      // phone: phone,
+      phone,
       dob: formattedToday,
       gender,
       username,
@@ -106,54 +110,55 @@ function Profile() {
 
     const editInfo = await editUserDetails(apiBody);
     const { data, status } = editInfo;
-    if (status !== 201) toast.error(data?.error);
-    else setEditView(false);
+    if (status !== 200) toast.error(data?.error);
+    else {
+      setUserData(data.data);
+      setEditView(false);
+    }
     setUpdateLoading(false);
   };
 
   const editButton = () => {
     return (
-      <div onClick={() => setEditView(!editView)}>
-        <IconButton aria-label="edit your profile">
-          <EditIcon color="#1d1f23" />
-        </IconButton>
+      <div
+        onClick={() => {
+          setUpdateUserData(userData);
+          setEditView(!editView);
+        }}
+        className="btn_edit_profile"
+      >
+        {/* <IconButton
+          aria-label="edit your profile"
+          disableFocusRipple={true}
+          disableRipple={true}
+        > */}
+        {/* <EditIcon color="#1d1f23" fontSize="small" /> */}
+        Edit profile
+        {/* </IconButton> */}
       </div>
     );
   };
 
   const ViewProfile = () => {
-    const data = {
-      _id: "6370dfbb2a6185df6e1216a2",
-      firstName: "Monkey",
-      lastName: "D Luffy",
-      email: "luffy@gmail.com",
-      dob: "06/07/2000",
-      phone: "551-344-5525",
-      gender: "male",
-      rsvped_events: [1, 2, 3],
-      profile_photo_url: "",
-      followers: [1, 2, 3],
-      events_created: [1, 2, 3],
-    };
-
     const {
       firstName,
       lastName,
+      username,
       email,
       dob,
       phone,
       gender,
       profile_photo_url,
-      followers,
+      followers = [1],
+      following,
       rsvped_events,
       events_created,
-      // } = userData;
-    } = data;
+    } = userData;
+    const username1 = "tarundadlani1";
     return (
       <div>
         <div className="grid grid_spaces text-[#1d1f23]">
           <div className="user_profile_picture">
-            {/* {profile_photo_url ? ( */}
             <img
               src={
                 profile_photo_url
@@ -162,9 +167,6 @@ function Profile() {
               }
               alt="your profile"
             />
-            {/* // ) : (
-            //   <AccountCircleIcon fontSize="inherit" />
-            // )} */}
           </div>
           <div className="py-4 px-3 text-xl">
             <div className="flex items-center text-3xl  font-bold h-[40px]">
@@ -173,7 +175,9 @@ function Profile() {
               </span>
               {editButton()}
             </div>
-
+            <div className="font-extralight">
+              <span>@{username}</span>
+            </div>
             <div className="flex">
               <div className="flex items-center">
                 <div className="w-[30px] h-[30px]">
@@ -199,49 +203,15 @@ function Profile() {
             something like that
           </div>
         </div>
-        <div className="text-2xl font-extrabold">Followers</div>
-        <Divider />
-        <div className="ml-2">
-          {followers?.length > 0 ? (
-            followers?.map((item, i) => {
-              return <div> item {i}</div>;
-            })
-          ) : (
-            <div>No followers to show!</div>
-          )}
-        </div>
-        <div className="text-2xl font-extrabold">Events</div>
-        <Divider />
 
-        <div className="ml-2">
-          {rsvped_events?.length > 0 ? (
-            rsvped_events?.map((item, i) => {
-              return (
-                <div>
-                  <a href={`/profile/${i}`}>item {i}</a>
-                </div>
-              );
-            })
-          ) : (
-            <div>No events to show!</div>
-          )}
-        </div>
-        <div className="text-2xl font-extrabold">RSVP</div>
-        <Divider />
+        <div onClick={() => navigate("/profile/" + username1)}>{username1}</div>
 
-        <div className="ml-2">
-          {events_created?.length > 0 ? (
-            events_created?.map((item, i) => {
-              return (
-                <div>
-                  <a href={`/profile/${i}`}>item {i}</a>
-                </div>
-              );
-            })
-          ) : (
-            <div>No events to show!</div>
-          )}
-        </div>
+        <ProfileSectionMiddle
+          followers={followers}
+          following={following}
+          events_created={events_created}
+          rsvped_events={rsvped_events}
+        />
       </div>
     );
   };
@@ -261,7 +231,7 @@ function Profile() {
                 required
                 fullWidth
                 type="text"
-                value={userData?.firstName}
+                value={updateUserData?.firstName}
                 name="firstName"
                 margin="dense"
                 placeholder="John"
@@ -296,7 +266,7 @@ function Profile() {
                 fullWidth
                 type="text"
                 margin="dense"
-                value={userData?.lastName}
+                value={updateUserData?.lastName}
                 placeholder="Doe"
                 helperText={
                   errors?.lastName ? (
@@ -327,7 +297,7 @@ function Profile() {
                 required
                 fullWidth
                 type="text"
-                value={userData?.username}
+                value={updateUserData?.username}
                 name="username"
                 margin="dense"
                 placeholder="John"
@@ -344,7 +314,7 @@ function Profile() {
                 onChange={(e) => {
                   let { name, value } = e.target;
                   if (value === "") setError(name);
-                  if (!nameValidation(value)) setError(name);
+                  if (!usernameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
                 }}
@@ -362,7 +332,7 @@ function Profile() {
                 type="email"
                 fullWidth
                 margin="dense"
-                value={userData?.email ?? ""}
+                value={updateUserData?.email ?? ""}
                 name="email"
                 placeholder="johndoe@example.com"
                 helperText={
@@ -394,7 +364,7 @@ function Profile() {
                 fullWidth
                 required
                 margin="dense"
-                value={userData?.gender ?? ""}
+                value={updateUserData?.gender ?? ""}
                 name="gender"
                 placeholder="select a gender"
                 error={errors?.gender}
@@ -435,7 +405,7 @@ function Profile() {
                 name="phone"
                 error={errors?.phone}
                 placeholder="1234567899"
-                value={userData?.phone ?? ""}
+                value={updateUserData?.phone ?? ""}
                 helperText={
                   errors?.phone ? (
                     <span className="text-base flex items-center">
@@ -462,9 +432,8 @@ function Profile() {
                     label="Date of birth"
                     disableFuture
                     inputFormat="MM/DD/YYYY"
-                    value={userData?.dob ?? null}
+                    value={updateUserData?.dob ?? null}
                     renderInput={(params) => (
-                      // FIXME: Fix the date error styling
                       <TextField
                         size="small"
                         required
@@ -517,7 +486,6 @@ function Profile() {
                 accept="image/*"
                 type="file"
                 onChange={(e) => {
-                  console.log(e.target.files[0]);
                   setImageObj(e.target.files[0]);
                 }}
               />
@@ -527,7 +495,7 @@ function Profile() {
         </div>
 
         <div className="flex mt-4">
-          <button className="btn_default mr-2" onClick={() => validateData()}>
+          <button className="btn_default mr-2" onClick={validateData}>
             <Loading loading={updateLoading} width={18} /> Update
           </button>
           <button
@@ -542,7 +510,7 @@ function Profile() {
   };
 
   const setValues = (name, value) => {
-    setUserData({ ...userData, [name]: value });
+    setUpdateUserData({ ...updateUserData, [name]: value });
   };
 
   const setError = (name) => {

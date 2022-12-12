@@ -6,6 +6,7 @@ import {
   emailValidation,
   nameValidation,
   passwordValidation,
+  usernameValidation,
 } from "../../utils/helper";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
@@ -31,6 +32,7 @@ function SignUp() {
       return setErrors({
         firstName: true,
         lastName: true,
+        username: true,
         phone: true,
         dob: true,
         gender: true,
@@ -44,6 +46,7 @@ function SignUp() {
     const errorObj = {};
     if (!signupData?.firstName) errorObj.firstName = true;
     if (!signupData?.agreedTerms) errorObj.agreedTerms = true;
+    if (!signupData?.username) errorObj.username = true;
     if (!signupData?.lastName) errorObj.lastName = true;
     if (!signupData?.email) errorObj.email = true;
     if (!signupData?.phone) errorObj.phone = true;
@@ -60,8 +63,16 @@ function SignUp() {
     else setErrors({});
 
     setLoading(true);
-    const { firstName, lastName, email, phone, dob, gender, password } =
-      signupData;
+    const {
+      firstName,
+      lastName,
+      username,
+      email,
+      phone,
+      dob,
+      gender,
+      password,
+    } = signupData;
 
     const today = new Date(dob);
     const yyyy = today.getFullYear();
@@ -77,6 +88,7 @@ function SignUp() {
     const apiBody = {
       firstName,
       lastName,
+      username,
       email,
       password,
       phone,
@@ -132,7 +144,7 @@ function SignUp() {
         </div>
         <div className="rounded-md px-4 height_signup_form">
           <div className="flex justify-between">
-            <div className="mr-1 w-6/12">
+            <div className="mr-1 w-4/12">
               <TextField
                 size="small"
                 id="firstName"
@@ -150,7 +162,7 @@ function SignUp() {
                   errors?.firstName ? (
                     <span className="text-base flex items-center">
                       <CloseIcon fontSize="small" />
-                      Enter a valid First Name
+                      Enter valid name
                     </span>
                   ) : (
                     false
@@ -165,7 +177,7 @@ function SignUp() {
                 }}
               />
             </div>
-            <div className="ml-1 w-6/12">
+            <div className="ml-1 mr-1 w-4/12">
               <TextField
                 size="small"
                 id="lastName"
@@ -183,7 +195,7 @@ function SignUp() {
                   errors?.lastName ? (
                     <span className="text-base flex items-center">
                       <CloseIcon fontSize="small" />
-                      Enter a valid Last Name
+                      Enter valid name
                     </span>
                   ) : (
                     false
@@ -193,6 +205,39 @@ function SignUp() {
                   let { name, value } = e.target;
                   if (value === "") setError(name);
                   if (!nameValidation(value)) setError(name);
+                  else removeError(name);
+                  setValues(name, value);
+                }}
+              />
+            </div>
+            <div className="mr-1  w-4/12">
+              <TextField
+                size="small"
+                id="username"
+                label="Username"
+                variant="outlined"
+                error={errors?.username}
+                required
+                fullWidth
+                type="text"
+                value={signupData?.username}
+                name="username"
+                margin="dense"
+                placeholder="johndoe"
+                helperText={
+                  errors?.username ? (
+                    <span className="text-base flex items-center">
+                      <CloseIcon fontSize="small" />
+                      Enter valid username
+                    </span>
+                  ) : (
+                    false
+                  )
+                }
+                onChange={(e) => {
+                  let { name, value } = e.target;
+                  if (value === "") setError(name);
+                  if (!usernameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
                 }}
