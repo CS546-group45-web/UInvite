@@ -70,12 +70,14 @@ export const fullNameFormatter = (first, last) =>
 
 export const phoneNumberFormatter = (phone) => {
   // 332-260-2829
+  console.log(phone);
   return "+1".concat(
     " (",
     phone?.slice(0, 3),
     ") ",
-    phone?.slice(4, 7),
-    phone?.slice(7)
+    phone?.slice(3, 6),
+    "-",
+    phone?.slice(6)
   );
 };
 
