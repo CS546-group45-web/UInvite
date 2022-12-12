@@ -5,17 +5,19 @@ const users = mongoCollections.users;
 const validation = require('../utils/validation');
 
 const createUser = async (
-  first_name,
-  last_name,
+  firstName,
+  lastName,
   email,
+  username,
   password,
   phone,
   dob,
   gender
 ) => {
-  first_name = validation.checkNames(first_name, 'first_name');
-  last_name = validation.checkNames(last_name, 'last_name');
+  firstName = validation.checkNames(firstName, 'firstName');
+  lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
+  username = validation.checkUsername(username);
   dob = validation.checkDate(dob);
   phone = validation.checkPhone(phone);
   password = validation.checkPassword(password);
@@ -25,9 +27,10 @@ const createUser = async (
   hashed_password = await bcrypt.hash(password, 10);
 
   const newuUser = {
-    first_name: first_name,
-    last_name: last_name,
+    firstName: firstName,
+    lastName: lastName,
     email: email,
+    username: username,
     dob: dob,
     phone: phone,
     hashed_password: hashed_password,
@@ -36,6 +39,8 @@ const createUser = async (
     rsvped_events: [],
     profile_photo_url: '',
     events_created: [],
+    followers: [],
+    following: [],
   };
 
   const insertInfo = await user_collection.insertOne(newuUser);
@@ -69,26 +74,29 @@ const getUserByEmail = async (email) => {
 
 const updateUser = async (
   id,
-  first_name,
-  last_name,
+  firstName,
+  lastName,
   email,
+  username,
   phone,
   dob,
   gender
 ) => {
   validation.checkObjectId(id);
   const user_collection = await users();
-  first_name = validation.checkNames(first_name, 'first_name');
-  last_name = validation.checkNames(last_name, 'last_name');
+  firstName = validation.checkNames(firstName, 'firstName');
+  lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
+  username = validation.checkUsername(username);
   dob = validation.checkDate(dob);
   phone = validation.checkPhone(phone);
   gender = validation.checkGender(gender);
 
   const updatedUser = {
-    first_name: first_name,
-    last_name: last_name,
+    firstName: firstName,
+    lastName: lastName,
     email: email,
+    username: username,
     dob: dob,
     phone: phone,
     gender: gender,
@@ -130,6 +138,31 @@ const updateUserPassword = async (id, password) => {
   }
   return await getUserById(id);
 };
+
+const getUserByUsername = async (username) => {
+  const user_collection = await users();
+  const user = await user_collection.findOne({
+    username: username,
+  });
+
+  if (!user) throw 'User not found';
+  user._id = user._id.toString();
+  delete user.hashed_password;
+  return user;
+};
+
+const addFollower = async (userId, followerId) => {
+  const user_collection = await users();
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $addToSet: { followers: followerId } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+  return await getUserById(userId);
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -138,4 +171,6 @@ module.exports = {
   updateUser,
   verifyUser,
   updateUserPassword,
+  getUserByUsername,
+  addFollower,
 };

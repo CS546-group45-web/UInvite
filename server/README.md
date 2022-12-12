@@ -26,11 +26,12 @@ create a `.env` file in the root directory which is similer to `.env.example`
 
 ```json
 {
-  "first_name": "Monkey",
-  "last_name": "D Luffy",
+  "firstName": "Monkey",
+  "lastName": "D Luffy",
   "email": "luffy@gmail.com",
+  "username":"luffy"
   "password": "IamKing123",
-  "phone": "551-344-5525",
+  "phone": "5513445525",
   "dob": "06/07/2000",
   "gender": "male"
 }
@@ -76,15 +77,18 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 ```json
 {
   "_id": "6370dfbb2a6185df6e1216a2",
-  "first_name": "Monkey",
-  "last_name": "D Luffy",
+  "firstName": "Monkey",
+  "lastName": "D Luffy",
   "email": "luffy@gmail.com",
+  "username": "luffy",
   "dob": "06/07/2000",
-  "phone": "551-344-5525",
+  "phone": "5513445525",
   "gender": "male",
   "rsvped_events": [],
   "profile_photo_url": "",
-  "events_created": []
+  "events_created": [],
+  "followers": [],
+  "following": []
 }
 ```
 
@@ -137,6 +141,93 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 ```json
 {
   "message": "Password reset successfully"
+}
+```
+
+#### User
+
+#### Get User by id
+
+`GET /api/users/luffy`
+
+##### Response
+
+```json
+{
+  "_id": "6370dfbb2a6185df6e1216a2",
+  "firstName": "Monkey",
+  "lastName": "D Luffy",
+  "email": "luffy@gmail.com",
+  "username": "luffy",
+  "dob": "06/07/2000",
+  "phone": "5513445525",
+  "gender": "male",
+  "rsvped_events": [],
+  "profile_photo_url": "",
+  "events_created": [],
+  "followers": [],
+  "following": []
+}
+```
+
+<!-- user follow -->
+
+#### Follow User
+
+`POST /api/users/follow/:user_id`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "User followed successfully",
+  "data": {}
+}
+```
+
+<!-- edit user -->
+
+#### Edit User
+
+`POST /api/users/edit`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Request Body
+
+```json
+{
+  "firstName": "Money",
+  "lastName": "D Luffy",
+  "email": "luffy@gmail.com",
+  "username": "luffy",
+  "dob": "06/07/2000",
+  "phone": "5513445525",
+  "gender": "male"
+}
+```
+
+##### Response
+
+```json
+{
+  "message": "User updated successfully"
+  "data": {
+    "_id": "6370dfbb2a6185df6e1216a2",
+    "firstName": "Money",
+    "lastName": "D Luffy",
+    "email": "luffy@gmail.com",
+    "username": "luffy",
+    "dob": "06/07/2000",
+    "phone": "5513445525",
+    "gender": "male",
+    "rsvped_events": [],
+    "profile_photo_url": "",
+    "events_created": [],
+    "followers": [],
+    "following": []
 }
 ```
 

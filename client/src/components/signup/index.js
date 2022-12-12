@@ -79,10 +79,7 @@ function SignUp() {
       lastName,
       email,
       password,
-      phone: phone
-        .substr(0, 3)
-        .concat("-", phone.substr(3, 3) + "-", phone.substr(6)),
-      // phone: phone,
+      phone,
       dob: formattedToday,
       gender,
     };
