@@ -1,4 +1,5 @@
 const { ObjectId } = require('mongodb');
+const xss = require('xss');
 
 const checkInputString = (input, name) => {
   if (!input) {
@@ -11,6 +12,7 @@ const checkInputString = (input, name) => {
   if (input.length === 0) {
     throw `${name} must not be empty`;
   }
+  input = xss(input);
   return input;
 };
 const checkInputNumber = (input, name) => {
