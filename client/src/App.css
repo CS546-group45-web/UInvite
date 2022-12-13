@@ -1,8 +1,24 @@
-html,
-body {
+html {
   /* TODO: decide font for the app */
   /* font-family: monospace; */
   /* font-size: 20px; */
+}
+
+body {
+  overflow: hidden;
+}
+
+.scroller::-webkit-scrollbar {
+  width: 5px;
+}
+
+.scroller::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px #393e46;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background-color: #353a42;
+  border-radius: 4px;
 }
 
 .btn_default {

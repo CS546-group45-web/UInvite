@@ -13,9 +13,10 @@ const { v4: uuidv4 } = require('uuid');
 router.route('/signup').post(async (req, res) => {
   const user = req.body;
   try {
-    req.body.first_name = validation.checkNames(user.first_name, 'first_name');
-    req.body.last_name = validation.checkNames(user.last_name, 'last_name');
+    req.body.firstName = validation.checkNames(user.firstName, 'firstName');
+    req.body.lastName = validation.checkNames(user.lastName, 'lastName');
     req.body.email = validation.checkEmail(user.email);
+    req.body.username = validation.checkUsername(user.username);
     req.body.password = validation.checkPassword(user.password);
     req.body.phone = validation.checkPhone(user.phone);
     req.body.dob = validation.checkDate(user.dob);
@@ -28,14 +29,19 @@ router.route('/signup').post(async (req, res) => {
   try {
     const userWithEmail = await userData.getUserByEmail(req.body.email);
     if (userWithEmail) {
-      return res.status(409).json({ error: 'User already exists' });
+      return res.status(409).json({ error: 'User already exists with email' });
+    }
+    const userWithUsername = await userData.getUserByUsername(req.body.username);
+    if (userWithUsername) {
+      return res.status(409).json({ error: 'Username already exists with username' });
     }
   } catch {
     try {
       const newUser = await userData.createUser(
-        user.first_name,
-        user.last_name,
+        user.firstName,
+        user.lastName,
         user.email,
+        user.username,
         user.password,
         user.phone,
         user.dob,
@@ -44,7 +50,7 @@ router.route('/signup').post(async (req, res) => {
       const token = uuidv4();
       const token_created = await tokenData.createToken(newUser, token);
       const url = `${process.env.BASE_URL}/verify/${token}`;
-      const message = `Hello, ${user.first_name} ${user.last_name} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
+      const message = `Hello, ${user.firstName} ${user.lastName} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
       const buttonText = 'Verify Email';
       const headline = 'Verify your email address';
       console.log(url);
@@ -57,7 +63,7 @@ router.route('/signup').post(async (req, res) => {
         buttonText
       );
       return res.status(201).json({
-        message: `User ${user.first_name} ${user.last_name} created successfully`,
+        message: `User ${user.firstName} ${user.lastName} created successfully`,
       });
     } catch (e) {
       return res.status(500).json({ error: e });
@@ -140,7 +146,7 @@ router.route('/forgot').post(async (req, res) => {
     const token_created = await tokenData.createToken(found_user._id, token);
     // time compare with token_created
     const url = `${process.env.BASE_URL}/reset/${token}`;
-    const message = `Hello, ${found_user.first_name} ${found_user.last_name}! You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link to complete the process within 15 minutes of receiving it:`;
+    const message = `Hello, ${found_user.firstName} ${found_user.lastName}! You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link to complete the process within 15 minutes of receiving it:`;
     const buttonText = 'Forgot Password';
     const headline = 'Forgot Password!';
     sendEmail(user.email, 'Password Reset', message, url, headline, buttonText);

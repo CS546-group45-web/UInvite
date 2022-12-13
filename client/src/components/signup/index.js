@@ -1,11 +1,12 @@
 import React from "react";
-import { Divider, Link, MenuItem, TextField } from "@mui/material";
+import { Checkbox, Divider, Link, MenuItem, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
 import {
   // validateDate,
   emailValidation,
   nameValidation,
   passwordValidation,
+  usernameValidation,
 } from "../../utils/helper";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
@@ -19,8 +20,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { toast } from "react-toastify";
 import { signup } from "../../utils/apis/auth";
 import Loading from "../common/Loading";
+import { useNavigate } from "react-router";
 
 function SignUp() {
+  const navigate = useNavigate();
   const [signupData, setSignupData] = React.useState({});
   const [errors, setErrors] = React.useState({});
   const [passwordVisibility, setPasswordVisibility] = React.useState(false);
@@ -31,17 +34,21 @@ function SignUp() {
       return setErrors({
         firstName: true,
         lastName: true,
+        username: true,
         phone: true,
         dob: true,
         gender: true,
         email: true,
         password: true,
         cpassword: true,
+        agreedTerms: true,
       });
     }
 
     const errorObj = {};
     if (!signupData?.firstName) errorObj.firstName = true;
+    if (!signupData?.agreedTerms) errorObj.agreedTerms = true;
+    if (!signupData?.username) errorObj.username = true;
     if (!signupData?.lastName) errorObj.lastName = true;
     if (!signupData?.email) errorObj.email = true;
     if (!signupData?.phone) errorObj.phone = true;
@@ -58,8 +65,16 @@ function SignUp() {
     else setErrors({});
 
     setLoading(true);
-    const { firstName, lastName, email, phone, dob, gender, password } =
-      signupData;
+    const {
+      firstName,
+      lastName,
+      username,
+      email,
+      phone,
+      dob,
+      gender,
+      password,
+    } = signupData;
 
     const today = new Date(dob);
     const yyyy = today.getFullYear();
@@ -71,18 +86,16 @@ function SignUp() {
 
     const formattedToday = mm + "/" + dd + "/" + yyyy;
 
-    console.log(dob.$d);
+    // console.log(dob.$d);
     const apiBody = {
-      first_name: firstName,
-      last_name: lastName,
-      email: email,
-      password: password,
-      phone: phone
-        .substr(0, 3)
-        .concat("-", phone.substr(3, 3) + "-", phone.substr(6)),
-      // phone: phone,
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+      phone,
       dob: formattedToday,
-      gender: gender,
+      gender,
     };
 
     const singupInfo = await signup(apiBody);
@@ -90,7 +103,7 @@ function SignUp() {
     const { data, status } = singupInfo;
     if (status !== 201) toast.error(data?.error);
     else {
-      console.log(data, status);
+      // console.log(data, status);
       window.location.href = "/login";
     }
     setLoading(false);
@@ -113,8 +126,15 @@ function SignUp() {
   const handleClickShowPassword = () =>
     setPasswordVisibility(!passwordVisibility);
 
+  const populateDate = (currentYear, diff) => {
+    let validYear = currentYear - diff;
+    return new Date(validYear.toString()).toISOString();
+  };
+
+  // console.log(populateDate(2022));
+
   return (
-    <div className="min-h-full py-8 lg:py-6 md:py-5 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-full py-8 lg:py-2 md:py-5 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-center">
         <div className="flex items-center flex-col p-16">
           <div className="w-60">
@@ -124,7 +144,7 @@ function SignUp() {
             Create your account
           </h2>
         </div>
-        <div className="rounded-md px-4">
+        <div className="rounded-md px-4 height_signup_form">
           <div className="flex justify-between">
             <div className="mr-1 w-6/12">
               <TextField
@@ -144,7 +164,7 @@ function SignUp() {
                   errors?.firstName ? (
                     <span className="text-base flex items-center">
                       <CloseIcon fontSize="small" />
-                      Enter a valid First Name
+                      Enter a valid first name
                     </span>
                   ) : (
                     false
@@ -177,7 +197,7 @@ function SignUp() {
                   errors?.lastName ? (
                     <span className="text-base flex items-center">
                       <CloseIcon fontSize="small" />
-                      Enter a valid Last Name
+                      Enter a valid last name
                     </span>
                   ) : (
                     false
@@ -194,37 +214,74 @@ function SignUp() {
             </div>
           </div>
 
-          <TextField
-            size="small"
-            id="email"
-            label="Email"
-            variant="outlined"
-            required
-            type="email"
-            fullWidth
-            margin="dense"
-            value={signupData?.email ?? ""}
-            name="email"
-            placeholder="johndoe@example.com"
-            helperText={
-              errors?.email ? (
-                <span className="text-base flex items-center">
-                  <CloseIcon fontSize="small" />
-                  Enter a valid email
-                </span>
-              ) : (
-                false
-              )
-            }
-            error={errors?.email}
-            onChange={(e) => {
-              let { name, value } = e.target;
-              if (value === "") setError(name);
-              if (!emailValidation(value)) setError(name);
-              else removeError(name);
-              setValues(name, value);
-            }}
-          />
+          <div className="flex justify-between">
+            <div className="mr-1 w-6/12">
+              <TextField
+                size="small"
+                id="email"
+                label="Email"
+                variant="outlined"
+                required
+                type="email"
+                fullWidth
+                margin="dense"
+                value={signupData?.email ?? ""}
+                name="email"
+                placeholder="johndoe@example.com"
+                helperText={
+                  errors?.email ? (
+                    <span className="text-base flex items-center">
+                      <CloseIcon fontSize="small" />
+                      Enter a valid email
+                    </span>
+                  ) : (
+                    false
+                  )
+                }
+                error={errors?.email}
+                onChange={(e) => {
+                  let { name, value } = e.target;
+                  if (value === "") setError(name);
+                  if (!emailValidation(value)) setError(name);
+                  else removeError(name);
+                  setValues(name, value);
+                }}
+              />
+            </div>
+            <div className="ml-1 w-6/12">
+              <TextField
+                size="small"
+                id="username"
+                label="Username"
+                variant="outlined"
+                error={errors?.username}
+                required
+                fullWidth
+                type="text"
+                value={signupData?.username}
+                name="username"
+                margin="dense"
+                placeholder="johndoe"
+                helperText={
+                  errors?.username ? (
+                    <span className="text-base flex items-center">
+                      <CloseIcon fontSize="small" />
+                      Enter a valid username
+                    </span>
+                  ) : (
+                    false
+                  )
+                }
+                onChange={(e) => {
+                  let { name, value } = e.target;
+                  if (value === "") setError(name);
+                  if (!usernameValidation(value)) setError(name);
+                  else removeError(name);
+                  setValues(name, value);
+                }}
+              />
+            </div>
+          </div>
           <div className="my-1">
             <div className="flex justify-between">
               <div className="mr-1 w-6/12">
@@ -295,18 +352,34 @@ size="small"
                     setValues(name, value);
                   }}
                 /> */}
-                {/* FIXME: Fix the date error state mgmt */}
                 <div className="mt-2">
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Date of birth"
+                      disableFuture
                       inputFormat="MM/DD/YYYY"
                       value={signupData?.dob ?? null}
                       renderInput={(params) => (
-                        <TextField size="small" {...params} />
+                        // FIXME: Fix the date error styling
+                        <TextField
+                          size="small"
+                          required
+                          onKeyDown={(e) => e.preventDefault()}
+                          error={errors?.dob}
+                          helperText={
+                            errors?.dob ? (
+                              <span className="helperText__dob text-base flex items-center">
+                                <CloseIcon fontSize="small" />
+                                Enter a valid date
+                              </span>
+                            ) : (
+                              false
+                            )
+                          }
+                          {...params}
+                        />
                       )}
                       onChange={(e) => {
-                        console.log(e, typeof e);
                         if (e === null) removeError("dob");
                         setValues("dob", e);
                       }}
@@ -314,17 +387,11 @@ size="small"
                         if (e === "invalidDate") setError("dob");
                         if (e === null) removeError("dob");
                       }}
-                      maxDate={new Date().toISOString()}
-                      minDate={new Date("01/01/1950").toISOString()}
+                      maxDate={populateDate(new Date().getFullYear(), 13)}
+                      minDate={populateDate(new Date().getFullYear(), 100)}
                       openTo={"day"}
                     />
                   </LocalizationProvider>
-                  {errors?.dob && (
-                    <span className="helperText__gender text-base flex items-center ">
-                      <CloseIcon fontSize="small" />
-                      Enter a valid date
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
@@ -511,6 +578,23 @@ size="small"
             />
           </div>
 
+          <div className="flex items-center">
+            <Checkbox
+              checked={signupData?.agreedTerms}
+              onChange={(e) => {
+                setValues("agreedTerms", e.target.checked);
+                removeError("agreedTerms");
+              }}
+            />
+            <div
+              className={`text-xl${
+                errors.agreedTerms ? " text-[#d32f2f]" : ""
+              }`}
+            >
+              I have read and agreed to the terms and privacy policy.
+            </div>
+          </div>
+
           <div className="flex justify-center">
             <button
               onClick={validateData}
@@ -523,11 +607,14 @@ size="small"
           </div>
           <div className="mt-3">
             <Divider />
-            <div className="text-xl text-black">
+            <div className="text-xl text-black flex">
               Have a account? &nbsp;
-              <Link href="/login" underline="hover" color="#393e46">
+              <div
+                onClick={() => navigate("/login")}
+                className="text-[#393e46] cursor-pointer hover:underline"
+              >
                 Sign in
-              </Link>
+              </div>
             </div>
           </div>
         </div>

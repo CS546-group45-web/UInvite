@@ -18,7 +18,7 @@ export const makeApiCall = async (endpoint, method, body, headers = null) => {
           }
         : headers,
     }).then((res) => {
-      console.log({ res });
+      // console.log({ res });
       const { data, status } = res;
       results.data = data;
       results.status = status;

@@ -7,8 +7,10 @@ import SVGComponent from "../common/Logo";
 import { forgotpassword } from "../../utils/apis/auth";
 import { toast } from "react-toastify";
 import Loading from "../common/Loading";
+import { useNavigate } from "react-router";
 
 function ForgotPassword() {
+  const navigate = useNavigate();
   const [email, setEmail] = React.useState("");
   // const [passwordVisibility, setPasswordVisibility] = React.useState(false);
   const [error, setError] = React.useState(false);
@@ -100,9 +102,12 @@ function ForgotPassword() {
               <div className="pt-4">
                 <Divider />
                 <span className="text-xl">
-                  <Link href="/login" underline="hover" color="#393e46">
+                  <div
+                    onClick={() => navigate("/login")}
+                    className="text-[#393e46] cursor-pointer hover:underline "
+                  >
                     back to login
-                  </Link>
+                  </div>
                 </span>
               </div>
             </div>
