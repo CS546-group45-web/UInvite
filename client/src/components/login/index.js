@@ -48,7 +48,7 @@ function Login() {
       console.log(loginData);
       const { data, status } = loginData;
       if (status !== 200) toast.error(data?.error);
-      else {
+      else { 
         localStorage.setItem("auth", true);
         localStorage.setItem("token", data?.token);
         window.location.href = "/";
