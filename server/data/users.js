@@ -144,7 +144,6 @@ const getUserByUsername = async (username) => {
   const user = await user_collection.findOne({
     username: username,
   });
-
   if (!user) throw 'User not found';
   user._id = user._id.toString();
   delete user.hashed_password;
@@ -163,6 +162,30 @@ const addFollower = async (userId, followerId) => {
   return await getUserById(userId);
 };
 
+const unfollowUser = async (userId, followerId) => {
+  const user_collection = await users();
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $pull: { followers: followerId } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+  return await getUserById(userId);
+};
+
+const updateImageURL = async (userId, imageURL) => {
+  const user_collection = await users();
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $set: { profile_photo_url: imageURL } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+  return await getUserById(userId);
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -173,4 +196,6 @@ module.exports = {
   updateUserPassword,
   getUserByUsername,
   addFollower,
+  unfollowUser,
+  updateImageURL,
 };
