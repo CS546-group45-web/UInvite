@@ -5,60 +5,67 @@ const events = mongoCollections.events;
 const validation = require("../utils/validation");
 // const e = require("express");
 
-const createEvent = async (
-  userId,
-  eventTitle,
-  organizerName,
-  description,
-  startDateTime,
-  endDateTime,
-  address,
-  maxRsvpsCount,
-  type,
-  tags
+const createEvent = async(
+  user_id,
+event_title,
+type,
+organizer_name,
+Description,
+start_date_time,
+end_date_time,
+location,
+tags,
+pictures_allowed,
+comments_allowed,
+public_event,
+Max_rsvps_count = 1000
 ) => {
-  userId = validation.checkObjectId(userId);
-  eventTitle = validation.checkTitle(eventTitle, "eventTitle");
-  organizerName = validation.checkNames(organizerName, "organizerName");
-  description = validation.checkNames(description, "description");
-  startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
-  endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
-  address = validation.checkAdress(address, "address");
-  maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
+  /*----------------------------------------Validation begins--------------------------------------------*/
+  user_id = validation.checkObjectId(user_id);
+  event_title = validation.checkNames(event_title, "event_title");
+  organizer_name = validation.checkNames(organizer_name, "organizer_name");
+  Description = validation.checkNames(Description, "description");
+  start_date_time = validation.checkEventDate(
+      start_date_time,
+      "start_date_time");
+  end_date_time = validation.checkEventDate(
+      end_date_time, 
+      "end_date_time");
+  location = validation.checkAdress(location, "location");
+  Max_rsvps_count = validation.checkRsvpCount(
+      Max_rsvps_count,
+      "Max_rsvps_count"
+  );
   type = validation.checkEventType(type, "type");
+  pictures_allowed = validation.checkBool(pictures_allowed, "pictures_allowed");
+  comments_allowed = validation.checkBool(comments_allowed, "comments_allowed");
+  public_event = validation.checkBool(public_event, "public event");
   tags = validation.checkTags(tags, "tags");
-
+  /*----------------------------------------Validation ends--------------------------------------------*/
   const event_collection = await events();
   const newEvent = {
-    userId: ObjectId(userId),
-    eventTitle: eventTitle,
-    organizerName: organizerName,
-    description: description,
-    startDateTime: startDateTime,
-    endDateTime: endDateTime,
-    address: address,
-    date_created: new Date(),
-    maxRsvpsCount: maxRsvpsCount,
-    type: type,
-    rsvps: [],
-    waitlist: [],
-    tags: tags,
-    like_count: 0,
-    Comments: [],
-    reviews: [],
-    overallRating: 0,
+      user_id: ObjectId(user_id),
+      event_title: event_title,
+      organizer_name: organizer_name,
+      Description: Description,
+      start_date_time: start_date_time,
+      end_date_time: end_date_time,
+      location: location,
+      date_created: new Date(),
+      Max_rsvps_count: Max_rsvps_count,
+      type: type,
+      rsvps: [],
+      waitlist: [],
+      tags: tags,
+      like_count: 0,
+      Comments: [],
+      reviews: [],
+      overallRating : 0,
   };
-  let getExistingEvents = await getAllEvents();
-  if (getExistingEvents) {
-    for (elem of getExistingEvents) {
-      if (elem.eventTitle.toLowerCase() === eventTitle.toLowerCase())
-        throw `Event title ${eventTitle} already exists`;
-    }
-  }
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw "Could not add event";
-  return { Event: "Inserted Successfully." };
-};
+  return {Event : "Inserted Successfully."}
+}
 
 const updateOverallRating = async (userId) => {
   let oRating = 0;
