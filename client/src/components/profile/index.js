@@ -1,5 +1,5 @@
 import React from "react";
-import { MenuItem, TextField } from "@mui/material";
+import { MenuItem, Modal, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
 import {
   emailValidation,
@@ -14,12 +14,15 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { toast } from "react-toastify";
 import Loading from "../common/Loading";
 import IconButton from "@mui/material/IconButton";
-// import EditIcon from "@mui/icons-material/Edit";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PhoneAndroidOutlinedIcon from "@mui/icons-material/PhoneAndroidOutlined";
 import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
 import "./styles.css";
-import { editUserDetails, getUserDetails } from "../../utils/apis/user";
+import {
+  editUserDetails,
+  getUserDetails,
+  profilePhotoUpload,
+} from "../../utils/apis/user";
 import { useNavigate, useParams } from "react-router";
 import {
   capitalizeFirstLetter,
@@ -28,11 +31,11 @@ import {
 } from "../../utils/helper";
 import { PhotoCamera } from "@mui/icons-material";
 import ProfileSectionMiddle from "./profileSectionMiddle";
+import DefaultProfile from "../../assets/images/default_profile_pic.png";
 
 function Profile() {
   const params = useParams();
-
-  const navigate = useNavigate();
+  const [modalView, setModalView] = React.useState(false);
   const [editView, setEditView] = React.useState(false);
   const [errors, setErrors] = React.useState(false);
   const [userData, setUserData] = React.useState({});
@@ -53,6 +56,21 @@ function Profile() {
       setUserData(null);
     };
   }, [params]);
+
+  const handlemodalView = () => setModalView(true);
+  const handleClose = () => setModalView(false);
+
+  const uploadImage = async () => {
+    setUpdateLoading(true);
+    let formData = new FormData();
+    formData.append("profileImage", imageObj);
+
+    const data = await profilePhotoUpload(formData);
+    setUserData(data?.data?.data);
+    setImageObj(null);
+    setUpdateLoading(false);
+    handleClose();
+  };
 
   const validateData = async () => {
     if (Object.keys(updateUserData).length === 0) {
@@ -94,9 +112,7 @@ function Profile() {
     const formattedToday = mm + "/" + dd + "/" + yyyy;
 
     // console.log(dob.$d);
-    let formData = new FormData();
-    formData.append("file", imageObj);
-    // console.log({ formData });
+
     const apiBody = {
       firstName,
       lastName,
@@ -149,25 +165,95 @@ function Profile() {
       phone,
       gender,
       profile_photo_url,
-      followers = [1],
+      followers,
       following,
       rsvped_events,
       events_created,
     } = userData;
-    const username1 = "tarundadlani1";
     return (
       <div>
-        <div className="grid grid_spaces text-[#1d1f23]">
-          <div className="user_profile_picture">
+        <div className="grid grid_spaces text-[#1d1f23] mb-4">
+          <div className="user_profile_picture relative group">
             <img
               src={
-                profile_photo_url
-                  ? profile_photo_url
-                  : "https://avatars.githubusercontent.com/u/677777?v=4"
+                profile_photo_url !== ""
+                  ? process.env.REACT_APP_BASE_URL +
+                    "/images/" +
+                    profile_photo_url
+                  : DefaultProfile
               }
               alt="your profile"
             />
+            <div
+              className="w-fit hidden absolute bottom-0 right-0 group-hover:block"
+              onClick={handlemodalView}
+            >
+              <IconButton
+                color="primary"
+                aria-label="upload picture"
+                component="label"
+              >
+                <PhotoCamera />
+              </IconButton>
+            </div>
           </div>
+          <Modal
+            open={modalView}
+            onClose={() => {
+              setImageObj(null);
+              handleClose();
+            }}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <div className="profile_upload_modal">
+              <div className="user_profile_picture">
+                {imageObj && (
+                  <img
+                    src={imageObj ? URL.createObjectURL(imageObj) : null}
+                    alt="uploaded"
+                  />
+                )}
+              </div>
+              <div>
+                {imageObj ? (
+                  <div className="flex mt-4">
+                    <button className="btn_default mr-2" onClick={uploadImage}>
+                      <Loading loading={updateLoading} width={18} /> Upload
+                    </button>
+                    <button
+                      className="btn_default__cancel"
+                      onClick={() => {
+                        setImageObj(null);
+                        handleClose();
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <IconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="label"
+                    disableRipple={true}
+                  >
+                    <input
+                      hidden
+                      accept=".png, .jpg, .jpeg"
+                      type="file"
+                      onChange={(e) => {
+                        e.preventDefault();
+                        setImageObj(e.target.files[0]);
+                      }}
+                    />
+                    <PhotoCamera />
+                    upload image
+                  </IconButton>
+                )}
+              </div>
+            </div>
+          </Modal>
           <div className="py-4 px-3 text-xl">
             <div className="flex items-center text-3xl  font-bold h-[40px]">
               <span className="fullname ">
@@ -203,9 +289,6 @@ function Profile() {
             something like that
           </div>
         </div>
-
-        <div onClick={() => navigate("/profile/" + username1)}>{username1}</div>
-
         <ProfileSectionMiddle
           followers={followers}
           following={following}
@@ -462,35 +545,11 @@ function Profile() {
                     }}
                     maxDate={populateDate(new Date().getFullYear(), 13)}
                     minDate={populateDate(new Date().getFullYear(), 100)}
-                    openTo={"day"}
+                    modalViewTo={"day"}
                   />
                 </LocalizationProvider>
               </div>
             </div>
-          </div>
-          <div>
-            <div className="user_profile_picture">
-              <img
-                src={imageObj ? URL.createObjectURL(imageObj) : null}
-                alt="uploaded"
-              />
-            </div>
-            Upload photo
-            <IconButton
-              color="primary"
-              aria-label="upload picture"
-              component="label"
-            >
-              <input
-                hidden
-                accept="image/*"
-                type="file"
-                onChange={(e) => {
-                  setImageObj(e.target.files[0]);
-                }}
-              />
-              <PhotoCamera />
-            </IconButton>
           </div>
         </div>
 
