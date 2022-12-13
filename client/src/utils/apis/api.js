@@ -38,6 +38,10 @@ export const makeApiCall = async (endpoint, method, body, headers = null) => {
       error.status = response?.status;
 
       return error;
+    } else if (response?.status === 401) {
+      localStorage.removeItem("auth");
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     } else return "Something went wrong!";
   }
 };
