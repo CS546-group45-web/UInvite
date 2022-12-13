@@ -27,8 +27,12 @@ export const passwordValidation = (password) => {
 };
 
 export const nameValidation = (name) => {
-  // NOTE: should i allow two spaces and show the error or
   const regex = /^[a-zA-Z ]{2,20}$/;
+  return regex.test(name);
+};
+
+export const usernameValidation = (name) => {
+  const regex = /^[a-zA-Z0-9+_-]{6,20}$/;
   return regex.test(name);
 };
 
@@ -56,3 +60,26 @@ export const validateDate = (date) => {
   }
   return true;
 };
+
+export const fullNameFormatter = (first, last) =>
+  first?.charAt(0).toUpperCase() +
+  first?.slice(1) +
+  " " +
+  last?.charAt(0).toUpperCase() +
+  last?.slice(1);
+
+export const phoneNumberFormatter = (phone) => {
+  // 332-260-2829
+  console.log(phone);
+  return "+1".concat(
+    " (",
+    phone?.slice(0, 3),
+    ") ",
+    phone?.slice(3, 6),
+    "-",
+    phone?.slice(6)
+  );
+};
+
+export const capitalizeFirstLetter = (str) =>
+  str?.charAt(0).toUpperCase() + str?.slice(1);

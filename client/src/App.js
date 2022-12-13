@@ -15,19 +15,22 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyUser from "./components/verifyUser";
 import ResetPassword from "./components/resetPassword";
+import FollowerProfile from "./components/profile/followerProfile";
 
 function App() {
-  const isAuthenticated = () => {
-    return localStorage.getItem("auth") === "true" ? true : false;
-  };
-
   const styles = () =>
-    isAuthenticated() ? "col-span-10 px-5 py-5" : "col-span-12 px-5 py-5";
+    isAuthenticated()
+      ? "col-span-10 px-5 py-5 overflow-auto scroller"
+      : "col-span-12 px-5 py-5";
+
+  const isAuthenticated = () => {
+    return JSON.parse(localStorage.getItem("auth") === "true");
+  };
 
   return (
     <div className="App bg-gray-50 h-screen">
       <BrowserRouter>
-        <div className="grid grid-cols-12 h-full">
+        <div className="grid grid-cols-12 h-[101%]">
           {isAuthenticated() && <Nav />}
           <div className={styles()}>
             <Routes>
@@ -62,6 +65,18 @@ function App() {
                 element={
                   isAuthenticated() ? (
                     <Profile />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+
+              <Route
+                path="/profile/:username"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <FollowerProfile />
                   ) : (
                     <Navigate to="/login" replace />
                   )
