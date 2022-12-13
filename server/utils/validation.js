@@ -192,6 +192,13 @@ const checkUsername = (input) => {
   return input;
 };
 
+const checkBool = (input, permission) => {
+  if(!input || typeof input !== "boolean"){
+    throw `${permission} not a boolean`;
+  }
+  return input;
+}
+
 module.exports = {
   checkInputString,
   checkNames,
