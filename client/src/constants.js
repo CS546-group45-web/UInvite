@@ -8,7 +8,15 @@ export const genderOptions = [
     value: "female",
   },
   {
-    label: "Others",
-    value: "others",
+    label: "Non-binary",
+    value: "non-binary",
+  },
+  {
+    label: "Transgender",
+    value: "transgender",
+  },
+  {
+    label: "Prefer not to say",
+    value: "-",
   },
 ];
