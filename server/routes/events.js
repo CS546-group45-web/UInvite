@@ -4,12 +4,12 @@ const data = require("../data");
 const userData = data.users;
 const eventData = data.events;
 const validation = require("../utils/validation");
+const passport = require("passport");
 
 router
   .route("/")
-  .post(async (req, res) => {
+  .post(passport.authenticate("jwt", { session: false }), async (req, res) => {
     let {
-      userId,
       eventTitle,
       organizerName,
       description,
@@ -20,15 +20,16 @@ router
       type,
       tags,
     } = req.body;
+    let userId = req.user._id;
+    console.log(userId);
     try {
       userId = validation.checkObjectId(userId);
-      eventTitle = validation.checkNames(eventTitle, "eventTitle");
+      eventTitle = validation.checkTitle(eventTitle, "eventTitle");
       organizerName = validation.checkNames(organizerName, "organizerName");
       description = validation.checkNames(description, "description");
       startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
       endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
       address = validation.checkAdress(address, "address");
-      // console.log(maxRsvpsCount);
       maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
       type = validation.checkEventType(type, "type");
       tags = validation.checkTags(tags, "tags");

@@ -18,7 +18,7 @@ const createEvent = async (
   tags
 ) => {
   userId = validation.checkObjectId(userId);
-  eventTitle = validation.checkNames(eventTitle, "eventTitle");
+  eventTitle = validation.checkTitle(eventTitle, "eventTitle");
   organizerName = validation.checkNames(organizerName, "organizerName");
   description = validation.checkNames(description, "description");
   startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
