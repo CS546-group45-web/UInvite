@@ -61,18 +61,6 @@ router
     }
   );
 
-router.route('/:username').get(async (req, res) => {
-  try {
-    const user = await userData.getUserByUsername(req.params.username);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    return res.json(user);
-  } catch (e) {
-    return res.status(500).json({ error: e });
-  }
-});
-
 router
   .route('/follow/:id')
   .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -114,5 +102,30 @@ router
       return res.status(500).json({ error: e });
     }
   });
+
+router
+  .route('/followers')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const followers = await userData.getFollowersInformation(req.user._id);
+      return res.json({
+        message: 'Followers fetched successfully',
+        data: followers,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+router.route('/:username').get(async (req, res) => {
+  try {
+    const user = await userData.getUserByUsername(req.params.username);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    return res.json(user);
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
 
 module.exports = router;
