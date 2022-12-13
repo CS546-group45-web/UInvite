@@ -71,8 +71,8 @@ function Nav() {
                 y2="100%"
                 id="linearGradient-1"
               >
-                <stop stop-color="#FEFEFE" offset="0%" />
-                <stop stop-color="#D2D4D5" offset="100%" />
+                <stop stopColor="#FEFEFE" offset="0%" />
+                <stop stopColor="#D2D4D5" offset="100%" />
               </linearGradient>
               <linearGradient
                 x1="50%"
@@ -81,8 +81,8 @@ function Nav() {
                 y2="100%"
                 id="linearGradient-2"
               >
-                <stop stop-color="#D4D5D6" offset="0%" />
-                <stop stop-color="#FAFBFB" offset="100%" />
+                <stop stopColor="#D4D5D6" offset="0%" />
+                <stop stopColor="#FAFBFB" offset="100%" />
               </linearGradient>
               <linearGradient
                 x1="71.7%"
@@ -91,8 +91,8 @@ function Nav() {
                 y2="100%"
                 id="linearGradient-3"
               >
-                <stop stop-color="#FEFEFE" offset="0%" />
-                <stop stop-color="#D2D4D5" offset="100%" />
+                <stop stopColor="#FEFEFE" offset="0%" />
+                <stop stopColor="#D2D4D5" offset="100%" />
               </linearGradient>
               <linearGradient
                 x1="112.505%"
@@ -101,16 +101,16 @@ function Nav() {
                 y2="100%"
                 id="linearGradient-4"
               >
-                <stop stop-color="#FDFDFD" offset="0%" />
-                <stop stop-color="#D5D7D8" offset="100%" />
+                <stop stopColor="#FDFDFD" offset="0%" />
+                <stop stopColor="#D5D7D8" offset="100%" />
               </linearGradient>
             </defs>
             <g
               id="root"
               stroke="none"
-              stroke-width="1"
+              strokeWidth="1"
               fill="none"
-              fill-rule="evenodd"
+              fillRule="evenodd"
             >
               <rect
                 id="background.accent"

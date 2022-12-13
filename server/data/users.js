@@ -60,6 +60,7 @@ const getUserById = async (id) => {
   const user = await user_collection.findOne({ _id: ObjectId(id) });
   if (!user) throw 'User not found';
   user._id = user._id.toString();
+  delete user.hashed_password;
   return user;
 };
 
@@ -144,7 +145,6 @@ const getUserByUsername = async (username) => {
   const user = await user_collection.findOne({
     username: username,
   });
-
   if (!user) throw 'User not found';
   user._id = user._id.toString();
   delete user.hashed_password;
@@ -163,6 +163,46 @@ const addFollower = async (userId, followerId) => {
   return await getUserById(userId);
 };
 
+const unfollowUser = async (userId, followerId) => {
+  const user_collection = await users();
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $pull: { followers: followerId } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+  return await getUserById(userId);
+};
+
+const updateImageURL = async (userId, imageURL) => {
+  const user_collection = await users();
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $set: { profile_photo_url: imageURL } }
+  );
+  return await getUserById(userId);
+};
+
+const getFollowersInformation = async (userId) => {
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  user._id = user._id.toString();
+  // for each in followers
+  // username
+  // first name and lastname
+  // email
+  // profile picfor followers and following
+
+  const followers = [];
+  for (let i = 0; i < user.followers.length; i++) {
+    const follower = await getUserById(user.followers[i]);
+    followers.push(follower);
+  }
+  return followers;
+};
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -173,4 +213,7 @@ module.exports = {
   updateUserPassword,
   getUserByUsername,
   addFollower,
+  unfollowUser,
+  updateImageURL,
+  getFollowersInformation,
 };

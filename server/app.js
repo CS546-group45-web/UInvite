@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 passport.use(strategy);
 app.use(passport.initialize());
-
+app.use('/images', express.static('images'));
 configRoutes(app);
 app.listen(port, () => {
   console.log("We've now got a server!");

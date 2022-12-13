@@ -17,10 +17,12 @@
     "handlebars": "^4.7.7",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.11.0",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.8.0",
     "nodemon": "^2.0.20",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "xss": "^1.0.14"
   }
 }

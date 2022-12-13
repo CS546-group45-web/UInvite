@@ -31,9 +31,13 @@ router.route('/signup').post(async (req, res) => {
     if (userWithEmail) {
       return res.status(409).json({ error: 'User already exists with email' });
     }
-    const userWithUsername = await userData.getUserByUsername(req.body.username);
+    const userWithUsername = await userData.getUserByUsername(
+      req.body.username
+    );
     if (userWithUsername) {
-      return res.status(409).json({ error: 'Username already exists with username' });
+      return res
+        .status(409)
+        .json({ error: 'Username already exists with username' });
     }
   } catch {
     try {
@@ -94,14 +98,21 @@ router
           found_user.hashed_password
         );
         if (match) {
+          if (!found_user.is_verified) {
+            return res.status(400).json({ error: 'User not verified' });
+          }
           const payload = { id: found_user._id };
           const token = jwt.sign(payload, process.env.JWT_SECRET);
           return res.json({ token });
         } else {
-          return res.status(400).json({ error: 'Either the email or password is invalid'});
+          return res
+            .status(400)
+            .json({ error: 'Either the email or password is invalid' });
         }
       } else {
-        return res.status(400).json({ error: 'Either the email or password is invalid'});
+        return res
+          .status(400)
+          .json({ error: 'Either the email or password is invalid' });
       }
     } catch (e) {
       return res.status(500).json({ error: e });
