@@ -4,6 +4,7 @@ const data = require('../data');
 const userData = data.users;
 const validation = require('../utils/validation');
 const passport = require('passport');
+const upload = require('../utils/uploadImage');
 router
   .route('/edit')
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -39,6 +40,27 @@ router
     }
   });
 
+router
+  .route('/profileImage')
+  .post(
+    passport.authenticate('jwt', { session: false }),
+    upload.single('profileImage'),
+    async (req, res) => {
+      try {
+        const updatedUser = await userData.updateImageURL(
+          req.user._id,
+          req.file.filename
+        );
+        return res.json({
+          message: 'Profile image updated successfully',
+          data: updatedUser,
+        });
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+    }
+  );
+
 router.route('/:username').get(async (req, res) => {
   try {
     const user = await userData.getUserByUsername(req.params.username);
@@ -65,6 +87,27 @@ router
       );
       return res.json({
         message: 'User followed successfully',
+        data: updatedUser,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+router
+  .route('/unfollow/:id')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const user = await userData.getUserById(req.params.id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      const updatedUser = await userData.unfollowUser(
+        req.user._id,
+        req.params.id
+      );
+      return res.json({
+        message: 'User unfollowed successfully',
         data: updatedUser,
       });
     } catch (e) {
