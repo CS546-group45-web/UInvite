@@ -1,7 +1,8 @@
 import React from "react";
-import { MenuItem, Modal, TextField } from "@mui/material";
+import { Divider, MenuItem, Modal, Slider, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
 import {
+  dataURLtoFile,
   emailValidation,
   nameValidation,
   usernameValidation,
@@ -23,7 +24,6 @@ import {
   getUserDetails,
   profilePhotoUpload,
 } from "../../utils/apis/user";
-import { useNavigate, useParams } from "react-router";
 import {
   capitalizeFirstLetter,
   fullNameFormatter,
@@ -32,13 +32,16 @@ import {
 import { PhotoCamera } from "@mui/icons-material";
 import ProfileSectionMiddle from "./profileSectionMiddle";
 import DefaultProfile from "../../assets/images/default_profile_pic.png";
+import AvatarEditor from "react-avatar-editor";
 
 function Profile() {
-  const params = useParams();
+  const editorRef = React.useRef(null);
   const [modalView, setModalView] = React.useState(false);
   const [editView, setEditView] = React.useState(false);
   const [errors, setErrors] = React.useState(false);
   const [userData, setUserData] = React.useState({});
+  const [zoom, setZoom] = React.useState(1);
+  const [borderRadius, setBorderRadius] = React.useState(1);
   const [updateUserData, setUpdateUserData] = React.useState({});
   const [pageLoading, setPageLoading] = React.useState(false);
   const [updateLoading, setUpdateLoading] = React.useState(false);
@@ -52,24 +55,47 @@ function Profile() {
       setPageLoading(false);
     };
     fetchUserDetails().catch((err) => console.log({ err }));
-    return () => {
-      setUserData(null);
-    };
-  }, [params]);
+  }, []);
+
+  React.useEffect(() => {
+    console.log(userData?.profile_photo_url);
+  }, [userData?.profile_photo_url]);
 
   const handlemodalView = () => setModalView(true);
   const handleClose = () => setModalView(false);
 
   const uploadImage = async () => {
     setUpdateLoading(true);
+    const img = editorRef.current?.getImageScaledToCanvas().toDataURL();
     let formData = new FormData();
-    formData.append("profileImage", imageObj);
-
-    const data = await profilePhotoUpload(formData);
-    setUserData(data?.data?.data);
+    formData.append("profileImage", dataURLtoFile(img, userData?.username));
+    const { data } = await profilePhotoUpload(formData);
+    setUserData(null);
+    setUserData(data?.data);
     setImageObj(null);
+    setZoom(1);
+    setBorderRadius(1);
     setUpdateLoading(false);
     handleClose();
+  };
+
+  const setValues = (name, value) => {
+    setUpdateUserData({ ...updateUserData, [name]: value });
+  };
+
+  const setError = (name) => {
+    setErrors({ ...errors, [name]: true });
+  };
+
+  const removeError = (name) => {
+    const errorObj = errors;
+    delete errorObj[name];
+    setErrors(errorObj);
+  };
+
+  const populateDate = (currentYear, diff) => {
+    let validYear = currentYear - diff;
+    return new Date(validYear.toString()).toISOString();
   };
 
   const validateData = async () => {
@@ -134,27 +160,6 @@ function Profile() {
     setUpdateLoading(false);
   };
 
-  const editButton = () => {
-    return (
-      <div
-        onClick={() => {
-          setUpdateUserData(userData);
-          setEditView(!editView);
-        }}
-        className="btn_edit_profile"
-      >
-        {/* <IconButton
-          aria-label="edit your profile"
-          disableFocusRipple={true}
-          disableRipple={true}
-        > */}
-        {/* <EditIcon color="#1d1f23" fontSize="small" /> */}
-        Edit profile
-        {/* </IconButton> */}
-      </div>
-    );
-  };
-
   const ViewProfile = () => {
     const {
       firstName,
@@ -208,11 +213,50 @@ function Profile() {
           >
             <div className="profile_upload_modal">
               <div className="user_profile_picture">
+                <AvatarEditor
+                  ref={editorRef}
+                  image={
+                    imageObj ? URL.createObjectURL(imageObj) : DefaultProfile
+                  }
+                  width={280}
+                  height={280}
+                  border={1}
+                  color={[57, 62, 70]} // RGBA
+                  scale={zoom}
+                  rotate={0}
+                  borderRadius={borderRadius}
+                />
                 {imageObj && (
-                  <img
-                    src={imageObj ? URL.createObjectURL(imageObj) : null}
-                    alt="uploaded"
-                  />
+                  <div>
+                    <div className="flex align-middle mt-2">
+                      <span className="text-xl mr-2">Zoom</span>
+                      <Slider
+                        min={0}
+                        max={2}
+                        step={0.1}
+                        size="small"
+                        defaultValue={1}
+                        onChange={(e) => setZoom(e.target.value)}
+                        aria-label="Small"
+                        valueLabelDisplay="auto"
+                        track={false}
+                      />
+                    </div>
+                    <div className="flex align-middle mt-2">
+                      <span className="text-xl mr-2">Border radius</span>
+                      <Slider
+                        min={10}
+                        max={150}
+                        step={5}
+                        size="small"
+                        defaultValue={10}
+                        onChange={(e) => setBorderRadius(e.target.value)}
+                        aria-label="Small"
+                        valueLabelDisplay="auto"
+                        track={false}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
               <div>
@@ -259,7 +303,22 @@ function Profile() {
               <span className="fullname ">
                 {fullNameFormatter(firstName, lastName)}
               </span>
-              {editButton()}
+              <div
+                onClick={() => {
+                  setUpdateUserData(userData);
+                  setEditView(!editView);
+                }}
+                className="btn_edit_profile"
+              >
+                {/* <IconButton
+          aria-label="edit your profile"
+          disableFocusRipple={true}
+          disableRipple={true}
+        > */}
+                {/* <EditIcon color="#1d1f23" fontSize="small" /> */}
+                Edit profile
+                {/* </IconButton> */}
+              </div>
             </div>
             <div className="font-extralight">
               <span>@{username}</span>
@@ -566,25 +625,6 @@ function Profile() {
         </div>
       </div>
     );
-  };
-
-  const setValues = (name, value) => {
-    setUpdateUserData({ ...updateUserData, [name]: value });
-  };
-
-  const setError = (name) => {
-    setErrors({ ...errors, [name]: true });
-  };
-
-  const removeError = (name) => {
-    const errorObj = errors;
-    delete errorObj[name];
-    setErrors(errorObj);
-  };
-
-  const populateDate = (currentYear, diff) => {
-    let validYear = currentYear - diff;
-    return new Date(validYear.toString()).toISOString();
   };
 
   return (
