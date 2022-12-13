@@ -21,7 +21,6 @@ router
       tags,
     } = req.body;
     let userId = req.user._id;
-    console.log(userId);
     try {
       userId = validation.checkObjectId(userId);
       eventTitle = validation.checkTitle(eventTitle, "eventTitle");
