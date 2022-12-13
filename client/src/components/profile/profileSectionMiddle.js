@@ -4,10 +4,10 @@ import { useNavigate } from "react-router";
 function ProfileSectionMiddle(
   followers,
   following,
-  events_created,
-  rsvped_events
+  sendUnfollowRequest,sendfollowRequest
 ) {
   const navigate = useNavigate();
+
   return (
     <div className="text-[#393e46] flex mx-4">
       <div className="w-6/12 mr-2">
@@ -22,6 +22,7 @@ function ProfileSectionMiddle(
                   onClick={() => navigate("/profile/" + item.username)}
                 >
                   {item.username}
+                  <div onClick={() => sendUnfollowRequest()}>Unfollow</div>
                 </div>
               );
             })
@@ -42,6 +43,8 @@ function ProfileSectionMiddle(
                   onClick={() => navigate("/profile/" + item.username)}
                 >
                   {item.username}
+
+                  <div onClick={() => sendUnfollowRequest()}>unfollow</div>
                 </div>
               );
             })

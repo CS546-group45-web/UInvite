@@ -9,10 +9,11 @@ import {
   fullNameFormatter,
   phoneNumberFormatter,
 } from "../../utils/helper";
-import { getUserDetailsByUsername } from "../../utils/apis/user";
+import { followUser, getUserDetailsByUsername } from "../../utils/apis/user";
 import Loading from "../common/Loading";
 import { useParams } from "react-router";
 import ProfileSectionMiddle from "./profileSectionMiddle";
+import { toast } from "react-toastify";
 
 function FollowerProfile() {
   const params = useParams();
@@ -31,6 +32,14 @@ function FollowerProfile() {
       setUserData(null);
     };
   }, [params]);
+
+  const sendFollowRequest = async (id) => {
+    const followUserData = await followUser(id);
+    const { data, status } = followUserData;
+
+    if (status === 200) setUserData(data.data);
+    else toast.error("follow request failed!");
+  };
 
   return (
     <div className="flex min-h-full justify-center">
@@ -90,7 +99,12 @@ function FollowerProfile() {
                   </span>
                 </div>
                 <div className="flex items-center pt-4">
-                  <button className="btn_default__follow">Follow</button>
+                  <button
+                    className="btn_default__follow"
+                    onClick={() => sendFollowRequest(userData?._id)}
+                  >
+                    Follow
+                  </button>
                 </div>
               </div>
               <div>

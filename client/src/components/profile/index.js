@@ -20,8 +20,11 @@ import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
 import "./styles.css";
 import {
   editUserDetails,
+  followUser,
   getUserDetails,
+  getUserFolowers,
   profilePhotoUpload,
+  unfollowUser,
 } from "../../utils/apis/user";
 import { useNavigate, useParams } from "react-router";
 import {
@@ -39,23 +42,31 @@ function Profile() {
   const [editView, setEditView] = React.useState(false);
   const [errors, setErrors] = React.useState(false);
   const [userData, setUserData] = React.useState({});
+  const [userFollower, setUserFollowers] = React.useState(null);
   const [updateUserData, setUpdateUserData] = React.useState({});
   const [pageLoading, setPageLoading] = React.useState(false);
   const [updateLoading, setUpdateLoading] = React.useState(false);
   const [imageObj, setImageObj] = React.useState(null);
 
+  const getUserAllDetails = async () => {
+    const data = await getUserDetails();
+    setUserData(data.data);
+    const followers = await getUserFolowers();
+    console.log(followers);
+    setUserFollowers(followers?.data?.data);
+  };
+
   React.useEffect(() => {
     const fetchUserDetails = async () => {
       setPageLoading(true);
-      const data = await getUserDetails();
-      setUserData(data.data);
+      await getUserAllDetails();
       setPageLoading(false);
     };
     fetchUserDetails().catch((err) => console.log({ err }));
     return () => {
       setUserData(null);
     };
-  }, [params]);
+  }, []);
 
   const handlemodalView = () => setModalView(true);
   const handleClose = () => setModalView(false);
@@ -64,12 +75,28 @@ function Profile() {
     setUpdateLoading(true);
     let formData = new FormData();
     formData.append("profileImage", imageObj);
-
     const data = await profilePhotoUpload(formData);
+    console.log(data?.data?.data);
     setUserData(data?.data?.data);
     setImageObj(null);
     setUpdateLoading(false);
     handleClose();
+  };
+
+  const sendUnFollowRequest = async (id) => {
+    const unfollowUserData = await unfollowUser(id);
+    const { data, status } = unfollowUserData;
+
+    if (status === 200) setUserData(data.data);
+    else toast.error("Unfollow request failed!");
+  };
+
+  const sendFollowRequest = async (id) => {
+    const followUserData = await followUser(id);
+    const { data, status } = followUserData;
+
+    if (status === 200) setUserData(data.data);
+    else toast.error("Follow request failed!");
   };
 
   const validateData = async () => {
@@ -167,13 +194,11 @@ function Profile() {
       profile_photo_url,
       followers,
       following,
-      rsvped_events,
-      events_created,
     } = userData;
     return (
       <div>
         <div className="grid grid_spaces text-[#1d1f23] mb-4">
-          <div className="user_profile_picture relative group">
+          <div className="user_profile_picture relative">
             <img
               src={
                 profile_photo_url !== ""
@@ -185,15 +210,11 @@ function Profile() {
               alt="your profile"
             />
             <div
-              className="w-fit hidden absolute bottom-0 right-0 group-hover:block"
+              className="w-fit absolute bottom-0 right-0 scale-90 hover:scale-100"
               onClick={handlemodalView}
             >
-              <IconButton
-                color="primary"
-                aria-label="upload picture"
-                component="label"
-              >
-                <PhotoCamera />
+              <IconButton aria-label="upload picture" component="label">
+                <PhotoCamera color="#393e46" />
               </IconButton>
             </div>
           </div>
@@ -292,8 +313,8 @@ function Profile() {
         <ProfileSectionMiddle
           followers={followers}
           following={following}
-          events_created={events_created}
-          rsvped_events={rsvped_events}
+          sendUnfollowRequest={sendUnFollowRequest}
+          sendfollowRequest={sendFollowRequest}
         />
       </div>
     );
