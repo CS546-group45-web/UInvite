@@ -50,9 +50,9 @@ function Login() {
       else {
         localStorage.setItem("auth", true);
         localStorage.setItem("token", data?.token);
-        // window.location.href = "/";
+        window.location.href = "/";
 
-        setTimeout(() => navigate("/"), 2000);
+        // setTimeout(() => navigate("/"), 2000);
       } // redirect("/");
       // navigate("/");
     }
