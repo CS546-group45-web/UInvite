@@ -181,9 +181,6 @@ const updateImageURL = async (userId, imageURL) => {
     { _id: ObjectId(userId) },
     { $set: { profile_photo_url: imageURL } }
   );
-  if (updatedInfo.modifiedCount === 0) {
-    throw 'could not update user successfully';
-  }
   return await getUserById(userId);
 };
 
