@@ -2,6 +2,7 @@ const { ObjectId } = require("mongodb");
 const bcrypt = require("bcryptjs");
 const mongoCollections = require("../config/mongoCollections");
 const events = mongoCollections.events;
+const user_func = require("./users")
 const validation = require("../utils/validation");
 // const e = require("express");
 
@@ -44,6 +45,7 @@ Max_rsvps_count = 1000
   /*----------------------------------------Validation ends--------------------------------------------*/
   const event_collection = await events();
   const newEvent = {
+      _id : ObjectId(),
       user_id: ObjectId(user_id),
       event_title: event_title,
       organizer_name: organizer_name,
@@ -67,24 +69,44 @@ Max_rsvps_count = 1000
   return {Event : "Inserted Successfully."}
 }
 
-const updateOverallRating = async (userId) => {
-  let oRating = 0;
+const add_guest = async (event_id, email) => {
+  eventId = validation.checkObjectId(eventId);
+  const user = user_func.getUserByEmail(email);
   const event_collection = await events();
-  const getReviews = await event_collection.findOne({
-    _id: ObjectId(userId),
-  });
-  const { reviews } = getReviews;
-  if (reviews.length !== 0) {
-    for (review of reviews) oRating += review.rating;
-    oRating = (oRating / reviews.length).toFixed(1);
-  }
-  const reviewAdd = await event_collection.updateOne(
+  const updated_info = await event_collection.updateOne(
+    {_id : ObjectId(event_id)},
     {
-      _id: ObjectId(movieId),
+      $push : {waitlist : user},
     },
-    { $set: { overallRating: Number(oRating) } }
+    {
+      returnDocument : "after"
+    }
+  )
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not add guest successfully';
+  }
+  const user_updatedInfo = await user_func.add_event(user._id.toString(), event_id);
+  return await getEventById(event_id);
+}
+
+const user_rsvped = async (user_id, event_id) => {
+  eventId = validation.checkObjectId(eventId);
+  const event_collection = await events();
+  const user = await event_collection.findOne(
+    {"waitlist._id" : ObjectId(user_id)}
   );
-};
+  if(user === null) throw 'No user with given id';
+  const updated_info = await event_collection.updateOne(
+    {_id : ObjectId(event_id)},
+    {$pull: {waitlist : {_id : ObjectId(user_id)}}},
+    {$push: {rsvps : user}},
+    {returnDocument : "after"}
+  );
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not add user to rsvps list.';
+  }
+  return await getEventById(event_id);
+}
 
 const getAllEvents = async () => {
   const eventCollection = await events();
@@ -151,9 +173,10 @@ module.exports = {
   createEvent,
   getAllEvents,
   getEventById,
-  updateOverallRating,
   removeEvent,
   // updateEvent,
   getEventsByDate,
   getEventsByTitle,
+  user_rsvped,
+  add_guest
 };

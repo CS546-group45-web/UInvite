@@ -2,6 +2,7 @@ const { ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
+const events_func = require('./events');
 const validation = require('../utils/validation');
 
 const createUser = async (
@@ -36,6 +37,7 @@ const createUser = async (
     hashed_password: hashed_password,
     gender: gender,
     is_verified: false,
+    invited_events: [],
     rsvped_events: [],
     profile_photo_url: '',
     events_created: [],
@@ -186,6 +188,52 @@ const updateImageURL = async (userId, imageURL) => {
   return await getUserById(userId);
 };
 
+const add_event = async(userId, event_id) => {
+  const user_collection = await users();
+  const event = await events_func.getEventById(event_id);
+  const updated_info = await user_collection.updateOne(
+    {_id : ObjectId(userId)},
+    {$push : {invited_events : event}},
+    {returnDocument: "after"}
+  )
+  if(updated_info.modifiedCount ===0){
+    throw 'Could not add invited event to user successfully';
+  }
+  return await getUserById(userId);
+}
+
+const rsvp_event = async(userId, event_id) =>{
+  const user_collection = await users();
+  const event = await user_collection.findOne(
+    {"invited_events._id" : ObjectId(event_id)}
+  );
+  if(event === null) throw 'No events with given Id';
+  const updated_info = await user_collection.updateOne(
+    {_id : ObjectId(userId)},
+    {$pull : {invited_events: {_id: ObjectId(event_id)}}},
+    {$push : {rsvped_events: event}},
+    {returnDocument: "after"}
+  );
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not rsvp to event to user successfully';
+  }
+  return await getUserById(userId);
+}
+
+const user_create_event = async(userId, created_event) =>{
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    {_id : ObjectId(userId)},
+    {$push : {events_created : created_event}},
+    {returnDocument: "after"}
+  );
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not add created event to user successfully';
+  }
+  return await getUserById(userId);
+}
+
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -198,4 +246,7 @@ module.exports = {
   addFollower,
   unfollowUser,
   updateImageURL,
+  add_event,
+  rsvp_event,
+  user_create_event,
 };
