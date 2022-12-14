@@ -49,12 +49,6 @@ const createUser = async (
   return newId;
 };
 
-const getAllUsers = async () => {
-  const user_collection = await users();
-  const user_list = await user_collection.find({}).toArray();
-  return user_list;
-};
-
 const getUserById = async (id) => {
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(id) });
@@ -70,6 +64,7 @@ const getUserByEmail = async (email) => {
   const user = await user_collection.findOne({ email });
   if (!user) throw 'User not found';
   user._id = user._id.toString();
+  delete user.hashed_password;
   return user;
 };
 
@@ -222,10 +217,8 @@ const getFollowingInformation = async (userId) => {
   }
   return following;
 };
-
 module.exports = {
   createUser,
-  getAllUsers,
   getUserById,
   getUserByEmail,
   updateUser,
