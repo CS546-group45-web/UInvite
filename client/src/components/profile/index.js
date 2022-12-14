@@ -1,5 +1,5 @@
 import React from "react";
-import { Divider, MenuItem, Modal, Slider, TextField } from "@mui/material";
+import { MenuItem, Modal, Slider, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
 import {
   dataURLtoFile,
@@ -10,7 +10,6 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers";
-import "./styles.css";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { toast } from "react-toastify";
 import Loading from "../common/Loading";
@@ -21,8 +20,12 @@ import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
 import "./styles.css";
 import {
   editUserDetails,
+  followUser,
   getUserDetails,
+  getUserFollowers,
+  getUserFollowing,
   profilePhotoUpload,
+  unfollowUser,
 } from "../../utils/apis/user";
 import {
   capitalizeFirstLetter,
@@ -37,15 +40,50 @@ import AvatarEditor from "react-avatar-editor";
 function Profile() {
   const editorRef = React.useRef(null);
   const [modalView, setModalView] = React.useState(false);
-  const [editView, setEditView] = React.useState(false);
-  const [errors, setErrors] = React.useState(false);
-  const [userData, setUserData] = React.useState({});
   const [zoom, setZoom] = React.useState(1);
   const [borderRadius, setBorderRadius] = React.useState(1);
-  const [updateUserData, setUpdateUserData] = React.useState({});
+  // const demouser = {
+  //   _id: "639972ffb5f8386c8be79553",
+  //   firstName: "Tarun",
+  //   lastName: "Dadlani",
+  //   email: "tdadlani@stevens.edu",
+  //   username: "tdadlani",
+  //   dob: "06/08/1998",
+  //   phone: "3322602829",
+  //   gender: "male",
+  //   is_verified: true,
+  //   rsvped_events: [],
+  //   profile_photo_url: "",
+  //   events_created: [],
+  //   followers: [],
+  //   following: [],
+  // };
+  const [editView, setEditView] = React.useState(false);
+  const [errors, setErrors] = React.useState(false);
+  const [userData, setUserData] = React.useState(null);
+  const [userFollower, setUserFollowers] = React.useState([]);
+  const [userFollowing, setUserFollowing] = React.useState([]);
+  const [updateUserData, setUpdateUserData] = React.useState(null);
   const [pageLoading, setPageLoading] = React.useState(false);
   const [updateLoading, setUpdateLoading] = React.useState(false);
   const [imageObj, setImageObj] = React.useState(null);
+
+  const getUserAllDetails = async () => {
+    getUserDetails().then((res) => {
+      if (res.status !== 200) return toast.error(res.data.error);
+      setUserData(res?.data);
+    });
+    getUserFollowers().then((res) => {
+      const { data, status } = res;
+      if (status !== 200) return toast.error(data.error);
+      setUserFollowers(data?.data);
+    });
+    getUserFollowing().then((res) => {
+      const { data, status } = res;
+      if (status !== 200) return toast.error(data.error);
+      setUserFollowing(data?.data);
+    });
+  };
 
   React.useEffect(() => {
     const fetchUserDetails = async () => {
@@ -57,10 +95,6 @@ function Profile() {
     fetchUserDetails().catch((err) => console.log({ err }));
   }, []);
 
-  React.useEffect(() => {
-    console.log(userData?.profile_photo_url);
-  }, [userData?.profile_photo_url]);
-
   const handlemodalView = () => setModalView(true);
   const handleClose = () => setModalView(false);
 
@@ -70,8 +104,7 @@ function Profile() {
     let formData = new FormData();
     formData.append("profileImage", dataURLtoFile(img, userData?.username));
     const { data } = await profilePhotoUpload(formData);
-    setUserData(null);
-    setUserData(data?.data);
+    setUserData(data?.data?.data);
     setImageObj(null);
     setZoom(1);
     setBorderRadius(1);
@@ -96,6 +129,21 @@ function Profile() {
   const populateDate = (currentYear, diff) => {
     let validYear = currentYear - diff;
     return new Date(validYear.toString()).toISOString();
+  };
+  const sendUnFollowRequest = async (id) => {
+    const unfollowUserData = await unfollowUser(id);
+    const { status } = unfollowUserData;
+
+    if (status === 200) getUserAllDetails();
+    else toast.error("Unfollow request failed!");
+  };
+
+  const sendFollowRequest = async (id) => {
+    const followUserData = await followUser(id);
+    const { status } = followUserData;
+
+    if (status === 200) getUserAllDetails();
+    else toast.error("Follow request failed!");
   };
 
   const validateData = async () => {
@@ -136,9 +184,6 @@ function Profile() {
     if (mm < 10) mm = "0" + mm;
 
     const formattedToday = mm + "/" + dd + "/" + yyyy;
-
-    // console.log(dob.$d);
-
     const apiBody = {
       firstName,
       lastName,
@@ -170,15 +215,12 @@ function Profile() {
       phone,
       gender,
       profile_photo_url,
-      followers,
-      following,
-      rsvped_events,
-      events_created,
-    } = userData;
+      _id,
+    } = userData ?? {};
     return (
       <div>
         <div className="grid grid_spaces text-[#1d1f23] mb-4">
-          <div className="user_profile_picture relative group">
+          <div className="user_profile_picture relative">
             <img
               src={
                 profile_photo_url !== ""
@@ -190,15 +232,11 @@ function Profile() {
               alt="your profile"
             />
             <div
-              className="w-fit hidden absolute bottom-0 right-0 group-hover:block"
+              className="w-fit absolute bottom-0 right-0 scale-90 hover:scale-100"
               onClick={handlemodalView}
             >
-              <IconButton
-                color="primary"
-                aria-label="upload picture"
-                component="label"
-              >
-                <PhotoCamera />
+              <IconButton aria-label="upload picture" component="label">
+                <PhotoCamera color="#393e46" />
               </IconButton>
             </div>
           </div>
@@ -349,10 +387,11 @@ function Profile() {
           </div>
         </div>
         <ProfileSectionMiddle
-          followers={followers}
-          following={following}
-          events_created={events_created}
-          rsvped_events={rsvped_events}
+          userId={_id}
+          followers={userFollower}
+          following={userFollowing}
+          sendUnfollowRequest={sendUnFollowRequest}
+          sendfollowRequest={sendFollowRequest}
         />
       </div>
     );

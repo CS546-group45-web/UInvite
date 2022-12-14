@@ -24,7 +24,9 @@ const fileStorageEngine = multer.diskStorage({
   filename: (req, file, cb) => {
     cb(
       null,
-      req.user.username +
+      Date.now() +
+        '_' +
+        req.user.username +
         '.' +
         file.originalname.split('.')[file.originalname.split('.').length - 1]
     ); //file.originalname has accesss to the file type

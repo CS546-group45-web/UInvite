@@ -9,28 +9,65 @@ import {
   fullNameFormatter,
   phoneNumberFormatter,
 } from "../../utils/helper";
-import { getUserDetailsByUsername } from "../../utils/apis/user";
+import {
+  followUser,
+  getUserDetailsByUsername,
+  getUserFollowers,
+  getUserFollowing,
+  unfollowUser,
+} from "../../utils/apis/user";
 import Loading from "../common/Loading";
 import { useParams } from "react-router";
 import ProfileSectionMiddle from "./profileSectionMiddle";
+import { toast } from "react-toastify";
+
+import DefaultProfile from "../../assets/images/default_profile_pic.png";
 
 function FollowerProfile() {
   const params = useParams();
   const [userData, setUserData] = React.useState({});
+  const [userFollower, setUserFollowers] = React.useState(null);
+  const [userFollowing, setUserFollowing] = React.useState(null);
   const [pageLoading, setPageLoading] = React.useState(false);
 
+  const getUserAllDetails = React.useCallback(() => {
+    setPageLoading(true);
+    getUserDetailsByUsername(params?.username).then((res) => {
+      if (res.status !== 200) return toast.error(res.data.error);
+      setUserData(res?.data);
+    });
+    getUserFollowers().then((res) => {
+      const { data, status } = res;
+      if (status !== 200) return toast.error(data.error);
+      setUserFollowers(data?.data);
+    });
+    getUserFollowing().then((res) => {
+      const { data, status } = res;
+      if (status !== 200) return toast.error(data.error);
+      setUserFollowing(data?.data);
+    });
+    setPageLoading(false);
+  }, [params.username]);
+
   React.useEffect(() => {
-    const fetchUSerDetails = async () => {
-      setPageLoading(true);
-      const data = await getUserDetailsByUsername(params?.username);
-      setUserData(data.data);
-      setPageLoading(false);
-    };
-    fetchUSerDetails().catch((err) => console.log({ err }));
-    return () => {
-      setUserData(null);
-    };
-  }, [params]);
+    getUserAllDetails();
+  }, [getUserAllDetails]);
+
+  const sendUnFollowRequest = async (id) => {
+    const unfollowUserData = await unfollowUser(id);
+    const { status } = unfollowUserData;
+
+    if (status === 200) getUserAllDetails();
+    else toast.error("Unfollow request failed!");
+  };
+
+  const sendFollowRequest = async (id) => {
+    const followUserData = await followUser(id);
+    const { status } = followUserData;
+
+    if (status === 200) getUserAllDetails();
+    else toast.error("Follow request failed!");
+  };
 
   return (
     <div className="flex min-h-full justify-center">
@@ -52,8 +89,11 @@ function FollowerProfile() {
                   src={
                     userData?.profile_photo_url
                       ? userData?.profile_photo_url
-                      : "https://avatars.githubusercontent.com/u/677777?v=4"
+                      : DefaultProfile
                   }
+                  onError={(e) => {
+                    e.target.src = DefaultProfile;
+                  }}
                   alt="your profile"
                 />
               </div>
@@ -90,7 +130,12 @@ function FollowerProfile() {
                   </span>
                 </div>
                 <div className="flex items-center pt-4">
-                  <button className="btn_default__follow">Follow</button>
+                  <button
+                    className="btn_default__follow"
+                    onClick={() => sendFollowRequest(userData?._id)}
+                  >
+                    Follow
+                  </button>
                 </div>
               </div>
               <div>
@@ -99,10 +144,11 @@ function FollowerProfile() {
               </div>
             </div>
             <ProfileSectionMiddle
-              followers={userData?.followers}
-              following={userData?.following}
-              events_created={userData?.events_created}
-              rsvped_events={userData?.rsvped_events}
+              userId={userData._id}
+              followers={userFollower}
+              following={userFollowing}
+              sendUnfollowRequest={sendUnFollowRequest}
+              sendfollowRequest={sendFollowRequest}
             />
           </div>
         </div>

@@ -49,12 +49,6 @@ const createUser = async (
   return newId;
 };
 
-const getAllUsers = async () => {
-  const user_collection = await users();
-  const user_list = await user_collection.find({}).toArray();
-  return user_list;
-};
-
 const getUserById = async (id) => {
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(id) });
@@ -154,10 +148,18 @@ const getUserByUsername = async (username) => {
 const addFollower = async (userId, followerId) => {
   const user_collection = await users();
   const updatedInfo = await user_collection.updateOne(
-    { _id: ObjectId(userId) },
-    { $addToSet: { followers: followerId } }
+    { _id: ObjectId(followerId) },
+    { $addToSet: { followers: userId } }
   );
   if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+
+  const updatedInfo2 = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $addToSet: { following: followerId } }
+  );
+  if (updatedInfo2.modifiedCount === 0) {
     throw 'could not update user successfully';
   }
   return await getUserById(userId);
@@ -166,10 +168,17 @@ const addFollower = async (userId, followerId) => {
 const unfollowUser = async (userId, followerId) => {
   const user_collection = await users();
   const updatedInfo = await user_collection.updateOne(
-    { _id: ObjectId(userId) },
-    { $pull: { followers: followerId } }
+    { _id: ObjectId(followerId) },
+    { $pull: { followers: userId } }
   );
   if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+  const updatedInfo2 = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $pull: { following: followerId } }
+  );
+  if (updatedInfo2.modifiedCount === 0) {
     throw 'could not update user successfully';
   }
   return await getUserById(userId);
@@ -184,9 +193,31 @@ const updateImageURL = async (userId, imageURL) => {
   return await getUserById(userId);
 };
 
+const getFollowersInformation = async (userId) => {
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  const followers = [];
+  for (let i = 0; i < user.followers.length; i++) {
+    const follower = await getUserById(user.followers[i]);
+    followers.push(follower);
+  }
+  return followers;
+};
+
+const getFollowingInformation = async (userId) => {
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  const following = [];
+  for (let i = 0; i < user.following.length; i++) {
+    const follower = await getUserById(user.following[i]);
+    following.push(follower);
+  }
+  return following;
+};
 module.exports = {
   createUser,
-  getAllUsers,
   getUserById,
   getUserByEmail,
   updateUser,
@@ -196,4 +227,6 @@ module.exports = {
   addFollower,
   unfollowUser,
   updateImageURL,
+  getFollowersInformation,
+  getFollowingInformation,
 };

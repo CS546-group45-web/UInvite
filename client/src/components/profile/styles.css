@@ -64,3 +64,22 @@ div.grid_spaces {
   padding: 10px;
   justify-content: space-evenly;
 }
+
+.followers_list__image {
+  width: 50px;
+  aspect-ratio: 1/1;
+  border-radius: 50px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+.btn_default_following {
+  width: auto;
+  height: 38px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: #393e46;
+  font-size: 18px;
+  font-weight: 500;
+  border: 2px solid #393e46;
+}

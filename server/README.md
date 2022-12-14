@@ -144,7 +144,7 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
-#### User
+### User
 
 #### Get User by id
 
@@ -167,23 +167,6 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "events_created": [],
   "followers": [],
   "following": []
-}
-```
-
-<!-- user follow -->
-
-#### Follow User
-
-`POST /api/users/follow/:user_id`
-
-authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
-
-##### Response
-
-```json
-{
-  "message": "User followed successfully",
-  "data": {}
 }
 ```
 
@@ -231,6 +214,168 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Update Profile Image
+
+`POST http://localhost:4000/api/user/profileImage`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Request Body
+
+```json
+{
+  "profileImage": "image.jpg" // file format
+}
+```
+
+##### Response
+
+```json
+{
+  "message": "Profile image updated successfully",
+  "data": {
+    "_id": "6399516a58fe5981b404afce",
+    "firstName": "Monkey",
+    "lastName": "D Luffy",
+    "email": "manisaiprasadam@gmail.com",
+    "username": "manisaiprasad",
+    "dob": "06/07/2000",
+    "phone": "5513445525",
+    "gender": "male",
+    "is_verified": true,
+    "rsvped_events": [],
+    "profile_photo_url": "1670996736832_manisaiprasad.jpeg",
+    "events_created": [],
+    "followers": ["6397c1f87bfb3f5473fbca60"],
+    "following": ["6397c1f87bfb3f5473fbca60"]
+  }
+}
+```
+
+#### Follow User
+
+`GET /api/users/follow/:user_id`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "User followed successfully",
+  "data": {
+    "_id": "6399516a58fe5981b404afce",
+    "firstName": "Monkey",
+    "lastName": "D Luffy",
+    "email": "manisaiprasadam@gmail.com",
+    "username": "manisaiprasad",
+    "dob": "06/07/2000",
+    "phone": "5513445525",
+    "gender": "male",
+    "is_verified": true,
+    "rsvped_events": [],
+    "profile_photo_url": "",
+    "events_created": [],
+    "followers": [],
+    "following": ["6397c1f87bfb3f5473fbca60"]
+  }
+}
+```
+
+#### Follow User
+
+`GET /api/users/unfollow/:user_id`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "User followed successfully",
+  "data": {
+    "_id": "6399516a58fe5981b404afce",
+    "firstName": "Monkey",
+    "lastName": "D Luffy",
+    "email": "manisaiprasadam@gmail.com",
+    "username": "manisaiprasad",
+    "dob": "06/07/2000",
+    "phone": "5513445525",
+    "gender": "male",
+    "is_verified": true,
+    "rsvped_events": [],
+    "profile_photo_url": "",
+    "events_created": [],
+    "followers": [],
+    "following": ["6397c1f87bfb3f5473fbca60"]
+  }
+}
+```
+
+#### Followers Details
+
+`GET /api/users/followers`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "Followers fetched successfully",
+  "data": [
+    {
+      "_id": "6397c1f87bfb3f5473fbca60",
+      "firstName": "Tarun",
+      "lastName": "Dadlani",
+      "email": "tdadlani@stevens.edu",
+      "username": "tdadlani",
+      "dob": "12/03/2003",
+      "phone": "3322602829",
+      "gender": "male",
+      "is_verified": true,
+      "rsvped_events": [],
+      "profile_photo_url": "tdadlani.png",
+      "events_created": [],
+      "followers": ["6399516a58fe5981b404afce"],
+      "following": ["6399516a58fe5981b404afce"]
+    }
+  ]
+}
+```
+
+#### Get Following Details
+
+`GET /api/users/followers`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "Followers fetched successfully",
+  "data": [
+    {
+      "_id": "6397c1f87bfb3f5473fbca60",
+      "firstName": "Tarun",
+      "lastName": "Dadlani",
+      "email": "tdadlani@stevens.edu",
+      "username": "tdadlani",
+      "dob": "12/03/2003",
+      "phone": "3322602829",
+      "gender": "male",
+      "is_verified": true,
+      "rsvped_events": [],
+      "profile_photo_url": "tdadlani.png",
+      "events_created": [],
+      "followers": ["6399516a58fe5981b404afce"],
+      "following": ["6399516a58fe5981b404afce"]
+    }
+  ]
+}
+```
+
 #### Create Event
 
 `POST /api/events/create`
@@ -239,19 +384,19 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 
 ```json
 {
-  "user_id": "63785b6cfd19003dcdf3c6ee",
-  "event_title": "Dance",
-  "organizer_name": "User Name",
-  "Description": "Description",
-  "start_date_time": "2022-11-06T19:58:23.464Z",
-  "end_date_time": "2022-11-06T19:58:23.464Z",
+  "userId": "63785b6cfd19003dcdf3c6ee",
+  "eventTitle": "Dance",
+  "organizerName": "User Name",
+  "description": "description",
+  "startDateTime": "2022-11-06T19:58:23.464Z",
+  "endDateTime": "2022-11-06T19:58:23.464Z",
   "address": {
     "City": "Jersey City",
     "State": "New Jersey",
     "Country": "United States",
     "Zipcode": "07306"
   },
-  "Max_rsvps_count": "100",
+  "maxRsvpscount": "100",
   "type": "in-person",
   "tags": ["party"]
 }
