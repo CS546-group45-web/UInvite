@@ -144,7 +144,7 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
-#### User
+### User
 
 #### Get User by id
 
@@ -170,7 +170,87 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
-<!-- user follow -->
+<!-- edit user -->
+
+#### Edit User
+
+`POST /api/users/edit`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Request Body
+
+```json
+{
+  "firstName": "Money",
+  "lastName": "D Luffy",
+  "email": "luffy@gmail.com",
+  "username": "luffy",
+  "dob": "06/07/2000",
+  "phone": "5513445525",
+  "gender": "male"
+}
+```
+
+##### Response
+
+```json
+{
+  "message": "User updated successfully"
+  "data": {
+    "_id": "6370dfbb2a6185df6e1216a2",
+    "firstName": "Money",
+    "lastName": "D Luffy",
+    "email": "luffy@gmail.com",
+    "username": "luffy",
+    "dob": "06/07/2000",
+    "phone": "5513445525",
+    "gender": "male",
+    "rsvped_events": [],
+    "profile_photo_url": "",
+    "events_created": [],
+    "followers": [],
+    "following": []
+}
+```
+
+#### Update Profile Image
+
+`POST http://localhost:4000/api/user/profileImage`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Request Body
+
+```json
+{
+  "profileImage": "image.jpg" // file format
+}
+```
+
+##### Response
+
+```json
+{
+  "message": "Profile image updated successfully",
+  "data": {
+    "_id": "6399516a58fe5981b404afce",
+    "firstName": "Monkey",
+    "lastName": "D Luffy",
+    "email": "manisaiprasadam@gmail.com",
+    "username": "manisaiprasad",
+    "dob": "06/07/2000",
+    "phone": "5513445525",
+    "gender": "male",
+    "is_verified": true,
+    "rsvped_events": [],
+    "profile_photo_url": "1670996736832_manisaiprasad.jpeg",
+    "events_created": [],
+    "followers": ["6397c1f87bfb3f5473fbca60"],
+    "following": ["6397c1f87bfb3f5473fbca60"]
+  }
+}
+```
 
 #### Follow User
 
@@ -293,50 +373,6 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
       "following": ["6399516a58fe5981b404afce"]
     }
   ]
-}
-```
-
-<!-- edit user -->
-
-#### Edit User
-
-`POST /api/users/edit`
-
-authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
-
-##### Request Body
-
-```json
-{
-  "firstName": "Money",
-  "lastName": "D Luffy",
-  "email": "luffy@gmail.com",
-  "username": "luffy",
-  "dob": "06/07/2000",
-  "phone": "5513445525",
-  "gender": "male"
-}
-```
-
-##### Response
-
-```json
-{
-  "message": "User updated successfully"
-  "data": {
-    "_id": "6370dfbb2a6185df6e1216a2",
-    "firstName": "Money",
-    "lastName": "D Luffy",
-    "email": "luffy@gmail.com",
-    "username": "luffy",
-    "dob": "06/07/2000",
-    "phone": "5513445525",
-    "gender": "male",
-    "rsvped_events": [],
-    "profile_photo_url": "",
-    "events_created": [],
-    "followers": [],
-    "following": []
 }
 ```
 
