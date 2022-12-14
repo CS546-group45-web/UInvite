@@ -68,10 +68,8 @@ export const fullNameFormatter = (first, last) =>
   last?.charAt(0).toUpperCase() +
   last?.slice(1);
 
-export const phoneNumberFormatter = (phone) => {
-  // 332-260-2829
-  console.log(phone);
-  return "+1".concat(
+export const phoneNumberFormatter = (phone) =>
+  "+1".concat(
     " (",
     phone?.slice(0, 3),
     ") ",
@@ -79,7 +77,6 @@ export const phoneNumberFormatter = (phone) => {
     "-",
     phone?.slice(6)
   );
-};
 
 export const capitalizeFirstLetter = (str) =>
   str?.charAt(0).toUpperCase() + str?.slice(1);

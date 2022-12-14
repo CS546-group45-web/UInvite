@@ -198,10 +198,9 @@ const checkUsername = (input) => {
   }
   return input;
 };
-
-const checkBool = (input, permission) =>{
+const checkBool = (input, permission) => {
   if(!input || typeof input !== "boolean"){
-    throw `${permission} is not a boolean.`;
+    throw `${permission} not a boolean`;
   }
   return input;
 }
