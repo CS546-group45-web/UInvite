@@ -131,6 +131,30 @@ router
     }
   });
 
+router.route('/followers/:userId').get(async (req, res) => {
+  try {
+    const followers = await userData.getFollowersInformation(req.params.userId);
+    return res.json({
+      message: 'Followers fetched successfully',
+      data: followers,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
+router.route('/following/:userId').get(async (req, res) => {
+  try {
+    const following = await userData.getFollowingInformation(req.params.userId);
+    return res.json({
+      message: 'following fetched successfully',
+      data: following,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
 router.route('/:username').get(async (req, res) => {
   try {
     req.params.username = validation.checkUsername(req.params.username);
