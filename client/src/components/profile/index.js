@@ -42,22 +42,6 @@ function Profile() {
   const [modalView, setModalView] = React.useState(false);
   const [zoom, setZoom] = React.useState(1);
   const [borderRadius, setBorderRadius] = React.useState(1);
-  // const demouser = {
-  //   _id: "639972ffb5f8386c8be79553",
-  //   firstName: "Tarun",
-  //   lastName: "Dadlani",
-  //   email: "tdadlani@stevens.edu",
-  //   username: "tdadlani",
-  //   dob: "06/08/1998",
-  //   phone: "3322602829",
-  //   gender: "male",
-  //   is_verified: true,
-  //   rsvped_events: [],
-  //   profile_photo_url: "",
-  //   events_created: [],
-  //   followers: [],
-  //   following: [],
-  // };
   const [editView, setEditView] = React.useState(false);
   const [errors, setErrors] = React.useState(false);
   const [userData, setUserData] = React.useState(null);
@@ -68,27 +52,36 @@ function Profile() {
   const [updateLoading, setUpdateLoading] = React.useState(false);
   const [imageObj, setImageObj] = React.useState(null);
 
-  const getUserAllDetails = async () => {
+  const getUserAllDetails = async (showLoader = false) => {
+    showLoader && setPageLoading(true);
     getUserDetails().then((res) => {
       if (res.status !== 200) return toast.error(res.data.error);
       setUserData(res?.data);
-    });
-    getUserFollowers().then((res) => {
-      const { data, status } = res;
-      if (status !== 200) return toast.error(data.error);
-      setUserFollowers(data?.data);
-    });
-    getUserFollowing().then((res) => {
-      const { data, status } = res;
-      if (status !== 200) return toast.error(data.error);
-      setUserFollowing(data?.data);
+      getUserFollowers().then((res) => {
+        const { data, status } = res;
+        if (status !== 200) return toast.error(data.error);
+        setUserFollowers(data?.data);
+      });
+      getUserFollowing().then((res) => {
+        const { data, status } = res;
+        if (status !== 200) return toast.error(data.error);
+        setUserFollowing(data?.data);
+        setPageLoading(false);
+      });
     });
   };
 
   React.useEffect(() => {
-    setPageLoading(true);
-    getUserAllDetails().catch((err) => toast.error(err));
-    setPageLoading(false);
+    getUserAllDetails(true).catch((err) => toast.error(err));
+    return () => {
+      setUserData(null);
+      setImageObj(null);
+      setUserFollowing(null);
+      setUserFollowers(null);
+      setZoom(1);
+      setBorderRadius(1);
+      setUpdateLoading(false);
+    };
   }, []);
 
   const handlemodalView = () => setModalView(true);
@@ -344,14 +337,7 @@ function Profile() {
                 }}
                 className="btn_edit_profile"
               >
-                {/* <IconButton
-          aria-label="edit your profile"
-          disableFocusRipple={true}
-          disableRipple={true}
-        > */}
-                {/* <EditIcon color="#1d1f23" fontSize="small" /> */}
                 Edit profile
-                {/* </IconButton> */}
               </div>
             </div>
             <div className="font-extralight">
@@ -377,17 +363,16 @@ function Profile() {
               <span className="pl-2">{phoneNumberFormatter(phone)}</span>
             </div>
           </div>
-          <div>
-            Some insights could come here like number of events, follows or
-            something like that
-          </div>
+          <div>Some insights like #events, #follows, #followers</div>
         </div>
         <ProfileSectionMiddle
           userId={_id}
+          loggedInUserId={_id}
           followers={userFollower}
           following={userFollowing}
           sendUnfollowRequest={sendUnFollowRequest}
           sendfollowRequest={sendFollowRequest}
+          showFollowerFollowButtons={true}
         />
       </div>
     );

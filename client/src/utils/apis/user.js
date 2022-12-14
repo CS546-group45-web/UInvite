@@ -21,3 +21,8 @@ export const getUserFollowers = async () =>
 
 export const getUserFollowing = async () =>
   await makeApiCall("/api/user/following", "get");
+export const getOtherUserFollowersById = async (id) =>
+  await makeApiCall("/api/user/followers/" + id, "get");
+
+export const getOtherUserFollowing = async (id) =>
+  await makeApiCall("/api/user/following/" + id, "get");
