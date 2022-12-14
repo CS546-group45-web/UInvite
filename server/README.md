@@ -174,7 +174,7 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 
 #### Follow User
 
-`POST /api/users/follow/:user_id`
+`GET /api/users/follow/:user_id`
 
 authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
 
@@ -183,7 +183,116 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 ```json
 {
   "message": "User followed successfully",
-  "data": {}
+  "data": {
+    "_id": "6399516a58fe5981b404afce",
+    "firstName": "Monkey",
+    "lastName": "D Luffy",
+    "email": "manisaiprasadam@gmail.com",
+    "username": "manisaiprasad",
+    "dob": "06/07/2000",
+    "phone": "5513445525",
+    "gender": "male",
+    "is_verified": true,
+    "rsvped_events": [],
+    "profile_photo_url": "",
+    "events_created": [],
+    "followers": [],
+    "following": ["6397c1f87bfb3f5473fbca60"]
+  }
+}
+```
+
+#### Follow User
+
+`GET /api/users/unfollow/:user_id`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "User followed successfully",
+  "data": {
+    "_id": "6399516a58fe5981b404afce",
+    "firstName": "Monkey",
+    "lastName": "D Luffy",
+    "email": "manisaiprasadam@gmail.com",
+    "username": "manisaiprasad",
+    "dob": "06/07/2000",
+    "phone": "5513445525",
+    "gender": "male",
+    "is_verified": true,
+    "rsvped_events": [],
+    "profile_photo_url": "",
+    "events_created": [],
+    "followers": [],
+    "following": ["6397c1f87bfb3f5473fbca60"]
+  }
+}
+```
+
+#### Followers Details
+
+`GET /api/users/followers`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "Followers fetched successfully",
+  "data": [
+    {
+      "_id": "6397c1f87bfb3f5473fbca60",
+      "firstName": "Tarun",
+      "lastName": "Dadlani",
+      "email": "tdadlani@stevens.edu",
+      "username": "tdadlani",
+      "dob": "12/03/2003",
+      "phone": "3322602829",
+      "gender": "male",
+      "is_verified": true,
+      "rsvped_events": [],
+      "profile_photo_url": "tdadlani.png",
+      "events_created": [],
+      "followers": ["6399516a58fe5981b404afce"],
+      "following": ["6399516a58fe5981b404afce"]
+    }
+  ]
+}
+```
+
+#### Get Following Details
+
+`GET /api/users/followers`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "Followers fetched successfully",
+  "data": [
+    {
+      "_id": "6397c1f87bfb3f5473fbca60",
+      "firstName": "Tarun",
+      "lastName": "Dadlani",
+      "email": "tdadlani@stevens.edu",
+      "username": "tdadlani",
+      "dob": "12/03/2003",
+      "phone": "3322602829",
+      "gender": "male",
+      "is_verified": true,
+      "rsvped_events": [],
+      "profile_photo_url": "tdadlani.png",
+      "events_created": [],
+      "followers": ["6399516a58fe5981b404afce"],
+      "following": ["6399516a58fe5981b404afce"]
+    }
+  ]
 }
 ```
 
