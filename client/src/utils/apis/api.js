@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 // const baseUrl = "http://localhost:4000/";
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -25,18 +26,17 @@ export const makeApiCall = async (endpoint, method, body, headers = null) => {
     return results;
   } catch (err) {
     const { response } = err;
-    if (errosStatusCodes.includes(response?.status)) {
-      let error = {};
-      error.data = response?.data;
-      error.status = response?.status;
-      return error;
-    }
-    if (response?.status === 401) {
-      localStorage.removeItem("auth");
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-      return;
-    }
-    return "Something went wrong!";
+    if (errosStatusCodes.includes(response?.status))
+      return toast.error(response?.data?.error);
+    if (response?.status === 401) setTimeout(logoutUser, 3000);
+    toast.error("Something went wrong!");
+    setTimeout(logoutUser, 4000);
   }
+};
+
+const logoutUser = () => {
+  localStorage.removeItem("auth");
+  localStorage.removeItem("token");
+  window.location.href = "/login";
+  return;
 };
