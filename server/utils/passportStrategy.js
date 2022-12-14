@@ -11,7 +11,6 @@ const opts = {
 
 const strategy = new JWTStrategy(opts, (payload, done) => {
   users.getUserById(payload.id).then((user) => {
-    console.log(user);
     if (user) {
       done(null, user);
     } else {
