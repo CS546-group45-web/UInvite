@@ -77,8 +77,8 @@ const checkDate = (input) => {
 const checkGender = (input) => {
   input = checkInputString(input, 'Gender');
   input = input.toLowerCase();
-  if (!/^(male|female|other)$/.test(input)) {
-    throw 'Gender should be male/female or others';
+  if (!/^(male|female|non-binary|transgender|-)$/.test(input)) {
+    throw 'Please select a valid Gender';
   }
   return input;
 };
@@ -189,15 +189,19 @@ const checkUsername = (input) => {
   if (!/^[a-zA-Z0-9]+$/.test(input)) {
     throw 'Username must contain only letters and numbers';
   }
+  if (input.length < 6) {
+    throw 'Username must contain at least 6 characters ';
+  }
+  input = input.toLowerCase();
   return input;
 };
 
 const checkBool = (input, permission) => {
-  if(!input || typeof input !== "boolean"){
+  if (!input || typeof input !== 'boolean') {
     throw `${permission} not a boolean`;
   }
   return input;
-}
+};
 
 module.exports = {
   checkInputString,
