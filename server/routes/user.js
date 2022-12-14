@@ -69,7 +69,7 @@ router
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
-      const updatedUser = await userData.followUser(
+      const updatedUser = await userData.addFollower(
         req.user._id,
         req.params.id
       );
@@ -117,6 +117,12 @@ router
     }
   });
 router.route('/:username').get(async (req, res) => {
+  try {
+    req.params.username = validation.checkUsername(req.params.username);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+
   try {
     const user = await userData.getUserByUsername(req.params.username);
     if (!user) {
