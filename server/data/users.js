@@ -203,13 +203,24 @@ const getFollowersInformation = async (userId) => {
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(userId) });
   if (!user) throw 'User not found';
-  user._id = user._id.toString();
   const followers = [];
   for (let i = 0; i < user.followers.length; i++) {
     const follower = await getUserById(user.followers[i]);
     followers.push(follower);
   }
   return followers;
+};
+
+const getFollowingInformation = async (userId) => {
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  const following = [];
+  for (let i = 0; i < user.following.length; i++) {
+    const follower = await getUserById(user.following[i]);
+    following.push(follower);
+  }
+  return following;
 };
 
 module.exports = {
@@ -225,4 +236,5 @@ module.exports = {
   unfollowUser,
   updateImageURL,
   getFollowersInformation,
+  getFollowingInformation,
 };
