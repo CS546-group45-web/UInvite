@@ -80,3 +80,18 @@ export const phoneNumberFormatter = (phone) =>
 
 export const capitalizeFirstLetter = (str) =>
   str?.charAt(0).toUpperCase() + str?.slice(1);
+
+export const getFormattedDate = (date) => {
+  date = new Date(date).toISOString();
+  console.log(date);
+
+  return (
+    date.split("T")[0].replaceAll("-", "/") +
+    " " +
+    date.split("T")[1].substr(0, 5)
+  );
+};
+
+export const getAddressFormatted = (address) => {
+  return address?.street + ", " + address?.City + ", " + address?.Zipcode;
+};
