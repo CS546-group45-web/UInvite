@@ -1,7 +1,8 @@
 import React from "react";
-import { MenuItem, Modal, TextField } from "@mui/material";
+import { MenuItem, Modal, Slider, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
 import {
+  dataURLtoFile,
   emailValidation,
   nameValidation,
   usernameValidation,
@@ -9,7 +10,6 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers";
-import "./styles.css";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { toast } from "react-toastify";
 import Loading from "../common/Loading";
@@ -20,10 +20,13 @@ import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
 import "./styles.css";
 import {
   editUserDetails,
+  followUser,
   getUserDetails,
+  getUserFollowers,
+  getUserFollowing,
   profilePhotoUpload,
+  unfollowUser,
 } from "../../utils/apis/user";
-import { useNavigate, useParams } from "react-router";
 import {
   capitalizeFirstLetter,
   fullNameFormatter,
@@ -32,44 +35,111 @@ import {
 import { PhotoCamera } from "@mui/icons-material";
 import ProfileSectionMiddle from "./profileSectionMiddle";
 import DefaultProfile from "../../assets/images/default_profile_pic.png";
+import AvatarEditor from "react-avatar-editor";
 
 function Profile() {
-  const params = useParams();
+  const editorRef = React.useRef(null);
   const [modalView, setModalView] = React.useState(false);
+  const [zoom, setZoom] = React.useState(1);
+  const [borderRadius, setBorderRadius] = React.useState(1);
+  // const demouser = {
+  //   _id: "639972ffb5f8386c8be79553",
+  //   firstName: "Tarun",
+  //   lastName: "Dadlani",
+  //   email: "tdadlani@stevens.edu",
+  //   username: "tdadlani",
+  //   dob: "06/08/1998",
+  //   phone: "3322602829",
+  //   gender: "male",
+  //   is_verified: true,
+  //   rsvped_events: [],
+  //   profile_photo_url: "",
+  //   events_created: [],
+  //   followers: [],
+  //   following: [],
+  // };
   const [editView, setEditView] = React.useState(false);
   const [errors, setErrors] = React.useState(false);
-  const [userData, setUserData] = React.useState({});
-  const [updateUserData, setUpdateUserData] = React.useState({});
+  const [userData, setUserData] = React.useState(null);
+  const [userFollower, setUserFollowers] = React.useState([]);
+  const [userFollowing, setUserFollowing] = React.useState([]);
+  const [updateUserData, setUpdateUserData] = React.useState(null);
   const [pageLoading, setPageLoading] = React.useState(false);
   const [updateLoading, setUpdateLoading] = React.useState(false);
   const [imageObj, setImageObj] = React.useState(null);
 
+  const getUserAllDetails = async () => {
+    getUserDetails().then((res) => {
+      if (res.status !== 200) return toast.error(res.data.error);
+      setUserData(res?.data);
+    });
+    getUserFollowers().then((res) => {
+      const { data, status } = res;
+      if (status !== 200) return toast.error(data.error);
+      setUserFollowers(data?.data);
+    });
+    getUserFollowing().then((res) => {
+      const { data, status } = res;
+      if (status !== 200) return toast.error(data.error);
+      setUserFollowing(data?.data);
+    });
+  };
+
   React.useEffect(() => {
-    const fetchUserDetails = async () => {
-      setPageLoading(true);
-      const data = await getUserDetails();
-      setUserData(data.data);
-      setPageLoading(false);
-    };
-    fetchUserDetails().catch((err) => console.log({ err }));
-    return () => {
-      setUserData(null);
-    };
-  }, [params]);
+    setPageLoading(true);
+    getUserAllDetails().catch((err) => toast.error(err));
+    setPageLoading(false);
+  }, []);
 
   const handlemodalView = () => setModalView(true);
   const handleClose = () => setModalView(false);
 
   const uploadImage = async () => {
     setUpdateLoading(true);
+    const img = editorRef.current?.getImageScaledToCanvas().toDataURL();
     let formData = new FormData();
-    formData.append("profileImage", imageObj);
-
-    const data = await profilePhotoUpload(formData);
-    setUserData(data?.data?.data);
+    formData.append("profileImage", dataURLtoFile(img, userData?.username));
+    const { data } = await profilePhotoUpload(formData);
+    setUserData(data?.data);
     setImageObj(null);
+    setZoom(1);
+    setBorderRadius(1);
     setUpdateLoading(false);
     handleClose();
+  };
+
+  const setValues = (name, value) => {
+    setUpdateUserData({ ...updateUserData, [name]: value });
+  };
+
+  const setError = (name) => {
+    setErrors({ ...errors, [name]: true });
+  };
+
+  const removeError = (name) => {
+    const errorObj = errors;
+    delete errorObj[name];
+    setErrors(errorObj);
+  };
+
+  const populateDate = (currentYear, diff) => {
+    let validYear = currentYear - diff;
+    return new Date(validYear.toString()).toISOString();
+  };
+  const sendUnFollowRequest = async (id) => {
+    const unfollowUserData = await unfollowUser(id);
+    const { status } = unfollowUserData;
+
+    if (status === 200) getUserAllDetails();
+    else toast.error("Unfollow request failed!");
+  };
+
+  const sendFollowRequest = async (id) => {
+    const followUserData = await followUser(id);
+    const { status } = followUserData;
+
+    if (status === 200) getUserAllDetails();
+    else toast.error("Follow request failed!");
   };
 
   const validateData = async () => {
@@ -110,9 +180,6 @@ function Profile() {
     if (mm < 10) mm = "0" + mm;
 
     const formattedToday = mm + "/" + dd + "/" + yyyy;
-
-    // console.log(dob.$d);
-
     const apiBody = {
       firstName,
       lastName,
@@ -134,27 +201,6 @@ function Profile() {
     setUpdateLoading(false);
   };
 
-  const editButton = () => {
-    return (
-      <div
-        onClick={() => {
-          setUpdateUserData(userData);
-          setEditView(!editView);
-        }}
-        className="btn_edit_profile"
-      >
-        {/* <IconButton
-          aria-label="edit your profile"
-          disableFocusRipple={true}
-          disableRipple={true}
-        > */}
-        {/* <EditIcon color="#1d1f23" fontSize="small" /> */}
-        Edit profile
-        {/* </IconButton> */}
-      </div>
-    );
-  };
-
   const ViewProfile = () => {
     const {
       firstName,
@@ -165,15 +211,12 @@ function Profile() {
       phone,
       gender,
       profile_photo_url,
-      followers,
-      following,
-      rsvped_events,
-      events_created,
-    } = userData;
+      _id,
+    } = userData ?? {};
     return (
       <div>
         <div className="grid grid_spaces text-[#1d1f23] mb-4">
-          <div className="user_profile_picture relative group">
+          <div className="user_profile_picture relative">
             <img
               src={
                 profile_photo_url !== ""
@@ -185,15 +228,11 @@ function Profile() {
               alt="your profile"
             />
             <div
-              className="w-fit hidden absolute bottom-0 right-0 group-hover:block"
+              className="w-fit absolute bottom-0 right-0 scale-90 hover:scale-100"
               onClick={handlemodalView}
             >
-              <IconButton
-                color="primary"
-                aria-label="upload picture"
-                component="label"
-              >
-                <PhotoCamera />
+              <IconButton aria-label="upload picture" component="label">
+                <PhotoCamera color="#393e46" />
               </IconButton>
             </div>
           </div>
@@ -208,11 +247,50 @@ function Profile() {
           >
             <div className="profile_upload_modal">
               <div className="user_profile_picture">
+                <AvatarEditor
+                  ref={editorRef}
+                  image={
+                    imageObj ? URL.createObjectURL(imageObj) : DefaultProfile
+                  }
+                  width={280}
+                  height={280}
+                  border={1}
+                  color={[57, 62, 70]} // RGBA
+                  scale={zoom}
+                  rotate={0}
+                  borderRadius={borderRadius}
+                />
                 {imageObj && (
-                  <img
-                    src={imageObj ? URL.createObjectURL(imageObj) : null}
-                    alt="uploaded"
-                  />
+                  <div>
+                    <div className="flex align-middle mt-2">
+                      <span className="text-xl mr-2">Zoom</span>
+                      <Slider
+                        min={0}
+                        max={2}
+                        step={0.1}
+                        size="small"
+                        defaultValue={1}
+                        onChange={(e) => setZoom(e.target.value)}
+                        aria-label="Small"
+                        valueLabelDisplay="auto"
+                        track={false}
+                      />
+                    </div>
+                    <div className="flex align-middle mt-2">
+                      <span className="text-xl mr-2">Border radius</span>
+                      <Slider
+                        min={10}
+                        max={150}
+                        step={5}
+                        size="small"
+                        defaultValue={10}
+                        onChange={(e) => setBorderRadius(e.target.value)}
+                        aria-label="Small"
+                        valueLabelDisplay="auto"
+                        track={false}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
               <div>
@@ -259,7 +337,22 @@ function Profile() {
               <span className="fullname ">
                 {fullNameFormatter(firstName, lastName)}
               </span>
-              {editButton()}
+              <div
+                onClick={() => {
+                  setUpdateUserData(userData);
+                  setEditView(!editView);
+                }}
+                className="btn_edit_profile"
+              >
+                {/* <IconButton
+          aria-label="edit your profile"
+          disableFocusRipple={true}
+          disableRipple={true}
+        > */}
+                {/* <EditIcon color="#1d1f23" fontSize="small" /> */}
+                Edit profile
+                {/* </IconButton> */}
+              </div>
             </div>
             <div className="font-extralight">
               <span>@{username}</span>
@@ -290,10 +383,11 @@ function Profile() {
           </div>
         </div>
         <ProfileSectionMiddle
-          followers={followers}
-          following={following}
-          events_created={events_created}
-          rsvped_events={rsvped_events}
+          userId={_id}
+          followers={userFollower}
+          following={userFollowing}
+          sendUnfollowRequest={sendUnFollowRequest}
+          sendfollowRequest={sendFollowRequest}
         />
       </div>
     );
@@ -566,25 +660,6 @@ function Profile() {
         </div>
       </div>
     );
-  };
-
-  const setValues = (name, value) => {
-    setUpdateUserData({ ...updateUserData, [name]: value });
-  };
-
-  const setError = (name) => {
-    setErrors({ ...errors, [name]: true });
-  };
-
-  const removeError = (name) => {
-    const errorObj = errors;
-    delete errorObj[name];
-    setErrors(errorObj);
-  };
-
-  const populateDate = (currentYear, diff) => {
-    let validYear = currentYear - diff;
-    return new Date(validYear.toString()).toISOString();
   };
 
   return (

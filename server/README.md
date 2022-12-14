@@ -376,6 +376,68 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Followers Details by user id
+
+`GET /api/users/followers/639972ffb5f8386c8be79553`
+
+##### Response
+
+```json
+{
+  "message": "Followers fetched successfully",
+  "data": [
+    {
+      "_id": "63997c767721a9d370c35712",
+      "firstName": "Mani Sai Prasad",
+      "lastName": "Masupalli",
+      "email": "manisaiprasadam@gmail.com",
+      "username": "manisai",
+      "dob": "06/07/2000",
+      "phone": "5513445525",
+      "gender": "female",
+      "is_verified": true,
+      "rsvped_events": [],
+      "profile_photo_url": "1671004157669_manisai.jpg",
+      "events_created": [],
+      "followers": [],
+      "following": ["639972ffb5f8386c8be79553", "63997d7bb5f8386c8be79555"]
+    }
+  ]
+}
+```
+
+#### Following Details by userid
+
+`GET /api/users/following/639972ffb5f8386c8be79553`
+
+##### Response
+
+```json
+{
+  "message": "Following fetched successfully",
+  "data": [
+    {
+      "_id": "63997c767721a9d370c35712",
+      "firstName": "Mani Sai Prasad",
+      "lastName": "Masupalli",
+      "email": "manisaiprasadam@gmail.com",
+      "username": "manisai",
+      "dob": "06/07/2000",
+      "phone": "5513445525",
+      "gender": "female",
+      "is_verified": true,
+      "rsvped_events": [],
+      "profile_photo_url": "1671004157669_manisai.jpg",
+      "events_created": [],
+      "followers": [],
+      "following": ["639972ffb5f8386c8be79553", "63997d7bb5f8386c8be79555"]
+    }
+  ]
+}
+```
+
+### Events
+
 #### Create Event
 
 `POST /api/events/create`

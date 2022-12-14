@@ -103,8 +103,10 @@ function SignUp() {
     const { data, status } = singupInfo;
     if (status !== 201) toast.error(data?.error);
     else {
-      // console.log(data, status);
-      window.location.href = "/login";
+      toast.success(
+        "User registered successfully. Please check your inbox to verify your account."
+      );
+      setTimeout(() => navigate("/"), 4000);
     }
     setLoading(false);
   };
@@ -130,8 +132,6 @@ function SignUp() {
     let validYear = currentYear - diff;
     return new Date(validYear.toString()).toISOString();
   };
-
-  // console.log(populateDate(2022));
 
   return (
     <div className="min-h-full py-8 lg:py-2 md:py-5 px-4 sm:px-6 lg:px-8">
@@ -318,40 +318,6 @@ function SignUp() {
                 />
               </div>
               <div className="ml-1 w-6/12">
-                {/* <TextField
-size="small"
-                  id="dob"
-                  label="Date of birth"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  margin="dense"
-                  name="dob"
-                  placeholder="07/27/1998"
-                  value={signupData?.dob ?? ""}
-                  error={errors?.dob}
-                  helperText={
-                    errors?.dob ? (
-                      <span className="text-base flex items-center">
-                        <CloseIcon fontSize="small" />
-                        Enter a valid date
-                      </span>
-                    ) : (
-                      false
-                    )
-                  }
-                  onChange={(e) => {
-                    console.log(e);
-                    let { name, value } = e.target;
-                    if (value.trim() === "") setError(name);
-
-                    if (!validateDate(value)) setError(name);
-                    else removeError(name);
-                    if (value.length > 2) value += "/";
-                    if (value.length > 5) value += "/";
-                    setValues(name, value);
-                  }}
-                /> */}
                 <div className="mt-2">
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
@@ -360,7 +326,6 @@ size="small"
                       inputFormat="MM/DD/YYYY"
                       value={signupData?.dob ?? null}
                       renderInput={(params) => (
-                        // FIXME: Fix the date error styling
                         <TextField
                           size="small"
                           required
@@ -440,7 +405,6 @@ size="small"
               variant="outlined"
               required
               fullWidth
-              // type="password"
               type={passwordVisibility ? "text" : "password"}
               margin="dense"
               name="password"
@@ -452,6 +416,13 @@ size="small"
                 if (value === "") setError(name);
                 if (!passwordValidation(value)) setError(name);
                 else removeError(name);
+                if (
+                  signupData?.cpassword &&
+                  signupData?.cpassword !== "" &&
+                  value !== signupData?.cpassword
+                )
+                  setError("cpassword");
+                else removeError("cpassword");
                 setValues(name, value);
               }}
             />
