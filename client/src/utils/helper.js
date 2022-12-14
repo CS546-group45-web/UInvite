@@ -32,7 +32,7 @@ export const nameValidation = (name) => {
 };
 
 export const usernameValidation = (name) => {
-  const regex = /^[a-zA-Z0-9+_-]{6,20}$/;
+  const regex = /^[a-zA-Z0-9]{6,20}$/;
   return regex.test(name);
 };
 
