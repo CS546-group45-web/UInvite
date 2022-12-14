@@ -116,6 +116,21 @@ router
       return res.status(500).json({ error: e });
     }
   });
+
+router
+  .route('/following')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const following = await userData.getFollowingInformation(req.user._id);
+      return res.json({
+        message: 'following fetched successfully',
+        data: following,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
 router.route('/:username').get(async (req, res) => {
   try {
     req.params.username = validation.checkUsername(req.params.username);
