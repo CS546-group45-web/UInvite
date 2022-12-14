@@ -86,13 +86,9 @@ function Profile() {
   };
 
   React.useEffect(() => {
-    const fetchUserDetails = async () => {
-      setPageLoading(true);
-      const data = await getUserDetails();
-      setUserData(data.data);
-      setPageLoading(false);
-    };
-    fetchUserDetails().catch((err) => console.log({ err }));
+    setPageLoading(true);
+    getUserAllDetails().catch((err) => toast.error(err));
+    setPageLoading(false);
   }, []);
 
   const handlemodalView = () => setModalView(true);
@@ -104,7 +100,7 @@ function Profile() {
     let formData = new FormData();
     formData.append("profileImage", dataURLtoFile(img, userData?.username));
     const { data } = await profilePhotoUpload(formData);
-    setUserData(data?.data?.data);
+    setUserData(data?.data);
     setImageObj(null);
     setZoom(1);
     setBorderRadius(1);
