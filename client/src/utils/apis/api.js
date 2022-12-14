@@ -3,7 +3,7 @@ import axios from "axios";
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const jwtToken = localStorage.getItem("token") ?? null;
-
+const errosStatusCodes = [500, 409, 404, 400];
 export const makeApiCall = async (endpoint, method, body, headers = null) => {
   let results = {};
   try {
@@ -18,30 +18,25 @@ export const makeApiCall = async (endpoint, method, body, headers = null) => {
           }
         : headers,
     }).then((res) => {
-      // console.log({ res });
       const { data, status } = res;
       results.data = data;
       results.status = status;
     });
     return results;
   } catch (err) {
-    // console.log({ err });
     const { response } = err;
-    if (
-      response?.status === 500 ||
-      response?.status === 409 ||
-      response?.status === 404 ||
-      response?.status === 400
-    ) {
+    if (errosStatusCodes.includes(response?.status)) {
       let error = {};
       error.data = response?.data;
       error.status = response?.status;
-
       return error;
-    } else if (response?.status === 401) {
+    }
+    if (response?.status === 401) {
       localStorage.removeItem("auth");
       localStorage.removeItem("token");
       window.location.href = "/login";
-    } else return "Something went wrong!";
+      return;
+    }
+    return "Something went wrong!";
   }
 };

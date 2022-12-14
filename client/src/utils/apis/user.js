@@ -1,6 +1,7 @@
 import { makeApiCall } from "./api";
 
-export const getUserDetails = async () => await makeApiCall("/api/auth", "get");
+export const getUserDetails = async () => makeApiCall("/api/auth", "get");
+
 export const getUserDetailsByUsername = async (username) =>
   await makeApiCall("/api/user/" + username, "get");
 export const editUserDetails = async (body) =>
@@ -15,5 +16,8 @@ export const followUser = async (id) =>
 export const unfollowUser = async (id) =>
   await makeApiCall("/api/user/unfollow/" + id, "get");
 
-export const getUserFolowers = async () =>
+export const getUserFollowers = async () =>
   await makeApiCall("/api/user/followers", "get");
+
+export const getUserFollowing = async () =>
+  await makeApiCall("/api/user/following", "get");

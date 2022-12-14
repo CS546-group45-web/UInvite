@@ -9,7 +9,6 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers";
-import "./styles.css";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { toast } from "react-toastify";
 import Loading from "../common/Loading";
@@ -22,11 +21,11 @@ import {
   editUserDetails,
   followUser,
   getUserDetails,
-  getUserFolowers,
+  getUserFollowers,
+  getUserFollowing,
   profilePhotoUpload,
   unfollowUser,
 } from "../../utils/apis/user";
-import { useNavigate, useParams } from "react-router";
 import {
   capitalizeFirstLetter,
   fullNameFormatter,
@@ -37,35 +36,54 @@ import ProfileSectionMiddle from "./profileSectionMiddle";
 import DefaultProfile from "../../assets/images/default_profile_pic.png";
 
 function Profile() {
-  const params = useParams();
+  // const demouser = {
+  //   _id: "639972ffb5f8386c8be79553",
+  //   firstName: "Tarun",
+  //   lastName: "Dadlani",
+  //   email: "tdadlani@stevens.edu",
+  //   username: "tdadlani",
+  //   dob: "06/08/1998",
+  //   phone: "3322602829",
+  //   gender: "male",
+  //   is_verified: true,
+  //   rsvped_events: [],
+  //   profile_photo_url: "",
+  //   events_created: [],
+  //   followers: [],
+  //   following: [],
+  // };
   const [modalView, setModalView] = React.useState(false);
   const [editView, setEditView] = React.useState(false);
   const [errors, setErrors] = React.useState(false);
-  const [userData, setUserData] = React.useState({});
-  const [userFollower, setUserFollowers] = React.useState(null);
-  const [updateUserData, setUpdateUserData] = React.useState({});
+  const [userData, setUserData] = React.useState(null);
+  const [userFollower, setUserFollowers] = React.useState([]);
+  const [userFollowing, setUserFollowing] = React.useState([]);
+  const [updateUserData, setUpdateUserData] = React.useState(null);
   const [pageLoading, setPageLoading] = React.useState(false);
   const [updateLoading, setUpdateLoading] = React.useState(false);
   const [imageObj, setImageObj] = React.useState(null);
 
   const getUserAllDetails = async () => {
-    const data = await getUserDetails();
-    setUserData(data.data);
-    const followers = await getUserFolowers();
-    console.log(followers);
-    setUserFollowers(followers?.data?.data);
+    getUserDetails().then((res) => {
+      if (res.status !== 200) return toast.error(res.data.error);
+      setUserData(res?.data);
+    });
+    getUserFollowers().then((res) => {
+      const { data, status } = res;
+      if (status !== 200) return toast.error(data.error);
+      setUserFollowers(data?.data);
+    });
+    getUserFollowing().then((res) => {
+      const { data, status } = res;
+      if (status !== 200) return toast.error(data.error);
+      setUserFollowing(data?.data);
+    });
   };
 
   React.useEffect(() => {
-    const fetchUserDetails = async () => {
-      setPageLoading(true);
-      await getUserAllDetails();
-      setPageLoading(false);
-    };
-    fetchUserDetails().catch((err) => console.log({ err }));
-    return () => {
-      setUserData(null);
-    };
+    setPageLoading(true);
+    getUserAllDetails().catch((err) => toast.error(err));
+    setPageLoading(false);
   }, []);
 
   const handlemodalView = () => setModalView(true);
@@ -85,17 +103,17 @@ function Profile() {
 
   const sendUnFollowRequest = async (id) => {
     const unfollowUserData = await unfollowUser(id);
-    const { data, status } = unfollowUserData;
+    const { status } = unfollowUserData;
 
-    if (status === 200) setUserData(data.data);
+    if (status === 200) getUserAllDetails();
     else toast.error("Unfollow request failed!");
   };
 
   const sendFollowRequest = async (id) => {
     const followUserData = await followUser(id);
-    const { data, status } = followUserData;
+    const { status } = followUserData;
 
-    if (status === 200) setUserData(data.data);
+    if (status === 200) getUserAllDetails();
     else toast.error("Follow request failed!");
   };
 
@@ -137,9 +155,6 @@ function Profile() {
     if (mm < 10) mm = "0" + mm;
 
     const formattedToday = mm + "/" + dd + "/" + yyyy;
-
-    // console.log(dob.$d);
-
     const apiBody = {
       firstName,
       lastName,
@@ -192,9 +207,8 @@ function Profile() {
       phone,
       gender,
       profile_photo_url,
-      followers,
-      following,
-    } = userData;
+      _id,
+    } = userData ?? {};
     return (
       <div>
         <div className="grid grid_spaces text-[#1d1f23] mb-4">
@@ -311,8 +325,9 @@ function Profile() {
           </div>
         </div>
         <ProfileSectionMiddle
-          followers={followers}
-          following={following}
+          userId={_id}
+          followers={userFollower}
+          following={userFollowing}
           sendUnfollowRequest={sendUnFollowRequest}
           sendfollowRequest={sendFollowRequest}
         />
