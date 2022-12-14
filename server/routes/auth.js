@@ -31,46 +31,47 @@ router.route('/signup').post(async (req, res) => {
     if (userWithEmail) {
       return res.status(409).json({ error: 'User already exists with email' });
     }
-    const userWithUsername = await userData.getUserByUsername(
-      req.body.username
-    );
-    if (userWithUsername) {
-      return res
-        .status(409)
-        .json({ error: 'Username already exists with username' });
-    }
   } catch {
     try {
-      const newUser = await userData.createUser(
-        user.firstName,
-        user.lastName,
-        user.email,
-        user.username,
-        user.password,
-        user.phone,
-        user.dob,
-        user.gender
+      const userWithUsername = await userData.getUserByUsername(
+        req.body.username
       );
-      const token = uuidv4();
-      const token_created = await tokenData.createToken(newUser, token);
-      const url = `${process.env.BASE_URL}/verify/${token}`;
-      const message = `Hello, ${user.firstName} ${user.lastName} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
-      const buttonText = 'Verify Email';
-      const headline = 'Verify your email address';
-      console.log(url);
-      sendEmail(
-        user.email,
-        'Welcome to Uinvite!',
-        message,
-        url,
-        headline,
-        buttonText
-      );
-      return res.status(201).json({
-        message: `User ${user.firstName} ${user.lastName} created successfully`,
-      });
+      if (userWithUsername) {
+        return res.status(409).json({ error: 'Username already taken' });
+      }
     } catch (e) {
-      return res.status(500).json({ error: e });
+      try {
+        const newUser = await userData.createUser(
+          user.firstName,
+          user.lastName,
+          user.email,
+          user.username,
+          user.password,
+          user.phone,
+          user.dob,
+          user.gender
+        );
+        const token = uuidv4();
+        const token_created = await tokenData.createToken(newUser, token);
+        const url = `${process.env.BASE_URL}/verify/${token}`;
+        const message = `Hello, ${user.firstName} ${user.lastName} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
+        const buttonText = 'Verify Email';
+        const headline = 'Verify your email address';
+        console.log(url);
+        sendEmail(
+          user.email,
+          'Welcome to Uinvite!',
+          message,
+          url,
+          headline,
+          buttonText
+        );
+        return res.status(201).json({
+          message: `User ${user.firstName} ${user.lastName} created successfully`,
+        });
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
     }
   }
 });
