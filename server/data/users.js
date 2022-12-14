@@ -154,10 +154,18 @@ const getUserByUsername = async (username) => {
 const addFollower = async (userId, followerId) => {
   const user_collection = await users();
   const updatedInfo = await user_collection.updateOne(
-    { _id: ObjectId(userId) },
-    { $addToSet: { followers: followerId } }
+    { _id: ObjectId(followerId) },
+    { $addToSet: { followers: userId } }
   );
   if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+
+  const updatedInfo2 = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $addToSet: { following: followerId } }
+  );
+  if (updatedInfo2.modifiedCount === 0) {
     throw 'could not update user successfully';
   }
   return await getUserById(userId);
@@ -166,10 +174,17 @@ const addFollower = async (userId, followerId) => {
 const unfollowUser = async (userId, followerId) => {
   const user_collection = await users();
   const updatedInfo = await user_collection.updateOne(
-    { _id: ObjectId(userId) },
-    { $pull: { followers: followerId } }
+    { _id: ObjectId(followerId) },
+    { $pull: { followers: userId } }
   );
   if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+  const updatedInfo2 = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $pull: { following: followerId } }
+  );
+  if (updatedInfo2.modifiedCount === 0) {
     throw 'could not update user successfully';
   }
   return await getUserById(userId);
@@ -189,12 +204,6 @@ const getFollowersInformation = async (userId) => {
   const user = await user_collection.findOne({ _id: ObjectId(userId) });
   if (!user) throw 'User not found';
   user._id = user._id.toString();
-  // for each in followers
-  // username
-  // first name and lastname
-  // email
-  // profile picfor followers and following
-
   const followers = [];
   for (let i = 0; i < user.followers.length; i++) {
     const follower = await getUserById(user.followers[i]);

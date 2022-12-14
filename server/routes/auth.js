@@ -142,7 +142,6 @@ router.route('/verify/:token').get(async (req, res) => {
 
 router.route('/forgot').post(async (req, res) => {
   const user = req.body;
-  console.log(user);
   try {
     req.body.email = validation.checkEmail(user.email);
   } catch (e) {
