@@ -101,8 +101,10 @@ const updateUser = async (
     { _id: ObjectId(id) },
     { $set: updatedUser }
   );
-  if (updatedInfo.modifiedCount === 0) {
-    throw 'could not update user successfully';
+  if (updatedInfo.modifiedCount === 0 && updatedInfo.matchedCount !== 0) {
+    throw 'No changes are made';
+  } else {
+    throw 'Could not update user';
   }
 
   return await getUserById(id);
