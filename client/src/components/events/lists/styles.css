@@ -1,7 +1,7 @@
 .event_banner {
-  width: inherit;
-  aspect-ratio: 2/1;
-  object-fit: contain;
+  width: 400px;
+  aspect-ratio: 2/1.5;
+  /* object-fit: contain; */
   border-radius: 4px;
   height: inherit;
   margin-top: 5px;
@@ -9,6 +9,40 @@
 
 .tags_chip {
   color: #393e67 !important;
-  border: 2px solid #393e67 !important;
-  font-weight: 900;
+  border: 1px solid #393e67 !important;
+  /* font-weight: 900; */
+  font-size: 15px !important;
+}
+
+.event_description {
+  width: 450px;
+  overflow: hidden;
+  white-space: pre-wrap;
+  text-overflow: ellipsis;
+  max-width: 470px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.event_desc:first-letter {
+  margin-left: 12px;
+  text-transform: capitalize;
+  font-weight: lighter;
+  font-size: 35px;
+}
+
+.event_desc {
+  font-size: 20px;
+  text-align: justify;
+}
+
+.event_page_top {
+  position: fixed;
+  background-color: white;
+  top: 0px;
+  border-bottom: 1px solid #393e4638;
+  width: -webkit-fill-available;
+  padding: 0px 0px 8px 0px;
+  margin: 15px 20px 0px -5px;
 }

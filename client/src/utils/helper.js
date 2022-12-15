@@ -8,7 +8,6 @@ export const emailValidation = (email) => {
 };
 
 // this function will return true if password is correct or else will return an error
-// NOTE: Think about more cases to make password strong
 export const passwordValidation = (password) => {
   if (!password) return false;
   // password = password.trim();

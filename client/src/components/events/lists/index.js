@@ -1,6 +1,7 @@
 import React from "react";
+import { getAllEventsForHomePage } from "../../../utils/apis/event";
 import EventCard from "./eventCard";
-import SearchBar from "./searchBar";
+// import SearchBar from "./searchBar";
 import "./styles.css";
 
 function EventsList() {
@@ -8,7 +9,8 @@ function EventsList() {
     user_id: "manisaiprasad",
     event_id: "78323302ecff990845f53729e24b43ab",
     Name: "DancePeChance",
-    Description: "Dance competition",
+    Description:
+      "We are so excited to be hosting our very first dance competition! This competition is open to all pupils in our school and will be taking place during the month of October. The competition will consist of a variety of dances including modern, salsa, ballroom, and country dances. There will be a total of 4 competitions which will be held on different days. The first competition will be held on the 8th of October and the last competition will be held on the 22nd of October.",
     start_date_time: "2022-12-08T19:58:23.464Z",
     end_date_time: "2022-12-12T19:58:23.464Z",
     address: {
@@ -52,10 +54,16 @@ function EventsList() {
   };
   const [events, setEvents] = React.useState([sample, sample, sample]);
 
+  React.useEffect(() => {
+    getAllEventsForHomePage().then((res) => {
+      console.log(res);
+    });
+  }, []);
+
   const eventsList = () => {
     return (
-      <div>
-        {events.map((event) => (
+      <div className="">
+        {events?.map((event) => (
           <EventCard event={event} />
         ))}
       </div>
@@ -64,10 +72,10 @@ function EventsList() {
 
   return (
     <div className="w-full">
-      <div className="fixed ">
+      {/* <div className="fixed">
         <SearchBar />
-      </div>
-      <div className="pt-12 max-h-screen">{eventsList()}</div>
+      </div> */}
+      {eventsList()}
     </div>
   );
 }
