@@ -2,7 +2,6 @@ import React from "react";
 import { Checkbox, Divider, Link, MenuItem, TextField } from "@mui/material";
 import { genderOptions } from "../../constants";
 import {
-  // validateDate,
   emailValidation,
   nameValidation,
   passwordValidation,
