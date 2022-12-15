@@ -26,7 +26,7 @@ const createEvent = async (
 
   const event_collection = await events();
   const newEvent = {
-    user_id: userId,
+    userId: userId,
     eventTitle: eventTitle,
     description: description,
     startDateTime: startDateTime,
@@ -101,7 +101,6 @@ const getAllEvents = async () => {
       element.lastName = userData.lastName;
       element.profile_photo_url = userData.profile_photo_url;
     } catch (e) {
-      console.log(e);
       throw e;
     }
   }

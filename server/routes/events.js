@@ -69,8 +69,12 @@ router
     }
   )
   .get(async (req, res) => {
-    const event = await eventData.getAllEvents();
-    return res.json({ message: 'events fetched', data: event });
+    try {
+      const event = await eventData.getAllEvents();
+      return res.json({ message: 'events fetched', data: event });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
   });
 
 router
