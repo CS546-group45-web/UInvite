@@ -446,21 +446,18 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 
 ```json
 {
+  {
   "userId": "63785b6cfd19003dcdf3c6ee",
-  "eventTitle": "Dance",
+  "eventTitle": "LetsNachos121",
   "organizerName": "User Name",
   "description": "description",
   "startDateTime": "2022-11-06T19:58:23.464Z",
   "endDateTime": "2022-11-06T19:58:23.464Z",
-  "address": {
-    "City": "Jersey City",
-    "State": "New Jersey",
-    "Country": "United States",
-    "Zipcode": "07306"
-  },
-  "maxRsvpscount": "100",
+  "address": "Jersey City,New Jersey ,United States,07306",
+  "maxRsvpsCount": "100",
   "type": "in-person",
   "tags": ["party"]
+}
 }
 ```
 

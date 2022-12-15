@@ -28,7 +28,7 @@ router
       description = validation.checkNames(description, "description");
       startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
       endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
-      address = validation.checkAdress(address, "address");
+      address = validation.checkInputString(address, "address");
       maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
       type = validation.checkEventType(type, "type");
       tags = validation.checkTags(tags, "tags");
