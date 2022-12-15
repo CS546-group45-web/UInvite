@@ -46,23 +46,20 @@ function Login() {
     if (Object.keys(errorObj).length === 0) {
       const loginData = await login(userData);
       const { data, status } = loginData;
-      if (status !== 200) toast.error(data?.error);
-      else {
+      if (status !== 200) {
+        console.log("2");
+        toast.error(data?.error);
+      } else {
         localStorage.setItem("auth", true);
         localStorage.setItem("token", data?.token);
         window.location.href = "/";
-
-        // setTimeout(() => navigate("/"), 2000);
-      } // redirect("/");
-      // navigate("/");
+      }
     }
     setLoading(false);
   };
 
   const handleClickShowPassword = () =>
     setPasswordVisibility(!passwordVisibility);
-
-  React.useEffect(() => {}, []);
 
   return (
     <div className="flex min-h-full justify-center items-center py-8 lg:py-6 md:py-5 px-4 sm:px-6 lg:px-8">
