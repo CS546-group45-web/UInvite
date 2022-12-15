@@ -438,6 +438,40 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+<!--
+Get User created events
+ -->
+
+#### Get User created events
+
+`GET /api/user/createdEvents`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "Created events fetched",
+  "data": [
+    {
+      "_id": "639aed8983d3e120e7494c19",
+      "eventTitle": "Danceee",
+      "dateCreated": "2022-12-15T09:48:57.931Z",
+      "rsvps": [],
+      "tags": ["party", "18+"]
+    },
+    {
+      "_id": "639aee5874e2a3341b949a64",
+      "eventTitle": "Danceee",
+      "dateCreated": "2022-12-15T09:52:24.532Z",
+      "rsvps": [],
+      "tags": ["party", "18+"]
+    }
+  ]
+}
+```
+
 ### Events
 
 #### Create Event

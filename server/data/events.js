@@ -66,26 +66,6 @@ const getAllUpcomingEvents = async () => {
   return events_list;
 };
 
-const add_guest = async (eventId, email) => {
-  eventId = validation.checkObjectId(eventId);
-  const user = await getUserByEmail(email);
-  const event_collection = await events();
-  const updated_info = await event_collection.updateOne(
-    { _id: ObjectId(eventId) },
-    {
-      $push: { waitlist: user },
-    },
-    {
-      returnDocument: 'after',
-    }
-  );
-  if (updated_info.modifiedCount === 0) {
-    throw 'Could not add guest successfully';
-  }
-  await add_event(user._id.toString(), eventId);
-  return await getEventById(eventId);
-};
-
 const getAllEvents = async () => {
   const eventCollection = await events();
   const events_list = await eventCollection.find({}).toArray();
@@ -95,7 +75,7 @@ const getAllEvents = async () => {
   for (const element of events_list) {
     element._id = element._id.toString();
     try {
-      let userData = await user.getUserById(element.userId);
+      let userData = await user.getUserById(element?.userId.toString());
       element.username = userData.username;
       element.firstName = userData.firstName;
       element.lastName = userData.lastName;
@@ -111,7 +91,7 @@ const getEventById = async (event_id) => {
   event_id = validation.checkObjectId(event_id);
   const eventCollection = await events();
   const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
-  if (event === null) throw new Error('No event with that id');
+  if (!event) throw 'No event with that id';
   event._id = event._id.toString();
   const userData = await user.getUserById(event.userId);
   event.username = userData.username;
@@ -119,6 +99,43 @@ const getEventById = async (event_id) => {
   event.lastName = userData.lastName;
   event.profile_photo_url = userData.profile_photo_url;
   return event;
+};
+
+const getEventMinById = async (event_id) => {
+  event_id = validation.checkObjectId(event_id);
+  const eventCollection = await events();
+  const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
+  if (!event) throw 'Event not found';
+  event._id = event._id.toString();
+  // only neeed eventTitle, dateCreated, rsvps, tags
+  const eventMin = {
+    _id: event._id,
+    eventTitle: event.eventTitle,
+    dateCreated: event.dateCreated,
+    rsvps: event.rsvps,
+    tags: event.tags,
+  };
+  return eventMin;
+};
+
+// rsvp to event
+const rsvp = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const event_collection = await events();
+  const updated_info = await event_collection.updateOne(
+    { _id: ObjectId(eventId) },
+    {
+      $push: { rsvps: userId },
+    },
+    {
+      returnDocument: 'after',
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'could not rsvp';
+  }
+  await user.addrsvpEvent(userId, eventId);
+  return await getEventById(eventId);
 };
 
 const getEventsByTitle = async (title) => {
@@ -167,8 +184,9 @@ module.exports = {
   getAllUpcomingEvents,
   getAllEvents,
   getEventById,
+  getEventMinById,
   removeEvent,
   getEventsByDate,
   getEventsByTitle,
-  add_guest,
+  rsvp,
 };
