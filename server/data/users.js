@@ -40,7 +40,7 @@ const createUser = async (
     invited_events: [],
     rsvped_events: [],
     profile_photo_url: '',
-    events_created: [],
+    eventsCreated: [],
     followers: [],
     following: [],
   };
@@ -221,6 +221,18 @@ const getFollowingInformation = async (userId) => {
   return following;
 };
 
+const addCreatedEvent = async (userId, eventId) => {
+  const user_collection = await users();
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $addToSet: { eventsCreated: eventId } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
+  }
+  return await getUserById(userId);
+};
+
 module.exports = {
   createUser,
   getUserById,
@@ -234,4 +246,5 @@ module.exports = {
   updateImageURL,
   getFollowingInformation,
   getFollowersInformation,
+  addCreatedEvent,
 };
