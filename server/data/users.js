@@ -2,9 +2,8 @@ const { ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
-const events = mongoCollections.events;
 const validation = require('../utils/validation');
-
+const events = require('./events');
 const createUser = async (
   firstName,
   lastName,
@@ -221,6 +220,24 @@ const getFollowingInformation = async (userId) => {
   return following;
 };
 
+const getCreatedEvents = async (userId) => {
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  const eventsCreated = [];
+  for (let i = 0; i < user?.eventsCreated.length; i++) {
+    try {
+      let eventData = await events.getEventMinById(
+        user?.eventsCreated[i].toString()
+      );
+      eventsCreated.push(eventData);
+    } catch (e) {
+      throw e;
+    }
+  }
+  return eventsCreated;
+};
+
 const addCreatedEvent = async (userId, eventId) => {
   const user_collection = await users();
   const updatedInfo = await user_collection.updateOne(
@@ -247,4 +264,5 @@ module.exports = {
   getFollowingInformation,
   getFollowersInformation,
   addCreatedEvent,
+  getCreatedEvents,
 };

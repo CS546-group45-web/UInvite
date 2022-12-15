@@ -175,6 +175,21 @@ router.route('/following/:userId').get(async (req, res) => {
   }
 });
 
+// get createdEvents
+router
+  .route('/createdEvents')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const createdEvents = await userData.getCreatedEvents(req.user._id);
+      return res.json({
+        message: 'Created events fetched',
+        data: createdEvents,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
 router.route('/:username').get(async (req, res) => {
   try {
     req.params.username = validation.checkUsername(req.params.username);

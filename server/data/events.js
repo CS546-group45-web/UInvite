@@ -111,7 +111,7 @@ const getEventById = async (event_id) => {
   event_id = validation.checkObjectId(event_id);
   const eventCollection = await events();
   const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
-  if (event === null) throw new Error('No event with that id');
+  if (!event) throw 'No event with that id';
   event._id = event._id.toString();
   const userData = await user.getUserById(event.userId);
   event.username = userData.username;
@@ -119,6 +119,23 @@ const getEventById = async (event_id) => {
   event.lastName = userData.lastName;
   event.profile_photo_url = userData.profile_photo_url;
   return event;
+};
+
+const getEventMinById = async (event_id) => {
+  event_id = validation.checkObjectId(event_id);
+  const eventCollection = await events();
+  const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
+  if (!event) throw 'Event not found';
+  event._id = event._id.toString();
+  // only neeed eventTitle, dateCreated, rsvps, tags
+  const eventMin = {
+    _id: event._id,
+    eventTitle: event.eventTitle,
+    dateCreated: event.dateCreated,
+    rsvps: event.rsvps,
+    tags: event.tags,
+  };
+  return eventMin;
 };
 
 const getEventsByTitle = async (title) => {
@@ -167,6 +184,7 @@ module.exports = {
   getAllUpcomingEvents,
   getAllEvents,
   getEventById,
+  getEventMinById,
   removeEvent,
   getEventsByDate,
   getEventsByTitle,
