@@ -9,15 +9,10 @@ function ProfileSectionMiddle({
   following,
   sendUnfollowRequest,
   sendfollowRequest,
+  showFollowerFollowButtons = false,
+  loggedInUserId,
 }) {
   const navigate = useNavigate();
-  // console.log({
-  //   userId,
-  //   followers,
-  //   following,
-  //   sendUnfollowRequest,
-  //   sendfollowRequest,
-  // });
   return (
     <div className="text-[#393e46] flex mx-4">
       <div className="w-6/12 mr-2">
@@ -34,11 +29,19 @@ function ProfileSectionMiddle({
                 followers,
               } = item;
               return (
-                <div className="flex justify-between text-xl items-center mx-1">
+                <div
+                  key={_id}
+                  className="flex justify-between text-xl items-center mx-1"
+                >
                   <div
-                    key={_id}
                     className="cursor-pointer flex items-center"
-                    onClick={() => navigate("/profile/" + username)}
+                    onClick={() =>
+                      navigate(
+                        loggedInUserId === _id
+                          ? "/profile"
+                          : "/profile/" + username
+                      )
+                    }
                   >
                     <img
                       className="followers_list__image"
@@ -61,7 +64,8 @@ function ProfileSectionMiddle({
                       </div>
                     </div>
                   </div>
-                  {followers?.includes((user) => user._id === userId) ? (
+                  {showFollowerFollowButtons &&
+                  followers?.includes((user) => user._id === userId) ? (
                     <div
                       onClick={() => {
                         sendUnfollowRequest(_id);
@@ -70,16 +74,20 @@ function ProfileSectionMiddle({
                     >
                       Unfollow
                     </div>
-                  ) : (
-                    <div
-                      onClick={() => {
-                        sendfollowRequest(_id);
-                      }}
-                      className="cursor-pointer btn_default__follow"
-                    >
-                      Follow
-                    </div>
-                  )}
+                  ) : null}
+
+                  {loggedInUserId === userId &&
+                    following.filter((user) => _id === user._id).length ===
+                      0 && (
+                      <div
+                        onClick={() => {
+                          sendfollowRequest(_id);
+                        }}
+                        className="cursor-pointer btn_default__follow"
+                      >
+                        Follow
+                      </div>
+                    )}
                 </div>
               );
             })
@@ -102,11 +110,19 @@ function ProfileSectionMiddle({
                 following,
               } = item;
               return (
-                <div className="flex justify-between text-xl items-center mx-1">
+                <div
+                  key={_id}
+                  className="flex justify-between text-xl items-center mx-1"
+                >
                   <div
-                    key={_id}
                     className="cursor-pointer flex items-center"
-                    onClick={() => navigate("/profile/" + username)}
+                    onClick={() =>
+                      navigate(
+                        loggedInUserId === _id
+                          ? "/profile"
+                          : "/profile/" + username
+                      )
+                    }
                   >
                     <img
                       className="followers_list__image"
@@ -129,7 +145,8 @@ function ProfileSectionMiddle({
                       </div>
                     </div>
                   </div>
-                  {following?.includes((user) => user?._id === userId) ? (
+                  {showFollowerFollowButtons &&
+                  following?.includes((user) => user?._id !== userId) ? (
                     <div
                       onClick={() => {
                         sendfollowRequest(item?._id);
@@ -138,7 +155,9 @@ function ProfileSectionMiddle({
                     >
                       Follow
                     </div>
-                  ) : (
+                  ) : null}
+
+                  {loggedInUserId === userId && (
                     <div
                       className="cursor-pointer btn_default_following"
                       onClick={() => {
@@ -148,6 +167,14 @@ function ProfileSectionMiddle({
                       Unfollow
                     </div>
                   )}
+                  {/* {loggedInUserId === userId && <div
+                    className="cursor-pointer btn_default_following"
+                    onClick={() => {
+                      sendUnfollowRequest(item?._id);
+                    }}
+                  >
+                    Unfollow
+                  </div>} */}
                 </div>
               );
             })

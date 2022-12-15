@@ -197,14 +197,14 @@ const checkUsername = (input) => {
     throw "Username must contain only letters and numbers";
   }
   if (input.length < 6) {
-    throw "Username must contain only letters and numbers";
+    throw "Username must contain at least 6 characters ";
   }
   input = input.toLowerCase();
   return input;
 };
 const checkBool = (input, permission) => {
   if (!input || typeof input !== "boolean") {
-    throw `${permission} is not a boolean.`;
+    throw `${permission} not a boolean`;
   }
   return input;
 };
