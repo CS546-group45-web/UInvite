@@ -1,11 +1,14 @@
 import { makeApiCall } from "./api";
 
-export const CreateEvent = async (event) =>
-  await makeApiCall("/api/auth/", "post", event);
-export const getEvent = async (eventid) =>
-  await makeApiCall("/api/user/" + eventid, "get");
-export const editEvent = async (body) =>
-  await makeApiCall("/api/user/edit", "post", body);
+export const createEvent = async (data) =>
+  await makeApiCall("/api/auth/", "post", data);
+export const getEventsDetailsById = async (id) =>
+  await makeApiCall("/api/events/" + id, "get");
+export const editEvent = async (data) =>
+  await makeApiCall("/api/events/edit", "post", data);
 
 export const getAllEventsForHomePage = async () =>
   await makeApiCall("/api/events", "get");
+
+export const postComment = async (comment, id) =>
+  await makeApiCall("/api/events/" + id + "/comment", "post", { comment });

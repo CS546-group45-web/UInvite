@@ -2,11 +2,17 @@ import React from "react";
 import Loading from "../../common/Loading";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MenuItem, TextField } from "@mui/material";
-import { nameValidation } from "../../../utils/helper";
+import {
+  eventNameValidation,
+  validateDescription,
+  validateTags,
+  validateUrl,
+} from "../../../utils/helper";
 import { typeOptions } from "../../../constants";
 
 function CreateEvent() {
@@ -17,21 +23,37 @@ function CreateEvent() {
   const validateData = async (e) => {
     e.preventDefault();
 
-    setCreateLoading(true);
+    if (Object.keys(eventData).length === 0) {
+      return setErrors({
+        eventTitle: true,
+        description: true,
+        type: true,
+        startDateTime: true,
+        endDateTime: true,
+        tags: true,
+        // maxRSVPscount: true,
+        address: true,
+        onlineEventLink: true,
+      });
+    }
+
     let errorObj = {};
     if (!eventData?.eventTitle) errorObj.eventTitle = true;
     if (!eventData?.description) errorObj.description = true;
     if (!eventData?.type) errorObj.type = true;
     if (!eventData?.startDateTime) errorObj.startDateTime = true;
     if (!eventData?.endDateTime) errorObj.endDateTime = true;
+    // if (!eventData?.maxRSVPscount) errorObj.maxRSVPscount = true;
     if (!eventData?.tags) errorObj.tags = true;
     if (eventData?.type === "in-person")
       if (!eventData?.address) errorObj.name = true;
-      else if (eventData?.type === "online")
-        if (!eventData?.onlineEventLink) errorObj.onlineEventLink = true;
+    if (eventData?.type === "online")
+      if (!eventData?.onlineEventLink) errorObj.onlineEventLink = true;
 
     if (Object.keys(errorObj).length !== 0) return setErrors(errorObj);
     else setErrors({});
+
+    setCreateLoading(true);
 
     const { eventTitle, description, type, startDateTime, endDateTime, tags } =
       eventData;
@@ -40,28 +62,16 @@ function CreateEvent() {
       eventTitle,
       description,
       type,
-      startDateTime,
-      endDateTime,
-      tags,
+      startDateTime: new Date(startDateTime).toISOString(),
+      endDateTime: new Date(endDateTime).toISOString(),
+      tags: tags.split(","),
     };
     if (type === "in-person") apiBody.address = eventData?.address;
     if (type === "online") apiBody.onlineEventLink = eventData?.onlineEventLink;
-    // const createInfo = await CreateEvent(apiBody);
-
-    // const { data, status } = createInfo;
-    // if (status !== 201) toast.error(data?.error);
-    // else {
-    // console.log(data, status);
-    // window.location.href = "/home";
-    // }
     console.log(apiBody);
 
     setCreateLoading(false);
   };
-
-  // React.useEffect(() => {
-  //   console.log(eventData);
-  // }, [eventData]);
 
   const setValues = (name, value) => {
     setEventData({ ...eventData, [name]: value });
@@ -82,6 +92,10 @@ function CreateEvent() {
     return new Date(validYear.toString()).toISOString();
   };
 
+  React.useEffect(() => {
+    console.log(eventData, errors);
+  }, [eventData, errors]);
+
   return (
     <div>
       <div className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
@@ -91,7 +105,7 @@ function CreateEvent() {
         <div className="space-y-4 p-4 w-full">
           <div className="rounded-md">
             <div className="flex ">
-              <div className="w-7/12">
+              <div className="w-8/12">
                 <TextField
                   id="eventTitle"
                   label="Event Title"
@@ -100,32 +114,35 @@ function CreateEvent() {
                   size="small"
                   type="text"
                   fullWidth
-                  placeholder="John Doe's Birthday Party"
+                  placeholder="eg. John Doe's Birthday Party"
                   margin="dense"
                   name="eventTitle"
                   error={errors?.eventTitle}
                   helperText={
-                    errors?.name ? (
+                    errors?.eventTitle ? (
                       <span className="text-base flex items-center">
                         <CloseIcon fontSize="small" />
                         Please enter a Event Title
                       </span>
                     ) : (
-                      false
+                      <span className="text-base flex items-center">
+                        <InfoOutlinedIcon fontSize="small" />
+                        &nbsp;Allowed A-z,a-z,0-9,!,-,@,+,#,$,&(Minimum 4
+                        characters)
+                      </span>
                     )
                   }
                   value={eventData?.eventTitle}
                   onChange={(e) => {
                     let { name, value } = e.target;
-                    value = value.trim();
                     if (value === "") setError(name);
-                    if (!nameValidation(value)) setError(name);
+                    if (!eventNameValidation(value)) setError(name);
                     else removeError(name);
                     setValues(name, value);
                   }}
                 />
               </div>
-              <div className="ml-1 mr-1 w-2/12">
+              <div className="ml-1 mr-1 w-4/12">
                 <TextField
                   size="small"
                   id="type"
@@ -140,7 +157,6 @@ function CreateEvent() {
                   error={errors?.type}
                   onChange={(e) => {
                     const { name, value } = e.target;
-                    console.log(name, value);
                     if (value !== "") {
                       setValues(name, value);
                       removeError(name);
@@ -156,11 +172,11 @@ function CreateEvent() {
                 {errors?.type && (
                   <span className="helperText__gender text-base flex items-center ">
                     <CloseIcon fontSize="small" />
-                    Choose a type
+                    Choose type
                   </span>
                 )}
               </div>
-              <div className="ml-1 w-3/12">
+              {/* <div className="ml-1 w-3/12">
                 <TextField
                   id="maxRSVPscount"
                   label="Max RSVP limit"
@@ -169,15 +185,24 @@ function CreateEvent() {
                   size="small"
                   type="number"
                   fullWidth
-                  placeholder="Max #RSVPs"
+                  placeholder="1-100"
                   margin="dense"
                   name="maxRSVPscount"
                   error={errors?.maxRSVPscount}
                   helperText={
-                    errors?.maxRSVPscount ? (
+                    errors?.maxRSVPscount || !eventData?.maxRSVPscount ? (
                       <span className="text-base flex items-center">
-                        <CloseIcon fontSize="small" />
-                        Max limit is 100
+                        {(errors?.maxRSVPscount ||
+                          eventData?.maxRSVPscount < 0 ||
+                          eventData?.maxRSVPscount > 100) && (
+                          <CloseIcon fontSize="small" />
+                        )}
+                        {eventData?.maxRSVPscount < 0 ||
+                        eventData?.maxRSVPscount > 100
+                          ? "1-100 RSVPS allowed"
+                          : eventData?.maxRSVPscount === 0
+                          ? "Invalid RSVP number"
+                          : null}
                       </span>
                     ) : (
                       false
@@ -185,20 +210,18 @@ function CreateEvent() {
                   }
                   value={eventData?.name}
                   onChange={(e) => {
-                    // TODO: confirm if the error should be displayed as soon as the user starts to enter the email or after clicking on submit
                     let { name, value } = e.target;
-                    value = value.trim();
-                    if (value === "") setError(name);
+                    if (value === 0) setError(name);
                     if (!nameValidation(value)) setError(name);
                     else removeError(name);
                     setValues(name, value);
                   }}
                 />
-              </div>
+              </div> */}
             </div>
 
             <div className="flex ">
-              {eventData?.type === "in-person" ? (
+              {(eventData?.type === "in-person" || !eventData.type) && (
                 <div className="mr-1 w-6/12">
                   <TextField
                     id="address"
@@ -211,9 +234,9 @@ function CreateEvent() {
                     placeholder="Venue of the event"
                     margin="dense"
                     name="address"
-                    error={errors?.Address}
+                    error={errors?.address}
                     helperText={
-                      errors?.name ? (
+                      errors?.address ? (
                         <span className="text-base flex items-center">
                           <CloseIcon fontSize="small" />
                           Please enter a address
@@ -224,17 +247,15 @@ function CreateEvent() {
                     }
                     value={eventData?.address}
                     onChange={(e) => {
-                      // TODO: confirm if the error should be displayed as soon as the user starts to enter the email or after clicking on submit
                       let { name, value } = e.target;
-                      value = value.trim();
                       if (value === "") setError(name);
-                      if (!nameValidation(value)) setError(name);
                       else removeError(name);
                       setValues(name, value);
                     }}
                   />
                 </div>
-              ) : (
+              )}
+              {eventData?.type === "online" && (
                 <div className="mr-1 w-6/12">
                   <TextField
                     id="address"
@@ -249,7 +270,7 @@ function CreateEvent() {
                     name="onlineEventLink"
                     error={errors?.onlineEventLink}
                     helperText={
-                      errors?.name ? (
+                      errors?.onlineEventLink ? (
                         <span className="text-base flex items-center">
                           <CloseIcon fontSize="small" />
                           Please enter a link
@@ -261,9 +282,7 @@ function CreateEvent() {
                     value={eventData?.onlineEventLink}
                     onChange={(e) => {
                       let { name, value } = e.target;
-                      value = value.trim();
-                      if (value === "") setError(name);
-                      if (!nameValidation(value)) setError(name);
+                      if (!validateUrl(value)) setError(name);
                       else removeError(name);
                       setValues(name, value);
                     }}
@@ -359,7 +378,7 @@ function CreateEvent() {
                   size="small"
                   type="text"
                   fullWidth
-                  placeholder="Enter tags(comma seperated)"
+                  placeholder="eg. party,fun,nyc"
                   margin="dense"
                   name="tags"
                   error={errors?.tags}
@@ -370,15 +389,16 @@ function CreateEvent() {
                         Enter atleast one tag
                       </span>
                     ) : (
-                      false
+                      <span className="text-base flex items-center">
+                        <InfoOutlinedIcon fontSize="small" />
+                        &nbsp;Enter tags(comma seperated)
+                      </span>
                     )
                   }
                   value={eventData?.tags}
                   onChange={(e) => {
                     let { name, value } = e.target;
-                    value = value.trim();
-                    if (value === "") setError(name);
-                    if (!nameValidation(value)) setError(name);
+                    if (!validateTags(value)) setError(name);
                     else removeError(name);
                     setValues(name, value);
                   }}
@@ -392,27 +412,20 @@ function CreateEvent() {
                   size="small"
                   type="text"
                   fullWidth
-                  placeholder="Enter email ids(comma seperated)"
+                  placeholder="eg. johndoe@eg.com,tonystark@eg.com"
                   margin="dense"
                   name="invites"
                   error={errors?.invites}
                   helperText={
-                    // NOTE: add helper text for examples
-                    errors?.invites ? (
-                      <span className="text-base flex items-center">
-                        <CloseIcon fontSize="small" />
-                        Enter atleast one tag
-                      </span>
-                    ) : (
-                      false
-                    )
+                    <span className="text-base flex items-center">
+                      <InfoOutlinedIcon fontSize="small" />
+                      &nbsp;Enter email ids(comma seperated)
+                    </span>
                   }
                   value={eventData?.invites}
                   onChange={(e) => {
                     let { name, value } = e.target;
-                    value = value.trim();
-                    if (value === "") setError(name);
-                    if (!nameValidation(value)) setError(name);
+                    if (!validateDescription(value)) setError(name);
                     else removeError(name);
                     setValues(name, value);
                   }}
@@ -442,15 +455,16 @@ function CreateEvent() {
                       Please enter a Event Title
                     </span>
                   ) : (
-                    false
+                    <span className="text-base flex items-center">
+                      <InfoOutlinedIcon fontSize="small" />
+                      &nbsp;Minimum of 20 characters
+                    </span>
                   )
                 }
                 value={eventData?.description}
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  value = value.trim();
-                  if (value === "") setError(name);
-                  if (!nameValidation(value)) setError(name);
+                  if (!validateDescription(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
                 }}
