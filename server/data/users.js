@@ -104,10 +104,9 @@ const updateUser = async (
   );
   if (updatedInfo.modifiedCount === 0 && updatedInfo.matchedCount !== 0) {
     throw 'No changes are made';
-  } else {
+  } else if (updatedInfo.modifiedCount === 0) {
     throw 'Could not update user';
   }
-
   return await getUserById(id);
 };
 
@@ -250,6 +249,18 @@ const addCreatedEvent = async (userId, eventId) => {
   return await getUserById(userId);
 };
 
+const addrsvpEvent = async (userId, eventId) => {
+  const user_collection = await users();
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $addToSet: { rsvps: eventId } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user';
+  }
+  return await getUserById(userId);
+};
+
 module.exports = {
   createUser,
   getUserById,
@@ -265,4 +276,5 @@ module.exports = {
   getFollowersInformation,
   addCreatedEvent,
   getCreatedEvents,
+  addrsvpEvent,
 };

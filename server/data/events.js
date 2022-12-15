@@ -66,26 +66,6 @@ const getAllUpcomingEvents = async () => {
   return events_list;
 };
 
-const add_guest = async (eventId, email) => {
-  eventId = validation.checkObjectId(eventId);
-  const user = await getUserByEmail(email);
-  const event_collection = await events();
-  const updated_info = await event_collection.updateOne(
-    { _id: ObjectId(eventId) },
-    {
-      $push: { waitlist: user },
-    },
-    {
-      returnDocument: 'after',
-    }
-  );
-  if (updated_info.modifiedCount === 0) {
-    throw 'Could not add guest successfully';
-  }
-  await add_event(user._id.toString(), eventId);
-  return await getEventById(eventId);
-};
-
 const getAllEvents = async () => {
   const eventCollection = await events();
   const events_list = await eventCollection.find({}).toArray();
@@ -95,7 +75,7 @@ const getAllEvents = async () => {
   for (const element of events_list) {
     element._id = element._id.toString();
     try {
-      let userData = await user.getUserById(element.userId);
+      let userData = await user.getUserById(element?.userId.toString());
       element.username = userData.username;
       element.firstName = userData.firstName;
       element.lastName = userData.lastName;
@@ -136,6 +116,26 @@ const getEventMinById = async (event_id) => {
     tags: event.tags,
   };
   return eventMin;
+};
+
+// rsvp to event
+const rsvp = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const event_collection = await events();
+  const updated_info = await event_collection.updateOne(
+    { _id: ObjectId(eventId) },
+    {
+      $push: { rsvps: userId },
+    },
+    {
+      returnDocument: 'after',
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'could not rsvp';
+  }
+  await user.addrsvpEvent(userId, eventId);
+  return await getEventById(eventId);
 };
 
 const getEventsByTitle = async (title) => {
@@ -188,5 +188,5 @@ module.exports = {
   removeEvent,
   getEventsByDate,
   getEventsByTitle,
-  add_guest,
+  rsvp,
 };
