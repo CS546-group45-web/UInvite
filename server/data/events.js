@@ -5,53 +5,39 @@ const events = mongoCollections.events;
 const users = mongoCollections.users;
 const validation = require("../utils/validation");
 
-const createEvent = async(
-  user_id,
-event_title,
-type,
-organizer_name,
-Description,
-start_date_time,
-end_date_time,
-location,
-tags,
-pictures_allowed,
-comments_allowed,
-public_event,
-Max_rsvps_count = 1000
+const createEvent = async (
+  userId,
+  eventTitle,
+  organizerName,
+  description,
+  startDateTime,
+  endDateTime,
+  address,
+  maxRsvpsCount,
+  type,
+  tags
 ) => {
-  /*----------------------------------------Validation begins--------------------------------------------*/
-  user_id = validation.checkObjectId(user_id);
-  event_title = validation.checkInputString(event_title, "event_title");
-  organizer_name = validation.checkNames(organizer_name, "organizer_name");
-  Description = validation.checkInputString(Description, "description");
-  start_date_time = validation.checkEventDate(
-      start_date_time,
-      "start_date_time");
-  end_date_time = validation.checkEventDate(
-      end_date_time, 
-      "end_date_time");
-  location = validation.checkAdress(location, "location");
-  Max_rsvps_count = validation.checkRsvpCount(
-      Max_rsvps_count,
-      "Max_rsvps_count"
-  );
+  userId = validation.checkObjectId(userId);
+  eventTitle = validation.checkTitle(eventTitle, "eventTitle");
+  organizerName = validation.checkNames(organizerName, "organizerName");
+  description = validation.checkNames(description, "description");
+  startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
+  endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
+  address = validation.checkAdress(address, "address");
+  maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
   type = validation.checkEventType(type, "type");
-  pictures_allowed = validation.checkBool(pictures_allowed, "pictures_allowed");
-  comments_allowed = validation.checkBool(comments_allowed, "comments_allowed");
-  public_event = validation.checkBool(public_event, "public event");
   tags = validation.checkTags(tags, "tags");
-  /*----------------------------------------Validation ends--------------------------------------------*/
+
   const event_collection = await events();
   const newEvent = {
-    userId: ObjectId(userId),
+    userId: userId,
     eventTitle: eventTitle,
     organizerName: organizerName,
     description: description,
     startDateTime: startDateTime,
     endDateTime: endDateTime,
     address: address,
-    date_created: new Date(),
+    date_created: new Date().toISOString(),
     maxRsvpsCount: maxRsvpsCount,
     type: type,
     rsvps: [],
@@ -62,70 +48,72 @@ Max_rsvps_count = 1000
     reviews: [],
     overallRating: 0,
   };
+  let getExistingEvents = await getAllEvents();
+  if (getExistingEvents) {
+    for (elem of getExistingEvents) {
+      if (elem.eventTitle.toLowerCase() === eventTitle.toLowerCase())
+        throw `Event title ${eventTitle} already exists`;
+    }
+  }
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw "Could not add event";
-  const newId = insertInfo.insertedId.toString();
-  await user_create_event(user_id, newEvent);
-  const event = await getEventById(newId);
-  return event;
-}
+  return { Event: "Inserted Successfully." };
+};
 
-const user_create_event = async(userId, created_event) =>{
+const user_create_event = async (userId, created_event) => {
   const user_collection = await users();
   const updated_info = await user_collection.updateOne(
-    {_id : ObjectId(userId)},
-    {$push : {events_created : created_event}},
-    {returnDocument: "after"}
+    { _id: ObjectId(userId) },
+    { $push: { events_created: created_event } },
+    { returnDocument: "after" }
   );
-  if(updated_info.modifiedCount === 0){
-    throw 'Could not add created event to user successfully';
+  if (updated_info.modifiedCount === 0) {
+    throw "Could not add created event to user successfully";
   }
-  return {"Event" : "added successfully"};
-}
+  return { Event: "added successfully" };
+};
 
 const getUserByEmail = async (email) => {
   email = validation.checkEmail(email);
   const user_collection = await users();
   const user = await user_collection.findOne({ email });
-  if (!user) throw 'User not found';
+  if (!user) throw "User not found";
   return user;
 };
 
-const add_event = async(userId, eventId) => {
+const add_event = async (userId, eventId) => {
   const user_collection = await users();
   const event = await getEventById_Object(eventId);
   const updated_info = await user_collection.updateOne(
-    {_id : ObjectId(userId)},
-    {$push : {invited_events : event}},
-    {returnDocument: "after"}
-  )
-  if(updated_info.modifiedCount ===0){
-    throw 'Could not add invited event to user successfully';
+    { _id: ObjectId(userId) },
+    { $push: { invited_events: event } },
+    { returnDocument: "after" }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw "Could not add invited event to user successfully";
   }
-  return {"Event" : "added event successfully"};
-}
-
+  return { Event: "added event successfully" };
+};
 
 const add_guest = async (eventId, email) => {
   eventId = validation.checkObjectId(eventId);
   const user = await getUserByEmail(email);
   const event_collection = await events();
   const updated_info = await event_collection.updateOne(
-    {_id : ObjectId(eventId)},
+    { _id: ObjectId(eventId) },
     {
-      $push : {waitlist : user},
+      $push: { waitlist: user },
     },
     {
-      returnDocument : "after"
+      returnDocument: "after",
     }
-  )
-  if(updated_info.modifiedCount === 0){
-    throw 'Could not add guest successfully';
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw "Could not add guest successfully";
   }
   await add_event(user._id.toString(), eventId);
   return await getEventById(eventId);
-}
-
+};
 
 const getAllEvents = async () => {
   const eventCollection = await events();
@@ -205,5 +193,5 @@ module.exports = {
   // updateEvent,
   getEventsByDate,
   getEventsByTitle,
-  add_guest
+  add_guest,
 };
