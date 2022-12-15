@@ -294,6 +294,7 @@ function CreateEvent() {
                   <DateTimePicker
                     label="Start date"
                     disablePast
+                    ampm={true}
                     inputFormat="MM/DD/YYYY hh:mm"
                     value={eventData?.startDateTime ?? null}
                     renderInput={(params) => (
@@ -341,7 +342,7 @@ function CreateEvent() {
                         onKeyDown={(e) => e.preventDefault()}
                         error={errors?.endDateTime}
                         helperText={
-                          errors?.dob ? (
+                          errors?.endDateTime ? (
                             <span className="helperText__dob text-base flex items-center">
                               <CloseIcon fontSize="small" />
                               Enter a valid date

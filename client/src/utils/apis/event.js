@@ -3,7 +3,7 @@ import { makeApiCall } from "./api";
 export const createEvent = async (data) =>
   await makeApiCall("/api/auth/", "post", data);
 export const getEventsDetailsById = async (id) =>
-  await makeApiCall("/api/events/" + id, "get");
+  await makeApiCall("/api/events/id/" + id, "get");
 export const editEvent = async (data) =>
   await makeApiCall("/api/events/edit", "post", data);
 

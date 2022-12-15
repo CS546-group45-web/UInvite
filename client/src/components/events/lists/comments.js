@@ -20,7 +20,7 @@ function Comments({ comments, loggedInUserId, postCommentByUser, loading }) {
 
   return (
     <div className="mt-3">
-      <div className="font-bold text-2xl">
+      <div className="font-bold text-2xl mb-2">
         <CommentOutlinedIcon fontSize="large" /> Comments
       </div>
       <div>
@@ -49,8 +49,7 @@ function Comments({ comments, loggedInUserId, postCommentByUser, loading }) {
             }
             value={comment}
             onChange={(e) => {
-              let { name, value } = e.target;
-
+              let { value } = e.target;
               if (!validateComment(value)) setError(true);
               else setError(false);
               setComment(value);

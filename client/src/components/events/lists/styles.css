@@ -1,5 +1,5 @@
 .event_banner {
-  width: 400px;
+  width: 350px;
   aspect-ratio: 2/1.5;
   /* object-fit: contain; */
   border-radius: 4px;
@@ -75,8 +75,7 @@
   font-weight: 700;
 }
 .comment_section {
-  overflow-y: scroll;
-  height: 500px;
+  overflow-y: auto;
   max-height: 500px;
 }
 

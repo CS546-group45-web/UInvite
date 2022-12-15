@@ -14,7 +14,7 @@ function EventPage() {
   const params = useParams();
   const sample = {
     user_id: "manisaiprasad",
-    _id: "78323302ecff990845f53729e24b43ab",
+    _id: "6398241071002c31e7614f1e",
     eventTitle: "DancePeChance",
     description:
       "We are so excited to be hosting our very first dance competition! This competition is open to all pupils in our school and will be taking place during the month of October. The competition will consist of a variety of dances including modern, salsa, ballroom, and country dances. There will be a total of 4 competitions which will be held on different days. The first competition will be held on the 8th of October and the last competition will be held on the 22nd of October.",
@@ -122,7 +122,8 @@ function EventPage() {
   const postCommentByUser = async (comment) => {
     setCommentLoading(true);
     const { data, status } = await postComment(comment, eventData?._id);
-    console.log({ data, status });
+    // console.log({ data, status });
+    setEventData(data?.data);
     setCommentLoading(false);
   };
 

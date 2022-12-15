@@ -7,7 +7,7 @@ import "./styles.css";
 function EventsList() {
   const sample = {
     user_id: "manisaiprasad",
-    event_id: "78323302ecff990845f53729e24b43ab",
+    event_id: "63997c767721a9d370c35712",
     Name: "DancePeChance",
     Description:
       "We are so excited to be hosting our very first dance competition! This competition is open to all pupils in our school and will be taking place during the month of October. The competition will consist of a variety of dances including modern, salsa, ballroom, and country dances. There will be a total of 4 competitions which will be held on different days. The first competition will be held on the 8th of October and the last competition will be held on the 22nd of October.",

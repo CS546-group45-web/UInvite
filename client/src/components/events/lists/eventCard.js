@@ -45,7 +45,7 @@ function EventCard({ event }) {
               </span>
             ))}
           </div>
-          <div className="mt-5 text-2xl font-semibold">
+          <div className="mt-2 text-2xl font-semibold">
             Event details
             <div className="text-lg">{getAddressFormatted(event.address)}</div>
             <div className="text-lg">
@@ -57,7 +57,7 @@ function EventCard({ event }) {
 
           <div className="mt-2">
             <div
-              className="my-2 text-[#393e46] text-xl cursor-pointer"
+              className="text-[#393e46] text-xl cursor-pointer"
               onClick={() => navigate("/profile/" + event?.user_id)}
             >
               Posted by organizer name
