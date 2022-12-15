@@ -2,42 +2,56 @@ const { ObjectId } = require("mongodb");
 const bcrypt = require("bcryptjs");
 const mongoCollections = require("../config/mongoCollections");
 const events = mongoCollections.events;
+const users = mongoCollections.users;
 const validation = require("../utils/validation");
-// const e = require("express");
 
-const createEvent = async (
-  userId,
-  eventTitle,
-  organizerName,
-  description,
-  startDateTime,
-  endDateTime,
-  address,
-  maxRsvpsCount,
-  type,
-  tags
+const createEvent = async(
+  user_id,
+event_title,
+type,
+organizer_name,
+Description,
+start_date_time,
+end_date_time,
+location,
+tags,
+pictures_allowed,
+comments_allowed,
+public_event,
+Max_rsvps_count = 1000
 ) => {
-  userId = validation.checkObjectId(userId);
-  eventTitle = validation.checkTitle(eventTitle, "eventTitle");
-  organizerName = validation.checkNames(organizerName, "organizerName");
-  description = validation.checkNames(description, "description");
-  startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
-  endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
-  address = validation.checkAdress(address, "address");
-  maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
+  /*----------------------------------------Validation begins--------------------------------------------*/
+  user_id = validation.checkObjectId(user_id);
+  event_title = validation.checkInputString(event_title, "event_title");
+  organizer_name = validation.checkNames(organizer_name, "organizer_name");
+  Description = validation.checkInputString(Description, "description");
+  start_date_time = validation.checkEventDate(
+      start_date_time,
+      "start_date_time");
+  end_date_time = validation.checkEventDate(
+      end_date_time, 
+      "end_date_time");
+  location = validation.checkAdress(location, "location");
+  Max_rsvps_count = validation.checkRsvpCount(
+      Max_rsvps_count,
+      "Max_rsvps_count"
+  );
   type = validation.checkEventType(type, "type");
+  pictures_allowed = validation.checkBool(pictures_allowed, "pictures_allowed");
+  comments_allowed = validation.checkBool(comments_allowed, "comments_allowed");
+  public_event = validation.checkBool(public_event, "public event");
   tags = validation.checkTags(tags, "tags");
-
+  /*----------------------------------------Validation ends--------------------------------------------*/
   const event_collection = await events();
   const newEvent = {
-    userId: userId,
+    userId: ObjectId(userId),
     eventTitle: eventTitle,
     organizerName: organizerName,
     description: description,
     startDateTime: startDateTime,
     endDateTime: endDateTime,
     address: address,
-    date_created: new Date().toISOString(),
+    date_created: new Date(),
     maxRsvpsCount: maxRsvpsCount,
     type: type,
     rsvps: [],
@@ -48,36 +62,70 @@ const createEvent = async (
     reviews: [],
     overallRating: 0,
   };
-  let getExistingEvents = await getAllEvents();
-  if (getExistingEvents) {
-    for (elem of getExistingEvents) {
-      if (elem.eventTitle.toLowerCase() === eventTitle.toLowerCase())
-        throw `Event title ${eventTitle} already exists`;
-    }
-  }
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw "Could not add event";
-  return { Event: "Inserted Successfully." };
+  const newId = insertInfo.insertedId.toString();
+  await user_create_event(user_id, newEvent);
+  const event = await getEventById(newId);
+  return event;
+}
+
+const user_create_event = async(userId, created_event) =>{
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    {_id : ObjectId(userId)},
+    {$push : {events_created : created_event}},
+    {returnDocument: "after"}
+  );
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not add created event to user successfully';
+  }
+  return {"Event" : "added successfully"};
+}
+
+const getUserByEmail = async (email) => {
+  email = validation.checkEmail(email);
+  const user_collection = await users();
+  const user = await user_collection.findOne({ email });
+  if (!user) throw 'User not found';
+  return user;
 };
 
-const updateOverallRating = async (userId) => {
-  let oRating = 0;
-  const event_collection = await events();
-  const getReviews = await event_collection.findOne({
-    _id: ObjectId(userId),
-  });
-  const { reviews } = getReviews;
-  if (reviews.length !== 0) {
-    for (review of reviews) oRating += review.rating;
-    oRating = (oRating / reviews.length).toFixed(1);
+const add_event = async(userId, eventId) => {
+  const user_collection = await users();
+  const event = await getEventById_Object(eventId);
+  const updated_info = await user_collection.updateOne(
+    {_id : ObjectId(userId)},
+    {$push : {invited_events : event}},
+    {returnDocument: "after"}
+  )
+  if(updated_info.modifiedCount ===0){
+    throw 'Could not add invited event to user successfully';
   }
-  const reviewAdd = await event_collection.updateOne(
+  return {"Event" : "added event successfully"};
+}
+
+
+const add_guest = async (eventId, email) => {
+  eventId = validation.checkObjectId(eventId);
+  const user = await getUserByEmail(email);
+  const event_collection = await events();
+  const updated_info = await event_collection.updateOne(
+    {_id : ObjectId(eventId)},
     {
-      _id: ObjectId(movieId),
+      $push : {waitlist : user},
     },
-    { $set: { overallRating: Number(oRating) } }
-  );
-};
+    {
+      returnDocument : "after"
+    }
+  )
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not add guest successfully';
+  }
+  await add_event(user._id.toString(), eventId);
+  return await getEventById(eventId);
+}
+
 
 const getAllEvents = async () => {
   const eventCollection = await events();
@@ -99,6 +147,15 @@ const getEventById = async (event_id) => {
   event._id = event._id.toString();
   return event;
 };
+
+const getEventById_Object = async (event_id) => {
+  event_id = validation.checkObjectId(event_id);
+  const eventCollection = await events();
+  const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
+  if (event === null) throw new Error("No event with that id");
+  return event;
+};
+
 const getEventsByTitle = async (title) => {
   title = validation.checkTitle(title);
   const eventCollection = await events();
@@ -144,9 +201,9 @@ module.exports = {
   createEvent,
   getAllEvents,
   getEventById,
-  updateOverallRating,
   removeEvent,
   // updateEvent,
   getEventsByDate,
   getEventsByTitle,
+  add_guest
 };

@@ -1,8 +1,8 @@
 .user_profile_picture img {
   width: 200px;
   aspect-ratio: 1/1;
-  padding: 8px;
   object-fit: contain;
+  border-radius: 100px;
 }
 
 .btn_default__follow {
@@ -46,4 +46,40 @@ div.grid_spaces {
   margin-bottom: 12px;
   font-weight: 500;
   cursor: pointer;
+}
+
+.profile_upload_modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  background-color: white;
+  width: 450px;
+  height: 500px;
+  border-radius: 10px;
+  padding: 10px;
+  justify-content: space-evenly;
+}
+
+.followers_list__image {
+  width: 50px;
+  aspect-ratio: 1/1;
+  border-radius: 50px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+.btn_default_following {
+  width: auto;
+  height: 38px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: #393e46;
+  font-size: 18px;
+  font-weight: 500;
+  border: 2px solid #393e46;
 }

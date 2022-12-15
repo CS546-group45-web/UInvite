@@ -34,7 +34,6 @@ const createComment = async (
       rating : rating
     }
     const eventCollection = await events();
-    const event = await eventCollection.findOne({_id: ObjectId(eventId)});
     const updatedInfo = await eventCollection.updateOne(
       {_id : ObjectId(eventId)},
       {
