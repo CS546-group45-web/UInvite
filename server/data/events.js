@@ -141,7 +141,7 @@ const getAllEvents = async () => {
 };
 
 const getEventById = async (event_id) => {
-  event_id = validation.checkId(event_id);
+  event_id = validation.checkObjectId(event_id);
   const eventCollection = await events();
   const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
   if (event === null) throw new Error("No event with that id");

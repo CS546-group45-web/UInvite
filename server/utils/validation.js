@@ -119,14 +119,13 @@ const checkAdress = (input, name = 'address') => {
 };
 
 const checkEventDate = (input, name = 'start date') => {
-  checkInputString(input, name);
+  input = checkInputString(input, name);
   const dateParsed = new Date(Date.parse(input));
   if (dateParsed.toISOString() != input) throw 'Date format should be in ISO';
   return input;
 };
 
 const checkRsvpCount = (input, name = 'rsvp') => {
-  checkInputString(input, name);
   checkInputNumber(input, name);
   return input;
 };
@@ -203,7 +202,7 @@ const checkUsername = (input) => {
   return input;
 };
 const checkBool = (input, permission) => {
-  if (!input || typeof input !== 'boolean') {
+  if (typeof input !== 'boolean') {
     throw `${permission} not a boolean`;
   }
   return input;

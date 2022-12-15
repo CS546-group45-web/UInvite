@@ -352,4 +352,5 @@ module.exports = {
   add_event,
   rsvp_event,
   user_create_event,
+  getAllUsers,
 };
