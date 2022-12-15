@@ -11,7 +11,6 @@ router
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
     let {
       eventTitle,
-      organizerName,
       description,
       startDateTime,
       endDateTime,
@@ -24,7 +23,6 @@ router
     try {
       userId = validation.checkObjectId(userId);
       eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
-      organizerName = validation.checkNames(organizerName, 'organizerName');
       description = validation.checkNames(description, 'description');
       startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
       endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
@@ -43,7 +41,6 @@ router
       let eventCreated = await eventData.createEvent(
         userId,
         eventTitle,
-        organizerName,
         description,
         startDateTime,
         endDateTime,
@@ -52,16 +49,17 @@ router
         type,
         tags
       );
-      return res
-        .status(200)
-        .json({ message: 'Event added successfully', eventId: eventCreated });
+      return res.status(200).json({
+        message: 'Event added successfully',
+        data: { eventId: eventCreated },
+      });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
   })
   .get(async (req, res) => {
     const event = await eventData.getAllEvents();
-    return res.json({ EventList: event });
+    return res.json({ message: 'events fetched', data: event });
   });
 
 router
@@ -75,7 +73,10 @@ router
     }
     try {
       const event = await eventData.getEventById(eventId);
-      return res.json({ EventList: event });
+      return res.json({
+        message: 'event fetched',
+        data: event,
+      });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
@@ -95,6 +96,16 @@ router
       return res.status(500).json({ error: e });
     }
   });
+
+// get all upcoming events
+router.route('/upcoming').get(async (req, res) => {
+  try {
+    const events = await eventData.getAllUpcomingEvents();
+    return res.json({ message: 'events fetched', data: events });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
 
 router.route('/title/:eventTitle').get(async (req, res) => {
   let eventTitle = req.params.eventTitle;

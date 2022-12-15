@@ -3,11 +3,9 @@ const mongoCollections = require('../config/mongoCollections');
 const events = mongoCollections.events;
 const validation = require('../utils/validation');
 const user = require('./users');
-
 const createEvent = async (
   userId,
   eventTitle,
-  organizerName,
   description,
   startDateTime,
   endDateTime,
@@ -18,7 +16,6 @@ const createEvent = async (
 ) => {
   userId = validation.checkObjectId(userId);
   eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
-  organizerName = validation.checkNames(organizerName, 'organizerName');
   description = validation.checkNames(description, 'description');
   startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
   endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
@@ -31,7 +28,6 @@ const createEvent = async (
   const newEvent = {
     userId: userId,
     eventTitle: eventTitle,
-    organizerName: organizerName,
     description: description,
     startDateTime: startDateTime,
     endDateTime: endDateTime,
@@ -47,13 +43,6 @@ const createEvent = async (
     reviews: [],
     overallRating: 0,
   };
-  let getExistingEvents = await getAllEvents();
-  if (getExistingEvents) {
-    for (elem of getExistingEvents) {
-      if (elem.eventTitle.toLowerCase() === eventTitle.toLowerCase())
-        throw `Event title ${eventTitle} already exists`;
-    }
-  }
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw 'Could not add event';
   const newId = insertInfo.insertedId;
@@ -61,18 +50,19 @@ const createEvent = async (
   return newId;
 };
 
-const add_event = async (userId, eventId) => {
-  const user_collection = await users();
-  const event = await getEventById_Object(eventId);
-  const updated_info = await user_collection.updateOne(
-    { _id: ObjectId(userId) },
-    { $push: { invited_events: event } },
-    { returnDocument: 'after' }
-  );
-  if (updated_info.modifiedCount === 0) {
-    throw 'Could not add invited event to user successfully';
+// get all upcoming events
+const getAllUpcomingEvents = async () => {
+  const eventCollection = await events();
+  const events_list = await eventCollection
+    .find({ startDateTime: { $gte: new Date() } })
+    .toArray();
+  if (!events_list) {
+    throw new Error('Could not get all upcoming events.');
   }
-  return { Event: 'added event successfully' };
+  for (const element of events_list) {
+    element._id = element._id.toString();
+  }
+  return events_list;
 };
 
 const add_guest = async (eventId, email) => {
@@ -103,6 +93,16 @@ const getAllEvents = async () => {
   }
   for (const element of events_list) {
     element._id = element._id.toString();
+    try {
+      let userData = await user.getUserById(element.userId);
+      element.username = userData.username;
+      element.firstName = userData.firstName;
+      element.lastName = userData.lastName;
+      element.profile_photo_url = userData.profile_photo_url;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
   return events_list; //changed from events to event_list
 };
@@ -113,14 +113,11 @@ const getEventById = async (event_id) => {
   const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
   if (event === null) throw new Error('No event with that id');
   event._id = event._id.toString();
-  return event;
-};
-
-const getEventById_Object = async (event_id) => {
-  event_id = validation.checkObjectId(event_id);
-  const eventCollection = await events();
-  const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
-  if (event === null) throw new Error('No event with that id');
+  const userData = await user.getUserById(event.userId);
+  event.username = userData.username;
+  event.firstName = userData.firstName;
+  event.lastName = userData.lastName;
+  event.profile_photo_url = userData.profile_photo_url;
   return event;
 };
 
@@ -167,6 +164,7 @@ const removeEvent = async (id) => {
 
 module.exports = {
   createEvent,
+  getAllUpcomingEvents,
   getAllEvents,
   getEventById,
   removeEvent,
