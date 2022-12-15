@@ -26,20 +26,20 @@ const createEvent = async (
 
   const event_collection = await events();
   const newEvent = {
-    userId: userId,
+    user_id: userId,
     eventTitle: eventTitle,
     description: description,
     startDateTime: startDateTime,
     endDateTime: endDateTime,
     address: address,
-    date_created: new Date().toISOString(),
+    dateCreated: new Date().toISOString(),
     // maxRsvpsCount: maxRsvpsCount,
     type: type,
     rsvps: [],
     waitlist: [],
     tags: tags,
     like_count: 0,
-    Comments: [],
+    comments: [],
     reviews: [],
     overallRating: 0,
   };

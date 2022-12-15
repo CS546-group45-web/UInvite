@@ -3,6 +3,7 @@ const router = express.Router();
 const data = require('../data');
 const userData = data.users;
 const eventData = data.events;
+const comments = data.comments;
 const validation = require('../utils/validation');
 const passport = require('passport');
 
@@ -139,5 +140,30 @@ router.route('/date/:eventDate').get(async (req, res) => {
     return res.status(500).json({ error: e });
   }
 });
+
+router
+  .route('/:eventId/comment')
+  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let comment = req.body.comment;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+      comment = validation.checkInputString(comment);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      comment = await comments.createComment(eventId, userId, comment);
+      let event = await eventData.getEventById(eventId);
+      res
+        .status(200)
+        .json({ message: 'Comment added successfully', data: event });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
 
 module.exports = router;
