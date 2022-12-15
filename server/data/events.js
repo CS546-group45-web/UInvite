@@ -12,7 +12,8 @@ const createEvent = async (
   address,
   // maxRsvpsCount,
   type,
-  tags
+  tags,
+  event_photo_url
 ) => {
   userId = validation.checkObjectId(userId);
   eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
@@ -22,11 +23,10 @@ const createEvent = async (
   address = validation.checkInputString(address, 'address');
   // maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
   type = validation.checkEventType(type, 'type');
-  tags = validation.checkTags(tags, 'tags');
 
   const event_collection = await events();
   const newEvent = {
-    user_id: userId,
+    userId: userId,
     eventTitle: eventTitle,
     description: description,
     startDateTime: startDateTime,
@@ -42,6 +42,7 @@ const createEvent = async (
     comments: [],
     reviews: [],
     overallRating: 0,
+    event_photo_url: event_photo_url,
   };
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw 'Could not add event';
@@ -100,7 +101,6 @@ const getAllEvents = async () => {
       element.lastName = userData.lastName;
       element.profile_photo_url = userData.profile_photo_url;
     } catch (e) {
-      console.log(e);
       throw e;
     }
   }

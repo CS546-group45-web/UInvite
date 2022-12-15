@@ -6,41 +6,15 @@ const eventData = data.events;
 const comments = data.comments;
 const validation = require('../utils/validation');
 const passport = require('passport');
+const upload = require('../utils/uploadImage');
 
 router
   .route('/')
-  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
-    let {
-      eventTitle,
-      description,
-      startDateTime,
-      endDateTime,
-      address,
-      // maxRsvpsCount,
-      type,
-      tags,
-    } = req.body;
-    let userId = req.user._id;
-    try {
-      userId = validation.checkObjectId(userId);
-      eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
-      description = validation.checkNames(description, 'description');
-      startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
-      endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
-      address = validation.checkInputString(address, 'address');
-      // maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, 'maxRsvpsCount');
-      type = validation.checkEventType(type, 'type');
-      tags = validation.checkTags(tags, 'tags');
-    } catch (e) {
-      if (typeof e === 'string') return res.status(400).json({ error: e });
-      else
-        return res
-          .status(400)
-          .json({ error: 'The event is missing a  parameter, try again!' });
-    }
-    try {
-      let eventCreated = await eventData.createEvent(
-        userId,
+  .post(
+    passport.authenticate('jwt', { session: false }),
+    upload.single('eventImage'),
+    async (req, res) => {
+      let {
         eventTitle,
         description,
         startDateTime,
@@ -48,19 +22,59 @@ router
         address,
         // maxRsvpsCount,
         type,
-        tags
-      );
-      return res.status(200).json({
-        message: 'Event added successfully',
-        data: { eventId: eventCreated },
-      });
+        tags,
+      } = req.body;
+      let userId = req.user._id;
+      try {
+        userId = validation.checkObjectId(userId);
+        eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
+        description = validation.checkNames(description, 'description');
+        startDateTime = validation.checkEventDate(
+          startDateTime,
+          'startDateTime'
+        );
+        endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
+        address = validation.checkInputString(address, 'address');
+        // maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, 'maxRsvpsCount');
+        type = validation.checkEventType(type, 'type');
+        tags = validation.checkTags(tags, 'tags');
+      } catch (e) {
+        if (typeof e === 'string') return res.status(400).json({ error: e });
+        else
+          return res
+            .status(400)
+            .json({ error: 'The event is missing a  parameter, try again!' });
+      }
+      const event_photo_url = req.file.filename;
+      try {
+        let eventCreated = await eventData.createEvent(
+          userId,
+          eventTitle,
+          description,
+          startDateTime,
+          endDateTime,
+          address,
+          // maxRsvpsCount,
+          type,
+          tags,
+          event_photo_url
+        );
+        return res.status(200).json({
+          message: 'Event added successfully',
+          data: { eventId: eventCreated },
+        });
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+    }
+  )
+  .get(async (req, res) => {
+    try {
+      const event = await eventData.getAllEvents();
+      return res.json({ message: 'events fetched', data: event });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
-  })
-  .get(async (req, res) => {
-    const event = await eventData.getAllEvents();
-    return res.json({ message: 'events fetched', data: event });
   });
 
 router
