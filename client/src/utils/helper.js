@@ -126,6 +126,12 @@ export const validateTags = (value) => {
   return regexTags.test(value);
 };
 
+export const validateDescription = (value) => value.length > 20;
+export const validateComment = (value) => value.trim().length > 0;
 
-export const validateDescription = (value)=> value.length > 20
-export const validateComment = (value)=> value.trim().length > 0
+export const validateDateDiff = (date1, date2) => {
+  date1 = new Date(date1);
+  date2 = new Date(date2);
+  const diff = Math.abs(date2 - date1) / 60000;
+  return diff > 60;
+};

@@ -6,18 +6,36 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { MenuItem, TextField } from "@mui/material";
+import {
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Slider,
+  TextField,
+} from "@mui/material";
 import {
   eventNameValidation,
   validateDescription,
   validateTags,
   validateUrl,
+  validateDateDiff,
+  dataURLtoFile,
 } from "../../../utils/helper";
 import { typeOptions } from "../../../constants";
+import { getUserFollowers } from "../../../utils/apis/user";
+import { createEvent } from "../../../utils/apis/event";
+import AvatarEditor from "react-avatar-editor";
 
 function CreateEvent() {
   const [eventData, setEventData] = React.useState({});
   const [errors, setErrors] = React.useState({});
+  const [invitees, setInvitees] = React.useState([]);
+  const [imageObj, setImageObj] = React.useState(null);
+  const editorRef = React.useRef(null);
+  const [zoom, setZoom] = React.useState(1);
   const [createLoading, setCreateLoading] = React.useState(false);
 
   const validateData = async (e) => {
@@ -50,6 +68,15 @@ function CreateEvent() {
     if (eventData?.type === "online")
       if (!eventData?.onlineEventLink) errorObj.onlineEventLink = true;
 
+    if (
+      !validateDateDiff(
+        eventData?.startDateTime?.$d,
+        eventData?.endDateTime?.$d
+      )
+    ) {
+      toast.error("Duration of the event should be more than 1 hour");
+    }
+
     if (Object.keys(errorObj).length !== 0) return setErrors(errorObj);
     else setErrors({});
 
@@ -64,11 +91,23 @@ function CreateEvent() {
       type,
       startDateTime: new Date(startDateTime).toISOString(),
       endDateTime: new Date(endDateTime).toISOString(),
-      tags: tags.split(","),
+      tags: tags,
     };
     if (type === "in-person") apiBody.address = eventData?.address;
     if (type === "online") apiBody.onlineEventLink = eventData?.onlineEventLink;
     console.log(apiBody);
+
+    const formData = new FormData();
+    const img = editorRef.current?.getImageScaledToCanvas().toDataURL();
+    formData.append("eventImage", dataURLtoFile(img, "event-image"));
+    // formData.append("eventImage");
+    for (const key in apiBody) {
+      console.log(key, apiBody[key]);
+      formData.append(key, apiBody[key]);
+    }
+
+    const { data } = await createEvent(formData);
+    console.log({ data });
 
     setCreateLoading(false);
   };
@@ -93,8 +132,17 @@ function CreateEvent() {
   };
 
   React.useEffect(() => {
-    console.log(eventData, errors);
-  }, [eventData, errors]);
+    getUserFollowers().then((res) => {
+      const { data, status } = res;
+      const list = data?.data?.map((item) => item.email);
+      if (status !== 200) return toast.error(data.error);
+      setInvitees(list);
+    });
+  }, []);
+
+  // React.useEffect(() => {
+  //   console.log(eventData, errors);
+  // }, [eventData, errors]);
 
   return (
     <div>
@@ -406,6 +454,33 @@ function CreateEvent() {
                 />
               </div>
               <div className="mr-1 w-6/12">
+                <FormControl sx={{ m: 1, width: "100%" }}>
+                  <InputLabel id="multiple-invitees">Invite people</InputLabel>
+                  <Select
+                    labelId="multiple-invitees"
+                    id="multiple-invitees"
+                    multiple
+                    value={eventData?.invites ?? []}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setValues("invites", value);
+                    }}
+                    input={
+                      <OutlinedInput
+                        label="Invite people"
+                        fullWidth
+                        // size="small"
+                      />
+                    }
+                  >
+                    {invitees?.map((name) => (
+                      <MenuItem key={name} value={name}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {/* </div>
                 <TextField
                   id="invites"
                   label="Invites"
@@ -430,7 +505,7 @@ function CreateEvent() {
                     else removeError(name);
                     setValues(name, value);
                   }}
-                />
+                /> */}
               </div>
             </div>
 
@@ -471,6 +546,55 @@ function CreateEvent() {
                 }}
               />
             </div>
+            <IconButton
+              color="primary"
+              aria-label="upload picture"
+              component="label"
+              disableRipple={true}
+            >
+              <input
+                hidden
+                accept=".png, .jpg, .jpeg"
+                type="file"
+                onChange={(e) => {
+                  e.preventDefault();
+                  setImageObj(e.target.files[0]);
+                }}
+              />
+              {/* <PhotoCamera /> */}
+              upload image
+            </IconButton>
+
+            {imageObj && (
+              <div>
+                {" "}
+                <AvatarEditor
+                  ref={editorRef}
+                  image={URL.createObjectURL(imageObj)}
+                  width={500}
+                  height={250}
+                  border={1}
+                  color={[57, 62, 70]} // RGBA
+                  scale={zoom}
+                  rotate={0}
+                  borderRadius={1}
+                />
+                <div className="flex align-middle mt-2">
+                  <span className="text-xl mr-2">Zoom</span>
+                  <Slider
+                    min={0}
+                    max={2}
+                    step={0.1}
+                    size="small"
+                    defaultValue={1}
+                    onChange={(e) => setZoom(e.target.value)}
+                    aria-label="Small"
+                    valueLabelDisplay="auto"
+                    track={false}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
