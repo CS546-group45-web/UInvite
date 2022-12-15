@@ -28,7 +28,7 @@ router
       try {
         userId = validation.checkObjectId(userId);
         eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
-        description = validation.checkNames(description, 'description');
+        description = validation.checkInputString(description, 'description');
         startDateTime = validation.checkEventDate(
           startDateTime,
           'startDateTime'
