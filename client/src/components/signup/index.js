@@ -1,25 +1,25 @@
-import React from "react";
-import { Checkbox, Divider, Link, MenuItem, TextField } from "@mui/material";
-import { genderOptions } from "../../constants";
+import React from 'react';
+import { Checkbox, Divider, MenuItem, TextField } from '@mui/material';
+import { genderOptions } from '../../constants';
 import {
   emailValidation,
   nameValidation,
   passwordValidation,
   usernameValidation,
-} from "../../utils/helper";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import SVGComponent from "../common/Logo";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DatePicker } from "@mui/x-date-pickers";
-import "./styles.css";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { toast } from "react-toastify";
-import { signup } from "../../utils/apis/auth";
-import Loading from "../common/Loading";
-import { useNavigate } from "react-router";
+} from '../../utils/helper';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import SVGComponent from '../common/Logo';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
+import './styles.css';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { toast } from 'react-toastify';
+import { signup } from '../../utils/apis/auth';
+import Loading from '../common/Loading';
+import { useNavigate } from 'react-router';
 
 function SignUp() {
   const navigate = useNavigate();
@@ -80,10 +80,10 @@ function SignUp() {
     let mm = today.getMonth() + 1; // Months start at 0!
     let dd = today.getDate();
 
-    if (dd < 10) dd = "0" + dd;
-    if (mm < 10) mm = "0" + mm;
+    if (dd < 10) dd = '0' + dd;
+    if (mm < 10) mm = '0' + mm;
 
-    const formattedToday = mm + "/" + dd + "/" + yyyy;
+    const formattedToday = mm + '/' + dd + '/' + yyyy;
 
     // console.log(dob.$d);
     const apiBody = {
@@ -103,9 +103,9 @@ function SignUp() {
     if (status !== 201) toast.error(data?.error);
     else {
       toast.success(
-        "User registered successfully. Please check your inbox to verify your account."
+        'User registered successfully. Please check your inbox to verify your account.'
       );
-      setTimeout(() => navigate("/"), 4000);
+      setTimeout(() => navigate('/'), 4000);
     }
     setLoading(false);
   };
@@ -171,7 +171,7 @@ function SignUp() {
                 }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!nameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -204,7 +204,7 @@ function SignUp() {
                 }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!nameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -224,7 +224,7 @@ function SignUp() {
                 type="email"
                 fullWidth
                 margin="dense"
-                value={signupData?.email ?? ""}
+                value={signupData?.email ?? ''}
                 name="email"
                 placeholder="johndoe@example.com"
                 helperText={
@@ -240,7 +240,7 @@ function SignUp() {
                 error={errors?.email}
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!emailValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -273,7 +273,7 @@ function SignUp() {
                 }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!usernameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -296,7 +296,7 @@ function SignUp() {
                   name="phone"
                   error={errors?.phone}
                   placeholder="1234567899"
-                  value={signupData?.phone ?? ""}
+                  value={signupData?.phone ?? ''}
                   helperText={
                     errors?.phone ? (
                       <span className="text-base flex items-center">
@@ -309,7 +309,7 @@ function SignUp() {
                   }
                   onChange={(e) => {
                     let { name, value } = e.target;
-                    if (value === "") setError(name);
+                    if (value === '') setError(name);
                     if (value.length < 10 || value.length > 10) setError(name);
                     else removeError(name);
                     setValues(name, value);
@@ -344,16 +344,16 @@ function SignUp() {
                         />
                       )}
                       onChange={(e) => {
-                        if (e === null) removeError("dob");
-                        setValues("dob", e);
+                        if (e === null) removeError('dob');
+                        setValues('dob', e);
                       }}
                       onError={(e, f) => {
-                        if (e === "invalidDate") setError("dob");
-                        if (e === null) removeError("dob");
+                        if (e === 'invalidDate') setError('dob');
+                        if (e === null) removeError('dob');
                       }}
                       maxDate={populateDate(new Date().getFullYear(), 13)}
                       minDate={populateDate(new Date().getFullYear(), 100)}
-                      openTo={"day"}
+                      openTo={'day'}
                     />
                   </LocalizationProvider>
                 </div>
@@ -370,13 +370,13 @@ function SignUp() {
               fullWidth
               required
               margin="dense"
-              value={signupData?.gender ?? ""}
+              value={signupData?.gender ?? ''}
               name="gender"
               placeholder="select a gender"
               error={errors?.gender}
               onChange={(e) => {
                 const { name, value } = e.target;
-                if (value !== "") {
+                if (value !== '') {
                   setValues(name, value);
                   removeError(name);
                 } else setError(name);
@@ -404,24 +404,24 @@ function SignUp() {
               variant="outlined"
               required
               fullWidth
-              type={passwordVisibility ? "text" : "password"}
+              type={passwordVisibility ? 'text' : 'password'}
               margin="dense"
               name="password"
               placeholder="********"
-              value={signupData?.password ?? ""}
+              value={signupData?.password ?? ''}
               error={errors?.password}
               onChange={(e) => {
                 let { name, value } = e.target;
-                if (value === "") setError(name);
+                if (value === '') setError(name);
                 if (!passwordValidation(value)) setError(name);
                 else removeError(name);
                 if (
                   signupData?.cpassword &&
-                  signupData?.cpassword !== "" &&
+                  signupData?.cpassword !== '' &&
                   value !== signupData?.cpassword
                 )
-                  setError("cpassword");
-                else removeError("cpassword");
+                  setError('cpassword');
+                else removeError('cpassword');
                 setValues(name, value);
               }}
             />
@@ -441,10 +441,10 @@ function SignUp() {
               <span
                 className={`${
                   !signupData?.password
-                    ? "password__blank"
+                    ? 'password__blank'
                     : !/[a-z]/g.test(signupData.password)
-                    ? "password__error"
-                    : "password__correct"
+                    ? 'password__error'
+                    : 'password__correct'
                 }`}
               >
                 {!signupData?.password ? null : !/[a-z]/g.test(
@@ -459,10 +459,10 @@ function SignUp() {
               <span
                 className={`${
                   !signupData?.password
-                    ? "password__blank"
+                    ? 'password__blank'
                     : !/[A-Z]/g.test(signupData.password)
-                    ? "password__error"
-                    : "password__correct"
+                    ? 'password__error'
+                    : 'password__correct'
                 }`}
               >
                 {!signupData?.password ? null : !/[A-Z]/g.test(
@@ -477,10 +477,10 @@ function SignUp() {
               <span
                 className={`${
                   !signupData?.password
-                    ? "password__blank"
+                    ? 'password__blank'
                     : !/[0-9]/g.test(signupData.password)
-                    ? "password__error"
-                    : "password__correct"
+                    ? 'password__error'
+                    : 'password__correct'
                 }`}
               >
                 {!signupData?.password ? null : !/[0-9]/g.test(
@@ -495,11 +495,11 @@ function SignUp() {
               <span
                 className={`${
                   !signupData?.password
-                    ? "password__blank"
+                    ? 'password__blank'
                     : signupData?.password?.length < 8 ||
                       signupData?.password?.length > 20
-                    ? "password__error"
-                    : "password__correct"
+                    ? 'password__error'
+                    : 'password__correct'
                 }`}
               >
                 {!signupData?.password ? null : signupData?.password?.length <
@@ -525,7 +525,7 @@ function SignUp() {
               margin="dense"
               type="password"
               name="cpassword"
-              value={signupData?.cpassword ?? ""}
+              value={signupData?.cpassword ?? ''}
               error={errors?.cpassword}
               placeholder="********"
               helperText={
@@ -540,7 +540,7 @@ function SignUp() {
               }
               onChange={(e) => {
                 let { name, value } = e.target;
-                if (value === "") setError(name);
+                if (value === '') setError(name);
                 if (signupData?.password !== value) setError(name);
                 else removeError(name);
                 setValues(name, value);
@@ -552,13 +552,13 @@ function SignUp() {
             <Checkbox
               checked={signupData?.agreedTerms}
               onChange={(e) => {
-                setValues("agreedTerms", e.target.checked);
-                removeError("agreedTerms");
+                setValues('agreedTerms', e.target.checked);
+                removeError('agreedTerms');
               }}
             />
             <div
               className={`text-xl${
-                errors.agreedTerms ? " text-[#d32f2f]" : ""
+                errors.agreedTerms ? ' text-[#d32f2f]' : ''
               }`}
             >
               I have read and agreed to the terms and privacy policy.
@@ -580,7 +580,7 @@ function SignUp() {
             <div className="text-xl text-black flex">
               Have a account? &nbsp;
               <div
-                onClick={() => navigate("/login")}
+                onClick={() => navigate('/login')}
                 className="text-[#393e46] cursor-pointer hover:underline"
               >
                 Sign in
