@@ -17,7 +17,7 @@ const createComment = async (eventId, userId, comment) => {
   const newComment = {
     _id: ObjectId(),
     user_id: userId,
-    date_created: today,
+    dateCreated: today,
     name: firstName + " " + lastName,
     username: username,
     profile_photo_url: profile_photo_url,

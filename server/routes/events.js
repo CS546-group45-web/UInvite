@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const data = require('../data');
+const data = require("../data");
 const userData = data.users;
 const eventData = data.events;
 const comments = data.comments;
@@ -8,8 +8,8 @@ const validation = require("../utils/validation");
 const passport = require("passport");
 
 router
-  .route('/')
-  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+  .route("/")
+  .post(passport.authenticate("jwt", { session: false }), async (req, res) => {
     let {
       eventTitle,
       organizerName,
@@ -24,21 +24,21 @@ router
     let userId = req.user._id;
     try {
       userId = validation.checkObjectId(userId);
-      eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
-      organizerName = validation.checkNames(organizerName, 'organizerName');
-      description = validation.checkNames(description, 'description');
-      startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
-      endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
-      address = validation.checkInputString(address, 'address');
+      eventTitle = validation.checkTitle(eventTitle, "eventTitle");
+      organizerName = validation.checkNames(organizerName, "organizerName");
+      description = validation.checkNames(description, "description");
+      startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
+      endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
+      address = validation.checkInputString(address, "address");
       // maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, 'maxRsvpsCount');
-      type = validation.checkEventType(type, 'type');
-      tags = validation.checkTags(tags, 'tags');
+      type = validation.checkEventType(type, "type");
+      tags = validation.checkTags(tags, "tags");
     } catch (e) {
-      if (typeof e === 'string') return res.status(400).json({ error: e });
+      if (typeof e === "string") return res.status(400).json({ error: e });
       else
         return res
           .status(400)
-          .json({ error: 'The event is missing a  parameter, try again!' });
+          .json({ error: "The event is missing a  parameter, try again!" });
     }
     try {
       let eventCreated = await eventData.createEvent(
@@ -55,7 +55,7 @@ router
       );
       return res
         .status(200)
-        .json({ message: 'Event added successfully', eventId: eventCreated });
+        .json({ message: "Event added successfully", eventId: eventCreated });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
@@ -66,7 +66,7 @@ router
   });
 
 router
-  .route('/id/:eventId')
+  .route("/id/:eventId")
   .get(async (req, res) => {
     let eventId = req.params.eventId;
     try {
@@ -97,7 +97,7 @@ router
     }
   });
 
-router.route('/title/:eventTitle').get(async (req, res) => {
+router.route("/title/:eventTitle").get(async (req, res) => {
   let eventTitle = req.params.eventTitle;
   console.log(eventTitle);
   try {
@@ -114,7 +114,7 @@ router.route('/title/:eventTitle').get(async (req, res) => {
   }
 });
 
-router.route('/date/:eventDate').get(async (req, res) => {
+router.route("/date/:eventDate").get(async (req, res) => {
   let eventDate = req.params.eventDate;
   try {
     title = validation.checkEventDate(eventDate);
@@ -134,10 +134,9 @@ router
   .route("/:eventId/comment")
   .post(passport.authenticate("jwt", { session: false }), async (req, res) => {
     let eventId = req.params.eventId;
-    console.log(eventId);
     let comment = req.body.comment;
     let userId = req.user._id;
-    console.log("Here");
+
     try {
       eventId = validation.checkObjectId(eventId);
       comment = validation.checkInputString(comment);
@@ -146,11 +145,11 @@ router
     }
 
     try {
-      console.log("Inside createComment");
       comment = await comments.createComment(eventId, userId, comment);
+      let event = await eventData.getEventById(eventId);
       res
         .status(200)
-        .json({ message: "Comment added successfully", data: comment });
+        .json({ message: "Comment added successfully", data: event });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
