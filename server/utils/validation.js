@@ -28,6 +28,15 @@ const checkNames = (input, name) => {
   return input;
 };
 
+const checkTitle = (input, name) => {
+  input = checkInputString(input);
+  if (!/^[a-zA-Z0-9 ]+$/.test(input)) {
+    throw `${name} must only contain letters or numbers`;
+  }
+  if (input.length < 4) throw `${name} should be of length 4 or greater`; //added extra validation
+  return input;
+};
+
 const checkEmail = (input) => {
   input = checkInputString(input, 'email');
   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(input)) {
@@ -86,11 +95,9 @@ const checkGender = (input) => {
 const checkObjectId = (input, name = 'object id') => {
   //console.log("Inside checkObject");
   checkInputString(input, name);
-  //console.log("after checkInputString");
   if (!ObjectId.isValid(input)) {
     throw `${name} must be a valid ObjectId`;
   }
-  //console.log("after check Object");
   return input;
 };
 
@@ -195,7 +202,6 @@ const checkUsername = (input) => {
   input = input.toLowerCase();
   return input;
 };
-
 const checkBool = (input, permission) => {
   if (!input || typeof input !== 'boolean') {
     throw `${permission} not a boolean`;
@@ -212,6 +218,8 @@ module.exports = {
   checkDate,
   checkGender,
   checkObjectId,
+  checkUsername,
+  checkTitle,
   checkAdress,
   checkEventDate,
   checkRsvpCount,
@@ -221,5 +229,4 @@ module.exports = {
   checkEventURl,
   checkComments,
   checkReviews,
-  checkUsername,
 };

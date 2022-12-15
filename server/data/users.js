@@ -2,6 +2,7 @@ const { ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
+const events = mongoCollections.events;
 const validation = require('../utils/validation');
 
 const createUser = async (
@@ -36,6 +37,7 @@ const createUser = async (
     hashed_password: hashed_password,
     gender: gender,
     is_verified: false,
+    invited_events: [],
     rsvped_events: [],
     profile_photo_url: '',
     events_created: [],
@@ -218,6 +220,7 @@ const getFollowingInformation = async (userId) => {
   }
   return following;
 };
+
 module.exports = {
   createUser,
   getUserById,
@@ -229,6 +232,6 @@ module.exports = {
   addFollower,
   unfollowUser,
   updateImageURL,
-  getFollowersInformation,
   getFollowingInformation,
+  getFollowersInformation,
 };
