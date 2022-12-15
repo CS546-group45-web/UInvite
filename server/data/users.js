@@ -2,6 +2,7 @@ const { ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
+const events = mongoCollections.events;
 const events_func = require('./events');
 const validation = require('../utils/validation');
 
@@ -60,6 +61,23 @@ const getUserById = async (id) => {
   return user;
 };
 
+const getUserById_Object = async (id) => {
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(id) });
+  if (!user) throw 'User not found';
+  user._id = user._id.toString();
+  delete user.hashed_password;
+  return user;
+};
+
+const getEventById_Object = async (event_id) => {
+  event_id = validation.checkObjectId(event_id);
+  const eventCollection = await events();
+  const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
+  if (event === null) throw new Error("No event with that id");
+  return event;
+};
+
 const getUserByEmail = async (email) => {
   email = validation.checkEmail(email);
   const user_collection = await users();
@@ -108,6 +126,18 @@ const updateUser = async (
   }
 
   return await getUserById(id);
+};
+
+const getAllUsers = async () => {
+  const userCollection = await users();
+  const users_list = await userCollection.find({}).toArray();
+  if (!users_list) {
+    throw new Error("Could not get all events.");
+  }
+  for (const element of users_list) {
+    element._id = element._id.toString();
+  }
+  return users_list; //changed from events to event_list
 };
 
 const verifyUser = async (id) => {
@@ -235,22 +265,61 @@ const add_event = async(userId, event_id) => {
   return await getUserById(userId);
 }
 
-const rsvp_event = async(userId, event_id) =>{
+const rsvp_event = async(userId, eventId) =>{
+  eventId = validation.checkObjectId(eventId);
+  userId = validation.checkObjectId(userId);
   const user_collection = await users();
-  const event = await user_collection.findOne(
-    {"invited_events._id" : ObjectId(event_id)}
+  const user = await user_collection.findOne(
+    {"invited_events._id" : ObjectId(eventId)}
   );
-  if(event === null) throw 'No events with given Id';
+  if(user === null) throw 'No events with given Id for this user';
   const updated_info = await user_collection.updateOne(
     {_id : ObjectId(userId)},
-    {$pull : {invited_events: {_id: ObjectId(event_id)}}},
-    {$push : {rsvped_events: event}},
+    {$pull : {invited_events: {_id: ObjectId(eventId)}}},
     {returnDocument: "after"}
   );
   if(updated_info.modifiedCount === 0){
-    throw 'Could not rsvp to event to user successfully';
+    throw 'Could not rsvp user to event successfully';
   }
+  const event = await getEventById_Object(eventId);
+  const updated_info_after = await user_collection.updateOne(
+    {_id : ObjectId(userId)},
+    {$push : {rsvped_events: event}},
+    {returnDocument: "after"}
+  );
+  if(updated_info_after.modifiedCount === 0){
+    throw 'Could not rsvp user to event successfully';
+  }
+  await user_rsvped(userId,eventId);
   return await getUserById(userId);
+}
+
+const user_rsvped = async (userId, eventId) => {
+  eventId = validation.checkObjectId(eventId);
+  userId = validation.checkObjectId(userId);
+  const event_collection = await events();
+  const event = await event_collection.findOne(
+    {"waitlist._id" : ObjectId(userId)}
+  );
+  if(event === null) throw 'No user with given id';
+  const user = await getUserById_Object(userId);
+  const updated_info = await event_collection.updateOne(
+    {_id : ObjectId(eventId)},
+    {$pull: {waitlist : {_id : ObjectId(userId)}}},
+    {returnDocument : "after"}
+  );
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not add user to rsvps list.';
+  }
+  const updated_info_after = await event_collection.updateOne(
+    {_id : ObjectId(eventId)},
+    {$push: {rsvps : user}},
+    {returnDocument : "after"}
+  );
+  if(updated_info_after.modifiedCount === 0){
+    throw 'Could not add user to rsvps list.';
+  }
+  return {"User rsvped" : "user_rsvp successfully rsvped."};
 }
 
 const user_create_event = async(userId, created_event) =>{

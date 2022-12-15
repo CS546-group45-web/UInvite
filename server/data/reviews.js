@@ -5,14 +5,12 @@ const validation = require('../utils/validation');
 
 const createReview = async (
   eventId,
-  reviewTitle,
   reviewerName,
   review,
   rating
 ) => {
   //----------------------------validation--------------------------------------
   eventId = validation.checkObjectId(eventId);
-  reviewTitle = validation.checkInputString(reviewTitle);
   reviewerName = validation.checkNames(reviewerName, "Full Name");
   if(!(/^([1-5]|[1-4].[0-9])$/gm.test(rating))){ throw new Error("Invalid Rating."); } // test valid rating
   //----------------------------validation ends---------------------------------
@@ -27,7 +25,6 @@ const createReview = async (
   const formattedToday = mm + '/' + dd + '/' + yyyy;
   const new_review = {
     _id : ObjectId(),
-    reviewTitle : reviewTitle,
     reviewDate : formattedToday,
     reviewerName : reviewerName,
     review : review,
