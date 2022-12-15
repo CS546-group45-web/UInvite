@@ -93,7 +93,6 @@ const checkGender = (input) => {
 };
 
 const checkObjectId = (input, name = "object id") => {
-  //console.log("Inside checkObject");
   checkInputString(input, name);
   if (!ObjectId.isValid(input)) {
     throw `${name} must be a valid ObjectId`;
@@ -199,6 +198,13 @@ const checkUsername = (input) => {
   return input;
 };
 
+const checkBool = (input, permission) => {
+  if (!input || typeof input !== "boolean") {
+    throw `${permission} is not a boolean.`;
+  }
+  return input;
+};
+
 module.exports = {
   checkInputString,
   checkNames,
@@ -219,4 +225,5 @@ module.exports = {
   checkEventURl,
   checkComments,
   checkReviews,
+  checkBool,
 };

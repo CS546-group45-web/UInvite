@@ -30,14 +30,14 @@ const createEvent = async (
 
   const event_collection = await events();
   const newEvent = {
-    userId: ObjectId(userId),
+    userId: userId,
     eventTitle: eventTitle,
     organizerName: organizerName,
     description: description,
     startDateTime: startDateTime,
     endDateTime: endDateTime,
     address: address,
-    date_created: new Date(),
+    date_created: new Date().toISOString(),
     maxRsvpsCount: maxRsvpsCount,
     type: type,
     rsvps: [],
@@ -92,7 +92,7 @@ const getAllEvents = async () => {
 };
 
 const getEventById = async (event_id) => {
-  event_id = validation.checkId(event_id);
+  event_id = validation.checkObjectId(event_id);
   const eventCollection = await events();
   const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
   if (event === null) throw new Error("No event with that id");
