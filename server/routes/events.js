@@ -3,6 +3,7 @@ const router = express.Router();
 const data = require("../data");
 const userData = data.users;
 const eventData = data.events;
+const comments = data.comments;
 const validation = require("../utils/validation");
 const passport = require("passport");
 
@@ -16,7 +17,7 @@ router
       startDateTime,
       endDateTime,
       address,
-      maxRsvpsCount,
+      // maxRsvpsCount,
       type,
       tags,
     } = req.body;
@@ -28,8 +29,8 @@ router
       description = validation.checkNames(description, "description");
       startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
       endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
-      address = validation.checkAdress(address, "address");
-      maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
+      address = validation.checkInputString(address, "address");
+      // maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, 'maxRsvpsCount');
       type = validation.checkEventType(type, "type");
       tags = validation.checkTags(tags, "tags");
     } catch (e) {
@@ -40,8 +41,7 @@ router
           .json({ error: "The event is missing a  parameter, try again!" });
     }
     try {
-      // console.log("Before event");
-      let eventCreate = await eventData.createEvent(
+      let eventCreated = await eventData.createEvent(
         userId,
         eventTitle,
         organizerName,
@@ -49,11 +49,13 @@ router
         startDateTime,
         endDateTime,
         address,
-        maxRsvpsCount,
+        // maxRsvpsCount,
         type,
         tags
       );
-      return res.status(200).json({ message: "Event added successfully" });
+      return res
+        .status(200)
+        .json({ message: "Event added successfully", eventId: eventCreated });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
@@ -67,7 +69,6 @@ router
   .route("/id/:eventId")
   .get(async (req, res) => {
     let eventId = req.params.eventId;
-    console.log(req.body);
     try {
       eventId = validation.checkObjectId(eventId);
     } catch (e) {
@@ -128,5 +129,30 @@ router.route("/date/:eventDate").get(async (req, res) => {
     return res.status(500).json({ error: e });
   }
 });
+
+router
+  .route("/:eventId/comment")
+  .post(passport.authenticate("jwt", { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let comment = req.body.comment;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+      comment = validation.checkInputString(comment);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      comment = await comments.createComment(eventId, userId, comment);
+      let event = await eventData.getEventById(eventId);
+      res
+        .status(200)
+        .json({ message: "Comment added successfully", data: event });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
 
 module.exports = router;

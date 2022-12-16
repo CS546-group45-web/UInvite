@@ -196,7 +196,7 @@ const checkUsername = (input) => {
     throw 'Username must contain only letters and numbers';
   }
   if (input.length < 6) {
-    throw 'Username must contain only letters and numbers';
+    throw 'Username must contain at least 6 characters ';
   }
   input = input.toLowerCase();
   return input;
@@ -228,5 +228,4 @@ module.exports = {
   checkEventURl,
   checkComments,
   checkReviews,
-  checkBool,
 };

@@ -17,7 +17,7 @@
 }
 
 div.grid_spaces {
-  grid-template-columns: auto auto auto;
+  grid-template-columns: max-content auto min-content;
 }
 
 .profile_page_loader {
@@ -76,10 +76,16 @@ div.grid_spaces {
 .btn_default_following {
   width: auto;
   height: 38px;
-  padding: 4px 10px;
+  padding: 4px 10px 4px 6px;
   border-radius: 12px;
   color: #393e46;
   font-size: 18px;
   font-weight: 500;
   border: 2px solid #393e46;
+}
+
+.btn_default_following__extra {
+  display: flex;
+  align-items: flex-end;
+  margin: 0px 10px;
 }
