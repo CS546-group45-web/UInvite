@@ -10,10 +10,11 @@ const createEvent = async (
   startDateTime,
   endDateTime,
   address,
-  // maxRsvpsCount,
   type,
   tags,
-  event_photo_url
+  isPicturesAllowed,
+  areCommentsAllowed,
+  ageRestricted
 ) => {
   userId = validation.checkObjectId(userId);
   eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
@@ -33,7 +34,9 @@ const createEvent = async (
     endDateTime: endDateTime,
     address: address,
     dateCreated: new Date().toISOString(),
-    // maxRsvpsCount: maxRsvpsCount,
+    isPicturesAllowed: isPicturesAllowed,
+    areCommentsAllowed: areCommentsAllowed,
+    ageRestricted: ageRestricted,
     type: type,
     rsvps: [],
     waitlist: [],
@@ -42,13 +45,31 @@ const createEvent = async (
     comments: [],
     reviews: [],
     overallRating: 0,
-    event_photo_url: event_photo_url,
   };
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw 'Could not add event';
-  const newId = insertInfo.insertedId;
-  await user.addCreatedEvent(userId, newId);
+  const newId = insertInfo.insertedId.toString();
+  try {
+    const userData = await user.addCreatedEvent(userId, newId);
+  } catch (e) {
+    throw e;
+  }
   return newId;
+};
+
+// updateEventPhoto
+const updateEventPhoto = async (eventId, userId, event_photo_url) => {
+  eventId = validation.checkObjectId(eventId);
+  userId = validation.checkObjectId(userId);
+  const eventCollection = await events();
+  const updatedEvent = await eventCollection.updateOne(
+    { _id: ObjectId(eventId), userId: ObjectId(userId) },
+    { $set: { event_photo_url: event_photo_url } }
+  );
+  if (updatedEvent.modifiedCount === 0) {
+    throw 'Could not update event photo';
+  }
+  return await getEventById(eventId);
 };
 
 // get all upcoming events
@@ -170,7 +191,6 @@ const removeEvent = async (id) => {
   id = validation.checkObjectId(id);
   const eventCollection = await events();
   const eventObject = await getEventById(id);
-
   const eventName = eventObject['eventTitle'];
   const deletionInfo = await eventCollection.deleteOne({ _id: ObjectId(id) });
   if (deletionInfo.deletedCount === 0) {
@@ -181,6 +201,7 @@ const removeEvent = async (id) => {
 
 module.exports = {
   createEvent,
+  updateEventPhoto,
   getAllUpcomingEvents,
   getAllEvents,
   getEventById,
