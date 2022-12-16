@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data');
 const userData = data.users;
+const eventData = data.events;
 const validation = require('../utils/validation');
 const passport = require('passport');
 const upload = require('../utils/uploadImage');
@@ -180,7 +181,7 @@ router
   .route('/createdEvents')
   .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-      const createdEvents = await userData.getCreatedEvents(req.user._id);
+      const createdEvents = await eventData.getCreatedEvents(req.user._id);
       return res.json({
         message: 'Created events fetched',
         data: createdEvents,

@@ -33,15 +33,6 @@ router
       address = validation.checkInputString(address, 'address');
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
-      arePicturesAllowed = validation.checkBoolean(
-        arePicturesAllowed,
-        'arePicturesAllowed'
-      );
-      areCommentsAllowed = validation.checkBoolean(
-        areCommentsAllowed,
-        'areCommentsAllowed'
-      );
-      ageRestricted = validation.checkBoolean(ageRestricted, 'ageRestricted');
     } catch (e) {
       if (typeof e === 'string') return res.status(400).json({ error: e });
       else
@@ -75,6 +66,65 @@ router
     try {
       const event = await eventData.getAllEvents();
       return res.json({ message: 'events fetched', data: event });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// update route
+router
+  .route('/update/:eventId')
+  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+    let {
+      eventTitle,
+      description,
+      startDateTime,
+      endDateTime,
+      address,
+      type,
+      tags,
+      arePicturesAllowed,
+      areCommentsAllowed,
+      ageRestricted,
+    } = req.body;
+    try {
+      eventId = validation.checkObjectId(eventId);
+      userId = validation.checkObjectId(userId);
+      eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
+      description = validation.checkInputString(description, 'description');
+      startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
+      endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
+      address = validation.checkInputString(address, 'address');
+      type = validation.checkEventType(type, 'type');
+      tags = validation.checkTags(tags, 'tags');
+    } catch (e) {
+      if (typeof e === 'string') return res.status(400).json({ error: e });
+      else
+        return res
+          .status(400)
+          .json({ error: 'The event is missing a  parameter, try again!' });
+    }
+    try {
+      const event = await eventData.updateEvent(
+        eventId,
+        userId,
+        eventTitle,
+        description,
+        startDateTime,
+        endDateTime,
+        address,
+        type,
+        tags,
+        arePicturesAllowed,
+        areCommentsAllowed,
+        ageRestricted
+      );
+      return res.status(200).json({
+        message: 'Event updated successfully',
+        data: event,
+      });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
