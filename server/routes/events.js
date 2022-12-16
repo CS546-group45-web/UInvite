@@ -19,7 +19,7 @@ router
       address,
       type,
       tags,
-      isPicturesAllowed,
+      arePicturesAllowed,
       areCommentsAllowed,
       ageRestricted,
     } = req.body;
@@ -33,9 +33,9 @@ router
       address = validation.checkInputString(address, 'address');
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
-      isPicturesAllowed = validation.checkBoolean(
-        isPicturesAllowed,
-        'isPicturesAllowed'
+      arePicturesAllowed = validation.checkBoolean(
+        arePicturesAllowed,
+        'arePicturesAllowed'
       );
       areCommentsAllowed = validation.checkBoolean(
         areCommentsAllowed,
@@ -59,7 +59,7 @@ router
         address,
         type,
         tags,
-        isPicturesAllowed,
+        arePicturesAllowed,
         areCommentsAllowed,
         ageRestricted
       );

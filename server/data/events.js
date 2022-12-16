@@ -12,7 +12,7 @@ const createEvent = async (
   address,
   type,
   tags,
-  isPicturesAllowed,
+  arePicturesAllowed,
   areCommentsAllowed,
   ageRestricted
 ) => {
@@ -34,7 +34,7 @@ const createEvent = async (
     endDateTime: endDateTime,
     address: address,
     dateCreated: new Date().toISOString(),
-    isPicturesAllowed: isPicturesAllowed,
+    arePicturesAllowed: arePicturesAllowed,
     areCommentsAllowed: areCommentsAllowed,
     ageRestricted: ageRestricted,
     type: type,
