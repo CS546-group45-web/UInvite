@@ -101,6 +101,14 @@ const add_guest = async (eventId, email) => {
   return await getEventById(eventId);
 };
 
+const add_guests = async (eventId, arr) =>{
+  eventId = validation.checkObjectId(eventId);
+  for(const element of arr){
+    await add_guest(eventId, element);
+  }
+  return {Add_guest : "added guests successfully."};
+}
+
 const getAllEvents = async () => {
   const eventCollection = await events();
   const events_list = await eventCollection.find({}).toArray();
@@ -183,27 +191,18 @@ const addRating = async (event_id, user_id, rating) => {
 
   const updatedInfo = await eventCollection.updateOne(
     { _id: ObjectId(event_id) },
-    { $push: { ratings: ratingObj } }
+    { $push: { ratings: ratingObj } },
+    {returnDocument : "after"}
   );
-  console.log({ updatedInfo });
   let orating = await updateOverallRating(event_id);
 
   if (updatedInfo.modifiedCount === 0) {
     throw "could not update event successfully";
   }
-  // let rating_id = ratings._id;
-  // console.log("Original Rating");
-  // console.log(rating_id);
-  // console.log(rating);
 
   const event = await eventCollection.findOne({
     _id: ObjectId(event_id),
   });
-  // console.log("Added");
-
-  // const event = await eventCollection.findOne({
-  //   ratings: { $elemMatch: { user_id: user_id } },
-  // });
   return event;
 };
 
@@ -271,6 +270,7 @@ module.exports = {
   getEventsByDate,
   getEventsByTitle,
   add_guest,
+  add_guests,
   addRating,
   updateRating,
 };
