@@ -58,6 +58,87 @@ const getUserById = async (id) => {
   return user;
 };
 
+// invited_events add invite
+const addInvite = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $addToSet: { invited_events: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not add invite';
+  }
+  return await getUserById(userId);
+};
+
+// getInvite
+const getInvite = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  if (user.invited_events.includes(eventId)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// acceptInvite removeInviteAndAddRSVP
+const acceptInvite = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $pull: { invited_events: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove invite';
+  }
+  const updated_info2 = await event_collection.updateOne(
+    { _id: ObjectId(eventId) },
+    {
+      $addToSet: { rsvps: userId },
+    }
+  );
+  if (updated_info2.modifiedCount === 0) {
+    throw 'Could not add RSVP';
+  }
+  // update in user rsvped_events
+  const updated_info3 = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+
+    {
+      $addToSet: { rsvped_events: eventId },
+    }
+  );
+  if (updated_info3.modifiedCount === 0) {
+    throw 'Could not add RSVP';
+  }
+  return await getUserById(userId);
+};
+
+// declineInvite
+const declineInvite = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $pull: { invited_events: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove invite';
+  }
+  return await getUserById(userId);
+};
+
 const getUserByEmail = async (email) => {
   email = validation.checkEmail(email);
   const user_collection = await users();
@@ -257,4 +338,8 @@ module.exports = {
   getFollowersInformation,
   addCreatedEvent,
   addrsvpEvent,
+  addInvite,
+  acceptInvite,
+  getInvite,
+  declineInvite,
 };

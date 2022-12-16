@@ -203,6 +203,22 @@ const getCreatedEvents = async (userId) => {
   return eventsCreated;
 };
 
+//  get user invites
+const getInvites = async (userId) => {
+  const userData = await user.getUserById(userId);
+  if (!userData) throw 'User not found';
+  const invites = [];
+  for (let i = 0; i < userData?.invites.length; i++) {
+    try {
+      let eventData = await getEventMinById(userData?.invites[i].toString());
+      invites.push(eventData);
+    } catch (e) {
+      throw e;
+    }
+  }
+  return invites;
+};
+
 // rsvp to event
 const rsvp = async (eventId, userId) => {
   eventId = validation.checkObjectId(eventId);
@@ -292,4 +308,5 @@ module.exports = {
   rsvp,
   getCreatedEvents,
   updateEvent,
+  getInvites,
 };

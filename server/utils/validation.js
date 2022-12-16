@@ -212,6 +212,13 @@ const checkBoolean = (input, name = 'boolean') => {
   return input;
 };
 
+const checkInvites = (input, name = 'invites') => {
+  checkInputString(input, name);
+  let invites = input.split(',');
+  invites.map((invite) => checkEmail(invite));
+  return invites;
+};
+
 module.exports = {
   checkInputString,
   checkNames,
@@ -233,4 +240,5 @@ module.exports = {
   checkComments,
   checkReviews,
   checkBoolean,
+  checkInvites,
 };

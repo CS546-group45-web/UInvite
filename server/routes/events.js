@@ -19,6 +19,7 @@ router
       address,
       type,
       tags,
+      invites,
       arePicturesAllowed,
       areCommentsAllowed,
       ageRestricted,
@@ -33,6 +34,7 @@ router
       address = validation.checkInputString(address, 'address');
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
+      invites = validation.checkInvites(invites, 'invites');
     } catch (e) {
       if (typeof e === 'string') return res.status(400).json({ error: e });
       else
@@ -54,6 +56,20 @@ router
         areCommentsAllowed,
         ageRestricted
       );
+      // send invites, invites is a array of emails
+      if (invites.length > 0) {
+        for (let i = 0; i < invites.length; i++) {
+          try {
+            const invitee = await userData.getUserByEmail(invites[i]);
+            if (invitee) {
+              await userData.addInvite(eventCreated, invitee._id);
+            }
+          } catch (e) {
+            return res.status(500).json({ error: e });
+          }
+        }
+      }
+
       return res.status(200).json({
         message: 'Event added successfully',
         data: { eventId: eventCreated },
@@ -66,6 +82,66 @@ router
     try {
       const event = await eventData.getAllEvents();
       return res.json({ message: 'events fetched', data: event });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// accpet invite
+router
+  .route('/accept/:eventId')
+  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+    try {
+      eventId = validation.checkObjectId(eventId);
+      userId = validation.checkObjectId(userId);
+    } catch (e) {
+      res
+        .status(400)
+        .json({ error: 'The event is missing a  parameter, try again!' });
+    }
+    try {
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
+      const invite = await userData.getInvite(eventId, userId);
+      if (!invite) {
+        return res.status(404).json({ error: 'Invite not found' });
+      }
+      await userData.acceptInvite(eventId, userId);
+      return res.status(200).json({ message: 'Invite accepted' });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// decline invite
+router
+  .route('/decline/:eventId')
+  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+    try {
+      eventId = validation.checkObjectId(eventId);
+      userId = validation.checkObjectId(userId);
+    } catch (e) {
+      res
+        .status(400)
+        .json({ error: 'The event is missing a  parameter, try again!' });
+    }
+    try {
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
+      const invite = await userData.getInvite(eventId, userId);
+      if (!invite) {
+        return res.status(404).json({ error: 'Invite not found' });
+      }
+      await userData.declineInvite(eventId, userId);
+      return res.status(200).json({ message: 'Invite declined' });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
