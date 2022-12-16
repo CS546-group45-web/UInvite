@@ -8,13 +8,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
-  Slider,
   TextField,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import {
   eventNameValidation,
@@ -22,20 +22,27 @@ import {
   validateTags,
   validateUrl,
   validateDateDiff,
-  dataURLtoFile,
+  // dataURLtoFile,
 } from "../../../utils/helper";
 import { typeOptions } from "../../../constants";
 import { getUserFollowers } from "../../../utils/apis/user";
 import { createEvent } from "../../../utils/apis/event";
-import AvatarEditor from "react-avatar-editor";
+// import AvatarEditor from "react-avatar-editor";
 
 function CreateEvent() {
-  const [eventData, setEventData] = React.useState({});
+  const [eventData, setEventData] = React.useState({
+    arePicturedAllowed: true,
+    areCommentsAllowed: true,
+    ageResitricted: true,
+    type: "in-person",
+    startDateTime: new Date(+new Date() + 86400000),
+    endDateTime: new Date(+new Date() + 87000000),
+  });
   const [errors, setErrors] = React.useState({});
   const [invitees, setInvitees] = React.useState([]);
-  const [imageObj, setImageObj] = React.useState(null);
-  const editorRef = React.useRef(null);
-  const [zoom, setZoom] = React.useState(1);
+  // const [imageObj, setImageObj] = React.useState(null);
+  // const editorRef = React.useRef(null);
+  // const [zoom, setZoom] = React.useState(1);
   const [createLoading, setCreateLoading] = React.useState(false);
 
   const validateData = async (e) => {
@@ -82,8 +89,18 @@ function CreateEvent() {
 
     setCreateLoading(true);
 
-    const { eventTitle, description, type, startDateTime, endDateTime, tags } =
-      eventData;
+    const {
+      eventTitle,
+      description,
+      type,
+      startDateTime,
+      endDateTime,
+      tags,
+      invitees,
+      arePicturedAllowed,
+      areCommentsAllowed,
+      ageResitricted,
+    } = eventData;
 
     const apiBody = {
       eventTitle,
@@ -92,21 +109,25 @@ function CreateEvent() {
       startDateTime: new Date(startDateTime).toISOString(),
       endDateTime: new Date(endDateTime).toISOString(),
       tags: tags,
+      invitees,
+      arePicturedAllowed,
+      areCommentsAllowed,
+      ageResitricted,
     };
     if (type === "in-person") apiBody.address = eventData?.address;
     if (type === "online") apiBody.onlineEventLink = eventData?.onlineEventLink;
     console.log(apiBody);
 
-    const formData = new FormData();
-    const img = editorRef.current?.getImageScaledToCanvas().toDataURL();
-    formData.append("eventImage", dataURLtoFile(img, "event-image"));
-    // formData.append("eventImage");
-    for (const key in apiBody) {
-      console.log(key, apiBody[key]);
-      formData.append(key, apiBody[key]);
-    }
+    // const formData = new FormData();
+    // const img = editorRef.current?.getImageScaledToCanvas().toDataURL();
+    // formData.append("eventImage", dataURLtoFile(img, "event-image"));
+    // // formData.append("eventImage");
+    // for (const key in apiBody) {
+    //   console.log(key, apiBody[key]);
+    //   formData.append(key, apiBody[key]);
+    // }
 
-    const { data } = await createEvent(formData);
+    const { data } = await createEvent(apiBody);
     console.log({ data });
 
     setCreateLoading(false);
@@ -139,10 +160,6 @@ function CreateEvent() {
       setInvitees(list);
     });
   }, []);
-
-  // React.useEffect(() => {
-  //   console.log(eventData, errors);
-  // }, [eventData, errors]);
 
   return (
     <div>
@@ -418,135 +435,112 @@ function CreateEvent() {
             </div>
 
             <div className="flex">
-              <div className="mr-1 w-6/12">
+              <div className="w-6/12 mr-1">
                 <TextField
-                  id="tags"
-                  label="Tags"
+                  id="description"
+                  label="Description"
                   variant="outlined"
                   required
                   size="small"
                   type="text"
                   fullWidth
-                  placeholder="eg. party,fun,nyc"
+                  placeholder="Tell us about your event"
                   margin="dense"
-                  name="tags"
-                  error={errors?.tags}
+                  name="description"
+                  multiline={true}
+                  minRows={5}
+                  error={errors?.description}
                   helperText={
-                    errors?.tags ? (
+                    errors?.description ? (
                       <span className="text-base flex items-center">
                         <CloseIcon fontSize="small" />
-                        Enter atleast one tag
+                        Please enter a Event Title
                       </span>
                     ) : (
                       <span className="text-base flex items-center">
                         <InfoOutlinedIcon fontSize="small" />
-                        &nbsp;Enter tags(comma seperated)
+                        &nbsp;Minimum of 20 characters
                       </span>
                     )
                   }
-                  value={eventData?.tags}
-                  onChange={(e) => {
-                    let { name, value } = e.target;
-                    if (!validateTags(value)) setError(name);
-                    else removeError(name);
-                    setValues(name, value);
-                  }}
-                />
-              </div>
-              <div className="mr-1 w-6/12">
-                <FormControl sx={{ m: 1, width: "100%" }}>
-                  <InputLabel id="multiple-invitees">Invite people</InputLabel>
-                  <Select
-                    labelId="multiple-invitees"
-                    id="multiple-invitees"
-                    multiple
-                    value={eventData?.invites ?? []}
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      setValues("invites", value);
-                    }}
-                    input={
-                      <OutlinedInput
-                        label="Invite people"
-                        fullWidth
-                        // size="small"
-                      />
-                    }
-                  >
-                    {invitees?.map((name) => (
-                      <MenuItem key={name} value={name}>
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                {/* </div>
-                <TextField
-                  id="invites"
-                  label="Invites"
-                  variant="outlined"
-                  size="small"
-                  type="text"
-                  fullWidth
-                  placeholder="eg. johndoe@eg.com,tonystark@eg.com"
-                  margin="dense"
-                  name="invites"
-                  error={errors?.invites}
-                  helperText={
-                    <span className="text-base flex items-center">
-                      <InfoOutlinedIcon fontSize="small" />
-                      &nbsp;Enter email ids(comma seperated)
-                    </span>
-                  }
-                  value={eventData?.invites}
+                  value={eventData?.description}
                   onChange={(e) => {
                     let { name, value } = e.target;
                     if (!validateDescription(value)) setError(name);
                     else removeError(name);
                     setValues(name, value);
                   }}
-                /> */}
+                />
+              </div>
+              <div className="w-6/12 ml-1">
+                <div>
+                  <TextField
+                    id="tags"
+                    label="Tags"
+                    variant="outlined"
+                    required
+                    size="small"
+                    type="text"
+                    fullWidth
+                    placeholder="eg. party,fun,nyc"
+                    margin="dense"
+                    name="tags"
+                    error={errors?.tags}
+                    helperText={
+                      errors?.tags ? (
+                        <span className="text-base flex items-center">
+                          <CloseIcon fontSize="small" />
+                          Enter atleast one tag
+                        </span>
+                      ) : (
+                        <span className="text-base flex items-center">
+                          <InfoOutlinedIcon fontSize="small" />
+                          &nbsp;Enter tags(comma seperated)
+                        </span>
+                      )
+                    }
+                    value={eventData?.tags}
+                    onChange={(e) => {
+                      let { name, value } = e.target;
+                      if (!validateTags(value)) setError(name);
+                      else removeError(name);
+                      setValues(name, value);
+                    }}
+                  />
+                </div>
+                <div>
+                  <FormControl sx={{ width: "100%" }}>
+                    <InputLabel id="multiple-invitees">
+                      Invite people
+                    </InputLabel>
+                    <Select
+                      labelId="multiple-invitees"
+                      id="multiple-invitees"
+                      multiple
+                      value={eventData?.invites ?? []}
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        setValues("invites", value);
+                      }}
+                      input={
+                        <OutlinedInput
+                          label="Invite people"
+                          fullWidth
+                          // size="small"
+                        />
+                      }
+                    >
+                      {invitees?.map((name) => (
+                        <MenuItem key={name} value={name}>
+                          {name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
               </div>
             </div>
-
-            <div className="w-7/12">
-              <TextField
-                id="description"
-                label="Description"
-                variant="outlined"
-                required
-                size="small"
-                type="text"
-                fullWidth
-                placeholder="Tell us about your event"
-                margin="dense"
-                name="description"
-                multiline={true}
-                minRows={4}
-                error={errors?.description}
-                helperText={
-                  errors?.description ? (
-                    <span className="text-base flex items-center">
-                      <CloseIcon fontSize="small" />
-                      Please enter a Event Title
-                    </span>
-                  ) : (
-                    <span className="text-base flex items-center">
-                      <InfoOutlinedIcon fontSize="small" />
-                      &nbsp;Minimum of 20 characters
-                    </span>
-                  )
-                }
-                value={eventData?.description}
-                onChange={(e) => {
-                  let { name, value } = e.target;
-                  if (!validateDescription(value)) setError(name);
-                  else removeError(name);
-                  setValues(name, value);
-                }}
-              />
-            </div>
-            <IconButton
+            {/* <IconButton
               color="primary"
               aria-label="upload picture"
               component="label"
@@ -561,11 +555,11 @@ function CreateEvent() {
                   setImageObj(e.target.files[0]);
                 }}
               />
-              {/* <PhotoCamera /> */}
+              <PhotoCamera />
               upload image
-            </IconButton>
+            </IconButton> */}
 
-            {imageObj && (
+            {/* {imageObj && (
               <div>
                 {" "}
                 <AvatarEditor
@@ -594,7 +588,42 @@ function CreateEvent() {
                   />
                 </div>
               </div>
-            )}
+            )} */}
+            <div className="flex">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={eventData?.arePicturedAllowed}
+                    onChange={(e) =>
+                      setValues("arePicturedAllowed", e.target.checked)
+                    }
+                  />
+                }
+                label="Allow to post images"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={eventData?.areCommentsAllowed}
+                    onChange={(e) =>
+                      setValues("areCommentsAllowed", e.target.checked)
+                    }
+                  />
+                }
+                label="Allow comments"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={eventData?.ageResitricted}
+                    onChange={(e) =>
+                      setValues("ageResitricted", e.target.checked)
+                    }
+                  />
+                }
+                label="Age Resiticted event"
+              />
+            </div>
           </div>
 
           <div>
