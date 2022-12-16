@@ -141,7 +141,7 @@ function SignUp() {
             Create your account
           </h2>
         </div>
-        <div className="rounded-md px-4 height_signup_form scroller">
+        <div className="rounded-md px-4">
           <div className="flex justify-between">
             <div className="mr-1 w-6/12">
               <TextField
@@ -159,7 +159,7 @@ function SignUp() {
                 placeholder="John"
                 helperText={
                   errors?.firstName ? (
-                    <span className="text-base flex items-center">
+                    <span className=" flex items-center">
                       <CloseIcon fontSize="small" />
                       Enter a valid first name
                     </span>
@@ -192,7 +192,7 @@ function SignUp() {
                 placeholder="Doe"
                 helperText={
                   errors?.lastName ? (
-                    <span className="text-base flex items-center">
+                    <span className=" flex items-center">
                       <CloseIcon fontSize="small" />
                       Enter a valid last name
                     </span>
@@ -227,7 +227,7 @@ function SignUp() {
                 placeholder="johndoe@example.com"
                 helperText={
                   errors?.email ? (
-                    <span className="text-base flex items-center">
+                    <span className=" flex items-center">
                       <CloseIcon fontSize="small" />
                       Enter a valid email
                     </span>
@@ -261,7 +261,7 @@ function SignUp() {
                 placeholder="johndoe"
                 helperText={
                   errors?.username ? (
-                    <span className="text-base flex items-center">
+                    <span className=" flex items-center">
                       <CloseIcon fontSize="small" />
                       Enter a valid username
                     </span>
@@ -297,7 +297,7 @@ function SignUp() {
                   value={signupData?.phone ?? ""}
                   helperText={
                     errors?.phone ? (
-                      <span className="text-base flex items-center">
+                      <span className=" flex items-center">
                         <CloseIcon fontSize="small" />
                         Enter a valid phone number
                       </span>
@@ -330,7 +330,7 @@ function SignUp() {
                           error={errors?.dob}
                           helperText={
                             errors?.dob ? (
-                              <span className="helperText__dob text-base flex items-center">
+                              <span className="helperText__dob  flex items-center">
                                 <CloseIcon fontSize="small" />
                                 Enter a valid date
                               </span>
@@ -389,7 +389,7 @@ function SignUp() {
               ))}
             </TextField>
             {errors?.gender && (
-              <span className="helperText__gender text-base flex items-center ">
+              <span className="helperText__gender flex items-center ">
                 <CloseIcon fontSize="small" />
                 Choose a gender
               </span>
@@ -410,11 +410,26 @@ function SignUp() {
               placeholder="********"
               value={signupData?.password ?? ""}
               error={errors?.password}
+              helperText={
+                errors?.cpassword ? (
+                  <span className=" flex items-center">
+                    <CloseIcon fontSize="small" />
+                    Password cannot be empty
+                  </span>
+                ) : (
+                  false
+                )
+              }
               onChange={(e) => {
                 let { name, value } = e.target;
-                if (value === "") setError(name);
-                if (!passwordValidation(value)) setError(name);
-                else removeError(name);
+                if (value === "") {
+                  setError(name);
+                  setValues(name, value);
+                }
+                if (!passwordValidation(value)) {
+                  setError(name);
+                  setValues(name, value);
+                } else removeError(name);
                 if (
                   signupData?.cpassword &&
                   signupData?.cpassword !== "" &&
@@ -437,81 +452,85 @@ function SignUp() {
               )}
             </div>
 
-            <div className="flex flex-col text-base">
-              <span
-                className={`${
-                  !signupData?.password
-                    ? "password__blank"
-                    : !/[a-z]/g.test(signupData.password)
-                    ? "password__error"
-                    : "password__correct"
-                }`}
-              >
-                {!signupData?.password ? null : !/[a-z]/g.test(
-                    signupData.password
-                  ) ? (
-                  <CloseIcon />
-                ) : (
-                  <CheckIcon />
-                )}
-                Password must contain atleast one lowercase letter e.g. a,b,c..
-              </span>
-              <span
-                className={`${
-                  !signupData?.password
-                    ? "password__blank"
-                    : !/[A-Z]/g.test(signupData.password)
-                    ? "password__error"
-                    : "password__correct"
-                }`}
-              >
-                {!signupData?.password ? null : !/[A-Z]/g.test(
-                    signupData.password
-                  ) ? (
-                  <CloseIcon />
-                ) : (
-                  <CheckIcon />
-                )}
-                Password must contain atleast one uppercase letter e.g. A,B,C..
-              </span>
-              <span
-                className={`${
-                  !signupData?.password
-                    ? "password__blank"
-                    : !/[0-9]/g.test(signupData.password)
-                    ? "password__error"
-                    : "password__correct"
-                }`}
-              >
-                {!signupData?.password ? null : !/[0-9]/g.test(
-                    signupData.password
-                  ) ? (
-                  <CloseIcon />
-                ) : (
-                  <CheckIcon />
-                )}
-                Password must contain atleast one number e.g. 1,2,3...
-              </span>
-              <span
-                className={`${
-                  !signupData?.password
-                    ? "password__blank"
-                    : signupData?.password?.length < 8 ||
-                      signupData?.password?.length > 20
-                    ? "password__error"
-                    : "password__correct"
-                }`}
-              >
-                {!signupData?.password ? null : signupData?.password?.length <
-                    8 || signupData?.password?.length > 20 ? (
-                  <CloseIcon />
-                ) : (
-                  <CheckIcon />
-                )}
-                Password must contain atleast 8 or more characters and less than
-                20 characters
-              </span>
-            </div>
+            {signupData?.password && (
+              <div className="flex flex-col">
+                <span
+                  className={`${
+                    !signupData?.password
+                      ? "password__blank"
+                      : !/[a-z]/g.test(signupData.password)
+                      ? "password__error"
+                      : "password__correct"
+                  }`}
+                >
+                  {!signupData?.password ? null : !/[a-z]/g.test(
+                      signupData.password
+                    ) ? (
+                    <CloseIcon />
+                  ) : (
+                    <CheckIcon />
+                  )}
+                  Password must contain atleast one lowercase letter e.g.
+                  a,b,c..
+                </span>
+                <span
+                  className={`${
+                    !signupData?.password
+                      ? "password__blank"
+                      : !/[A-Z]/g.test(signupData.password)
+                      ? "password__error"
+                      : "password__correct"
+                  }`}
+                >
+                  {!signupData?.password ? null : !/[A-Z]/g.test(
+                      signupData.password
+                    ) ? (
+                    <CloseIcon />
+                  ) : (
+                    <CheckIcon />
+                  )}
+                  Password must contain atleast one uppercase letter e.g.
+                  A,B,C..
+                </span>
+                <span
+                  className={`${
+                    !signupData?.password
+                      ? "password__blank"
+                      : !/[0-9]/g.test(signupData.password)
+                      ? "password__error"
+                      : "password__correct"
+                  }`}
+                >
+                  {!signupData?.password ? null : !/[0-9]/g.test(
+                      signupData.password
+                    ) ? (
+                    <CloseIcon />
+                  ) : (
+                    <CheckIcon />
+                  )}
+                  Password must contain atleast one number e.g. 1,2,3...
+                </span>
+                <span
+                  className={`${
+                    !signupData?.password
+                      ? "password__blank"
+                      : signupData?.password?.length < 8 ||
+                        signupData?.password?.length > 20
+                      ? "password__error"
+                      : "password__correct"
+                  }`}
+                >
+                  {!signupData?.password ? null : signupData?.password?.length <
+                      8 || signupData?.password?.length > 20 ? (
+                    <CloseIcon />
+                  ) : (
+                    <CheckIcon />
+                  )}
+                  Password must contain atleast 8 or more characters and less
+                  than 20 characters
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="my-1">
@@ -530,7 +549,7 @@ function SignUp() {
               placeholder="********"
               helperText={
                 errors?.cpassword ? (
-                  <span className="text-base flex items-center">
+                  <span className=" flex items-center">
                     <CloseIcon fontSize="small" />
                     Confirm password should match the password
                   </span>
@@ -557,7 +576,7 @@ function SignUp() {
               }}
             />
             <div
-              className={`text-xl${
+              className={`text-lg${
                 errors.agreedTerms ? " text-[#d32f2f]" : ""
               }`}
             >

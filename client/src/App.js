@@ -21,17 +21,17 @@ import EventPage from "./components/events/lists/eventPage";
 function App() {
   const styles = () =>
     isAuthenticated()
-      ? "col-span-10 px-5 my-5 overflow-auto scroller"
-      : "col-span-12 mx-5 my-5";
+      ? "col-span-10 px-5 py-5 overflow-y-auto scroller"
+      : "col-span-12 px-5 py-5 h-[100%] overflow-y-auto";
 
   const isAuthenticated = () => {
     return JSON.parse(localStorage.getItem("auth") === "true");
   };
 
   return (
-    <div className="App bg-gray-50 h-screen">
+    <div className="App bg-gray-50">
       <BrowserRouter>
-        <div className="grid grid-cols-12 h-[101%]">
+        <div className="grid grid-cols-12 h-screen">
           {isAuthenticated() && <Nav />}
           <div className={styles()}>
             <Routes>

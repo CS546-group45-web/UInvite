@@ -23,7 +23,7 @@ function Comments({ comments, loggedInUserId, postCommentByUser, loading }) {
       <div className="font-bold text-2xl mb-2">
         <CommentOutlinedIcon fontSize="large" /> Comments
       </div>
-      <div>
+      <div className="mb-4">
         <div className="w-7/12">
           <TextField
             id="comment"
