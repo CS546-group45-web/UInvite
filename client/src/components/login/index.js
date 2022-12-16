@@ -1,19 +1,19 @@
-import React from 'react';
-import { Divider, TextField } from '@mui/material';
-import { emailValidation, passwordValidation } from '../../utils/helper';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import CloseIcon from '@mui/icons-material/Close';
-import SVGComponent from '../common/Logo';
-import { login } from '../../utils/apis/auth';
-import { toast } from 'react-toastify';
-import Loading from '../common/Loading';
-import './styles.css';
-import { useNavigate } from 'react-router';
+import React from "react";
+import { Divider, TextField } from "@mui/material";
+import { emailValidation, passwordValidation } from "../../utils/helper";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import CloseIcon from "@mui/icons-material/Close";
+import SVGComponent from "../common/Logo";
+import { login } from "../../utils/apis/auth";
+import { toast } from "react-toastify";
+import Loading from "../common/Loading";
+import "./styles.css";
+import { useNavigate } from "react-router";
 
 function Login() {
   const navigate = useNavigate();
-  const [userData, setUserData] = React.useState({ email: '', password: '' });
+  const [userData, setUserData] = React.useState({ email: "", password: "" });
   const [passwordVisibility, setPasswordVisibility] = React.useState(false);
   const [errors, setErrors] = React.useState({ email: false, password: false });
   const [loading, setLoading] = React.useState(false);
@@ -47,12 +47,12 @@ function Login() {
       const loginData = await login(userData);
       const { data, status } = loginData;
       if (status !== 200) {
-        console.log('2');
+        console.log("2");
         toast.error(data?.error);
       } else {
-        localStorage.setItem('auth', true);
-        localStorage.setItem('token', data?.token);
-        window.location.href = '/';
+        localStorage.setItem("auth", true);
+        localStorage.setItem("token", data?.token);
+        window.location.href = "/";
       }
     }
     setLoading(false);
@@ -101,7 +101,7 @@ function Login() {
               onChange={(e) => {
                 let { name, value } = e.target;
                 value = value.trim();
-                if (value === '') setError(name);
+                if (value === "") setError(name);
                 if (!emailValidation(value)) setError(name);
                 else removeError(name);
                 setValues(name, value);
@@ -115,7 +115,7 @@ function Login() {
                 variant="outlined"
                 required
                 fullWidth
-                type={passwordVisibility ? 'text' : 'password'}
+                type={passwordVisibility ? "text" : "password"}
                 margin="dense"
                 name="password"
                 placeholder="********"
@@ -135,8 +135,8 @@ function Login() {
                   // password will come here
                   let { name, value } = e.target;
                   value = value.trim();
-                  if (value === '') setError(name);
-                  if (!passwordValidation(value)) setError(name);
+                  if (value === "") setError(name);
+                  if (value?.length < 8) setError(name);
                   else removeError(name);
                   setValues(name, value);
                 }}
@@ -161,7 +161,7 @@ function Login() {
 
             <div>
               <div
-                onClick={() => navigate('/forgot-password')}
+                onClick={() => navigate("/forgot-password")}
                 className="text-[#393e46] cursor-pointer hover:underline "
               >
                 Forgot your password?
@@ -183,7 +183,7 @@ function Login() {
           <div className="text-xl text-black flex">
             New user?&nbsp;
             <div
-              onClick={() => navigate('/signup')}
+              onClick={() => navigate("/signup")}
               className="text-[#393e46] cursor-pointer hover:underline "
             >
               Create new account
