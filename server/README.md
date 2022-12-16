@@ -472,6 +472,29 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Get User rsvped events
+
+`GET /api/user/rsvpEvents`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "Rsvp events fetched",
+  "data": [
+    {
+      "_id": "639c2ebdb8806952c83c8ad9",
+      "eventTitle": "DanceMani2",
+      "dateCreated": "2022-12-16T08:52:17.994Z",
+      "rsvps": ["63997c767721a9d370c35712"],
+      "tags": ["party", "helloo"]
+    }
+  ]
+}
+```
+
 ### Events
 
 #### Create Event
@@ -484,16 +507,16 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 
 ```json
 {
-  "eventTitle": "LetsNachos121",
-  "organizerName": "User Name",
+  "eventTitle": "DanceMani1",
   "description": "description",
   "startDateTime": "2022-11-06T19:58:23.464Z",
   "endDateTime": "2022-11-06T19:58:23.464Z",
-  "address": "Jersey City,New Jersey ,United States,07306",
-  "maxRsvpsCount": "100",
+  "address": "69 Hutton ST",
   "type": "in-person",
-  "tags": "party,18+", // should be a string followed by ','
-  "profileImage": "image.jpg" // file format
+  "tags": "party,helloo",
+  "arePicturesAllowed": "true",
+  "areCommentsAllowed": "true",
+  "ageRestricted": "true"
 }
 ```
 
@@ -504,6 +527,110 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "message": "Event added successfully",
   "data": {
     "eventId": "639aea871717b53eb381b5a2"
+  }
+}
+```
+
+#### Upload event image
+
+`POST /api/events/image/639aea871717b53eb381b5a2`
+
+#### Request Body
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+```json
+{
+  "eventImage": "banner.jpg" // type file
+}
+```
+
+#### Response
+
+```json
+{
+  "message": "Event photo updated successfully",
+  "data": {
+    "_id": "639c2ebdb8806952c83c8ad9",
+    "userId": "63997c767721a9d370c35712",
+    "eventTitle": "DanceMani2",
+    "description": "Hellooooooooo",
+    "startDateTime": "2022-11-06T19:58:23.464Z",
+    "endDateTime": "2022-11-06T19:58:23.464Z",
+    "address": "69 Hutton ST",
+    "dateCreated": "2022-12-16T08:52:17.994Z",
+    "arePicturesAllowed": true,
+    "areCommentsAllowed": true,
+    "ageRestricted": true,
+    "type": "in-person",
+    "rsvps": [],
+    "waitlist": [],
+    "tags": ["party", "helloo"],
+    "like_count": 0,
+    "comments": [],
+    "reviews": [],
+    "overallRating": 0,
+    "event_photo_url": "1671181757648_manisai.jpg",
+    "username": "manisai",
+    "firstName": "Mani Sai Prasad",
+    "lastName": "Masupalli",
+    "profile_photo_url": "1671106259009_manisai.png"
+  }
+}
+```
+
+#### Update event
+
+`POST /api/events/update/639aea871717b53eb381b5a2`
+
+#### Request Body
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+```json
+{
+  "eventTitle": "DanceMani2",
+  "description": "Hellooooooooo",
+  "startDateTime": "2022-11-06T19:58:23.464Z",
+  "endDateTime": "2022-11-06T19:58:23.464Z",
+  "address": "69 Hutton ST",
+  "type": "in-person",
+  "tags": "party,helloo",
+  "arePicturesAllowed": "true",
+  "areCommentsAllowed": "true",
+  "ageRestricted": "true"
+}
+```
+
+#### Response
+
+```json
+{
+  "message": "Event updated successfully",
+  "data": {
+    "_id": "639c2ebdb8806952c83c8ad9",
+    "userId": "63997c767721a9d370c35712",
+    "eventTitle": "DanceMani2",
+    "description": "Hellooooooooo",
+    "startDateTime": "2022-11-06T19:58:23.464Z",
+    "endDateTime": "2022-11-06T19:58:23.464Z",
+    "address": "69 Hutton ST",
+    "dateCreated": "2022-12-16T08:48:14.287Z",
+    "arePicturesAllowed": true,
+    "areCommentsAllowed": true,
+    "ageRestricted": true,
+    "type": "in-person",
+    "rsvps": [],
+    "waitlist": [],
+    "tags": ["party", "helloo"],
+    "like_count": 0,
+    "comments": [],
+    "reviews": [],
+    "overallRating": 0,
+    "username": "manisai",
+    "firstName": "Mani Sai Prasad",
+    "lastName": "Masupalli",
+    "profile_photo_url": "1671106259009_manisai.png"
   }
 }
 ```
@@ -539,6 +666,48 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
     "firstName": "Mani Sai Prasad",
     "lastName": "Masupalli",
     "profile_photo_url": "1671076586663_manisai.png"
+  }
+}
+```
+
+<!-- rsvp event -->
+
+#### RSVP Event
+
+`POST /api/events/rsvp/639c2ebdb8806952c83c8ad9`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Request Body
+
+```json
+{
+  "message": "RSVP added successfully",
+  "data": {
+    "_id": "639c2ebdb8806952c83c8ad9",
+    "userId": "63997c767721a9d370c35712",
+    "eventTitle": "DanceMani2",
+    "description": "Hellooooooooo",
+    "startDateTime": "2022-11-06T19:58:23.464Z",
+    "endDateTime": "2022-11-06T19:58:23.464Z",
+    "address": "69 Hutton ST",
+    "dateCreated": "2022-12-16T08:52:17.994Z",
+    "arePicturesAllowed": true,
+    "areCommentsAllowed": true,
+    "ageRestricted": true,
+    "type": "in-person",
+    "rsvps": ["63997c767721a9d370c35712"],
+    "waitlist": [],
+    "tags": ["party", "helloo"],
+    "like_count": 0,
+    "comments": [],
+    "reviews": [],
+    "overallRating": 0,
+    "event_photo_url": "1671181757648_manisai.jpg",
+    "username": "manisai",
+    "firstName": "Mani Sai Prasad",
+    "lastName": "Masupalli",
+    "profile_photo_url": "1671106259009_manisai.png"
   }
 }
 ```

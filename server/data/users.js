@@ -234,7 +234,7 @@ const addrsvpEvent = async (userId, eventId) => {
   const user_collection = await users();
   const updatedInfo = await user_collection.updateOne(
     { _id: ObjectId(userId) },
-    { $addToSet: { rsvps: eventId } }
+    { $addToSet: { rsvped_events: eventId } }
   );
   if (updatedInfo.modifiedCount === 0) {
     throw 'could not update user';

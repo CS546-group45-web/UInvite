@@ -80,25 +80,25 @@ const updateEvent = async (
   address = validation.checkInputString(address, 'address');
   type = validation.checkEventType(type, 'type');
 
+  const updatedEvent = {
+    userId: userId,
+    eventTitle: eventTitle,
+    description: description,
+    startDateTime: startDateTime,
+    endDateTime: endDateTime,
+    address: address,
+    dateCreated: new Date().toISOString(),
+    arePicturesAllowed: arePicturesAllowed && true,
+    areCommentsAllowed: areCommentsAllowed && true,
+    ageRestricted: ageRestricted && true,
+    type: type,
+  };
   const eventCollection = await events();
-  const updatedEvent = await eventCollection.updateOne(
-    { _id: ObjectId(eventId), userId: ObjectId(userId) },
-    {
-      $set: {
-        eventTitle: eventTitle,
-        description: description,
-        startDateTime: startDateTime,
-        endDateTime: endDateTime,
-        address: address,
-        type: type,
-        tags: tags,
-        arePicturesAllowed: arePicturesAllowed && true,
-        areCommentsAllowed: areCommentsAllowed && true,
-        ageRestricted: ageRestricted && true,
-      },
-    }
+  const updatedInfo = await eventCollection.updateOne(
+    { _id: ObjectId(eventId) },
+    { $set: updatedEvent }
   );
-  if (updatedEvent.modifiedCount === 0) {
+  if (updatedInfo.modifiedCount === 0) {
     throw 'Could not update event';
   }
   return await getEventById(eventId);
@@ -110,7 +110,7 @@ const updateEventPhoto = async (eventId, userId, event_photo_url) => {
   userId = validation.checkObjectId(userId);
   const eventCollection = await events();
   const updatedEvent = await eventCollection.updateOne(
-    { _id: ObjectId(eventId), userId: ObjectId(userId) },
+    { _id: ObjectId(eventId) },
     { $set: { event_photo_url: event_photo_url } }
   );
   if (updatedEvent.modifiedCount === 0) {
@@ -187,13 +187,14 @@ const getEventMinById = async (event_id) => {
 };
 
 const getCreatedEvents = async (userId) => {
-  const user_collection = await users();
-  const user = await user_collection.findOne({ _id: ObjectId(userId) });
-  if (!user) throw 'User not found';
+  const userData = await user.getUserById(userId);
+  if (!userData) throw 'User not found';
   const eventsCreated = [];
-  for (let i = 0; i < user?.eventsCreated.length; i++) {
+  for (let i = 0; i < userData?.eventsCreated.length; i++) {
     try {
-      let eventData = await getEventMinById(user?.eventsCreated[i].toString());
+      let eventData = await getEventMinById(
+        userData?.eventsCreated[i].toString()
+      );
       eventsCreated.push(eventData);
     } catch (e) {
       throw e;
@@ -209,17 +210,32 @@ const rsvp = async (eventId, userId) => {
   const updated_info = await event_collection.updateOne(
     { _id: ObjectId(eventId) },
     {
-      $push: { rsvps: userId },
-    },
-    {
-      returnDocument: 'after',
+      $addToSet: { rsvps: userId },
     }
   );
   if (updated_info.modifiedCount === 0) {
-    throw 'could not rsvp';
+    throw 'Could not rsvp to event';
   }
   await user.addrsvpEvent(userId, eventId);
   return await getEventById(eventId);
+};
+
+// getRsvpEvents
+const getRsvpEvents = async (userId) => {
+  const userData = await user.getUserById(userId);
+  if (!userData) throw 'User not found';
+  const eventsRsvp = [];
+  for (let i = 0; i < userData?.rsvped_events.length; i++) {
+    try {
+      let eventData = await getEventMinById(
+        userData?.rsvped_events[i].toString()
+      );
+      eventsRsvp.push(eventData);
+    } catch (e) {
+      throw e;
+    }
+  }
+  return eventsRsvp;
 };
 
 const getEventsByTitle = async (title) => {
@@ -268,10 +284,12 @@ module.exports = {
   getAllUpcomingEvents,
   getAllEvents,
   getEventById,
+  getRsvpEvents,
   getEventMinById,
   removeEvent,
   getEventsByDate,
   getEventsByTitle,
   rsvp,
   getCreatedEvents,
+  updateEvent,
 };
