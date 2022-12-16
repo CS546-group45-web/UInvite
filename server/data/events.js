@@ -16,14 +16,12 @@ const createEvent = async (
   type,
   tags
 ) => {
-  userId = validation.checkObjectId(userId);
   eventTitle = validation.checkTitle(eventTitle, "eventTitle");
   organizerName = validation.checkNames(organizerName, "organizerName");
   description = validation.checkNames(description, "description");
   startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
   endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
   address = validation.checkInputString(address, "address");
-  // maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
   type = validation.checkEventType(type, "type");
   tags = validation.checkTags(tags, "tags");
 
@@ -44,16 +42,10 @@ const createEvent = async (
     tags: tags,
     like_count: 0,
     comments: [],
-    reviews: [],
+    ratings: [],
     overallRating: 0,
   };
-  let getExistingEvents = await getAllEvents();
-  if (getExistingEvents) {
-    for (elem of getExistingEvents) {
-      if (elem.eventTitle.toLowerCase() === eventTitle.toLowerCase())
-        throw `Event title ${eventTitle} already exists`;
-    }
-  }
+
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw "Could not add event";
   const newId = insertInfo.insertedId;
@@ -165,6 +157,98 @@ const removeEvent = async (id) => {
   return `${eventName} has been successfully deleted!`;
 };
 
+const addRating = async (event_id, user_id, rating) => {
+  event_id = validation.checkObjectId(event_id);
+  rating = validation.checkRating(rating);
+  const eventCollection = await events();
+  const ratingObj = {
+    _id: ObjectId(),
+    user_id,
+    rating,
+  };
+
+  const updatedInfo = await eventCollection.updateOne(
+    { _id: ObjectId(event_id) },
+    { $push: { ratings: ratingObj } }
+  );
+  console.log({ updatedInfo });
+  let orating = await updateOverallRating(event_id);
+
+  if (updatedInfo.modifiedCount === 0) {
+    throw "could not update event successfully";
+  }
+  // let rating_id = ratings._id;
+  // console.log("Original Rating");
+  // console.log(rating_id);
+  // console.log(rating);
+
+  const event = await eventCollection.findOne({
+    _id: ObjectId(event_id),
+  });
+  // console.log("Added");
+
+  // const event = await eventCollection.findOne({
+  //   ratings: { $elemMatch: { user_id: user_id } },
+  // });
+  return event;
+};
+
+const updateOverallRating = async (eventId) => {
+  let oRating = 0;
+  const eventCollection = await events();
+  const { ratings } = await eventCollection.findOne({ _id: ObjectId(eventId) });
+  if (ratings.length !== 0) {
+    for (rating of ratings) {
+      oRating += rating.rating;
+    }
+    oRating = (oRating / ratings.length).toFixed(1);
+  }
+  const ratingAdd = await eventCollection.updateOne(
+    {
+      _id: ObjectId(eventId),
+    },
+    { $set: { overallRating: Number(oRating) } }
+  );
+  let eventList = getEventById(eventId);
+  return eventList;
+};
+
+const updateRating = async (event_id, user_id, rating, rating_id) => {
+  event_id = validation.checkObjectId(event_id);
+  rating = validation.checkRating(rating);
+  const eventCollection = await events();
+  const { ratings } = await eventCollection.findOne({
+    ratings: { $elemMatch: { user_id: user_id } },
+  });
+
+  for (rate of ratings) {
+    if (rate.user_id === user_id) {
+      break;
+    }
+  }
+  ratings[ratings.indexOf(rate)]["rating"] = rating;
+
+  const updatedInfo = await eventCollection.updateOne(
+    {
+      "ratings._id": rating_id,
+    },
+    {
+      $set: {
+        ratings: ratings,
+      },
+    }
+  );
+  const oRating = await updateOverallRating(event_id);
+
+  if (!updatedInfo.acknowledged) {
+    throw "could not update event successfully";
+  }
+  const event = await eventCollection.findOne({
+    _id: ObjectId(event_id),
+  });
+  return event;
+};
+
 module.exports = {
   createEvent,
   getAllEvents,
@@ -173,4 +257,6 @@ module.exports = {
   getEventsByDate,
   getEventsByTitle,
   add_guest,
+  addRating,
+  updateRating,
 };
