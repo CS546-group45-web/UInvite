@@ -1,8 +1,8 @@
-const { ObjectId } = require("mongodb");
-const bcrypt = require("bcryptjs");
-const mongoCollections = require("../config/mongoCollections");
+const { ObjectId } = require('mongodb');
+const bcrypt = require('bcryptjs');
+const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
-const validation = require("../utils/validation");
+const validation = require('../utils/validation');
 const createUser = async (
   firstName,
   lastName,
@@ -13,8 +13,8 @@ const createUser = async (
   dob,
   gender
 ) => {
-  firstName = validation.checkNames(firstName, "firstName");
-  lastName = validation.checkNames(lastName, "lastName");
+  firstName = validation.checkNames(firstName, 'firstName');
+  lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
   username = validation.checkUsername(username);
   dob = validation.checkDate(dob);
@@ -37,14 +37,14 @@ const createUser = async (
     is_verified: false,
     invited_events: [],
     rsvped_events: [],
-    profile_photo_url: "",
+    profile_photo_url: '',
     eventsCreated: [],
     followers: [],
     following: [],
   };
 
   const insertInfo = await user_collection.insertOne(newuUser);
-  if (insertInfo.insertedCount === 0) throw "Could not add user";
+  if (insertInfo.insertedCount === 0) throw 'Could not add user';
   const newId = insertInfo.insertedId;
   return newId;
 };
@@ -52,7 +52,7 @@ const createUser = async (
 const getUserById = async (id) => {
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(id) });
-  if (!user) throw "User not found";
+  if (!user) throw 'User not found';
   user._id = user._id.toString();
   delete user.hashed_password;
   return user;
@@ -69,7 +69,7 @@ const addInvite = async (eventId, userId) => {
     }
   );
   if (updated_info.modifiedCount === 0) {
-    throw "Could not add invite";
+    throw 'Could not add invite';
   }
   return await getUserById(userId);
 };
@@ -79,7 +79,7 @@ const getInvite = async (eventId, userId) => {
   eventId = validation.checkObjectId(eventId);
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(userId) });
-  if (!user) throw "User not found";
+  if (!user) throw 'User not found';
   if (user.invited_events.includes(eventId)) {
     return true;
   } else {
@@ -98,7 +98,7 @@ const acceptInvite = async (eventId, userId) => {
     }
   );
   if (updated_info.modifiedCount === 0) {
-    throw "Could not remove invite";
+    throw 'Could not remove invite';
   }
   const updated_info2 = await event_collection.updateOne(
     { _id: ObjectId(eventId) },
@@ -107,7 +107,7 @@ const acceptInvite = async (eventId, userId) => {
     }
   );
   if (updated_info2.modifiedCount === 0) {
-    throw "Could not add RSVP";
+    throw 'Could not add RSVP';
   }
   // update in user rsvped_events
   const updated_info3 = await user_collection.updateOne(
@@ -118,7 +118,7 @@ const acceptInvite = async (eventId, userId) => {
     }
   );
   if (updated_info3.modifiedCount === 0) {
-    throw "Could not add RSVP";
+    throw 'Could not add RSVP';
   }
   return await getUserById(userId);
 };
@@ -134,7 +134,7 @@ const declineInvite = async (eventId, userId) => {
     }
   );
   if (updated_info.modifiedCount === 0) {
-    throw "Could not remove invite";
+    throw 'Could not remove invite';
   }
   return await getUserById(userId);
 };
@@ -143,7 +143,7 @@ const getUserByEmail = async (email) => {
   email = validation.checkEmail(email);
   const user_collection = await users();
   const user = await user_collection.findOne({ email });
-  if (!user) throw "User not found";
+  if (!user) throw 'User not found';
   user._id = user._id.toString();
   return user;
 };
@@ -160,8 +160,8 @@ const updateUser = async (
 ) => {
   validation.checkObjectId(id);
   const user_collection = await users();
-  firstName = validation.checkNames(firstName, "firstName");
-  lastName = validation.checkNames(lastName, "lastName");
+  firstName = validation.checkNames(firstName, 'firstName');
+  lastName = validation.checkNames(lastName, 'lastName');
   email = validation.checkEmail(email);
   username = validation.checkUsername(username);
   dob = validation.checkDate(dob);
@@ -183,9 +183,9 @@ const updateUser = async (
     { $set: updatedUser }
   );
   if (updatedInfo.modifiedCount === 0 && updatedInfo.matchedCount !== 0) {
-    throw "No changes are made";
+    throw 'No changes are made';
   } else if (updatedInfo.modifiedCount === 0) {
-    throw "Could not update user";
+    throw 'Could not update user';
   }
   return await getUserById(id);
 };
@@ -197,7 +197,7 @@ const verifyUser = async (id) => {
     { $set: { is_verified: true } }
   );
   if (updatedInfo.modifiedCount === 0) {
-    throw "could not update user successfully";
+    throw 'could not update user successfully';
   }
   return await getUserById(id);
 };
@@ -211,7 +211,7 @@ const updateUserPassword = async (id, password) => {
     { $set: { hashed_password: hashed_password } }
   );
   if (updatedInfo.modifiedCount === 0) {
-    throw "could not update user successfully";
+    throw 'could not update user successfully';
   }
   return await getUserById(id);
 };
@@ -221,7 +221,7 @@ const getUserByUsername = async (username) => {
   const user = await user_collection.findOne({
     username: username,
   });
-  if (!user) throw "User not found";
+  if (!user) throw 'User not found';
   user._id = user._id.toString();
   delete user.hashed_password;
   return user;
@@ -234,7 +234,7 @@ const addFollower = async (userId, followerId) => {
     { $addToSet: { followers: userId } }
   );
   if (updatedInfo.modifiedCount === 0) {
-    throw "could not update user successfully";
+    throw 'could not update user successfully';
   }
 
   const updatedInfo2 = await user_collection.updateOne(
@@ -242,7 +242,7 @@ const addFollower = async (userId, followerId) => {
     { $addToSet: { following: followerId } }
   );
   if (updatedInfo2.modifiedCount === 0) {
-    throw "could not update user successfully";
+    throw 'could not update user successfully';
   }
   return await getUserById(userId);
 };
@@ -254,14 +254,14 @@ const unfollowUser = async (userId, followerId) => {
     { $pull: { followers: userId } }
   );
   if (updatedInfo.modifiedCount === 0) {
-    throw "could not update user successfully";
+    throw 'could not update user successfully';
   }
   const updatedInfo2 = await user_collection.updateOne(
     { _id: ObjectId(userId) },
     { $pull: { following: followerId } }
   );
   if (updatedInfo2.modifiedCount === 0) {
-    throw "could not update user successfully";
+    throw 'could not update user successfully';
   }
   return await getUserById(userId);
 };
@@ -278,7 +278,7 @@ const updateImageURL = async (userId, imageURL) => {
 const getFollowersInformation = async (userId) => {
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(userId) });
-  if (!user) throw "User not found";
+  if (!user) throw 'User not found';
   const followers = [];
   for (let i = 0; i < user.followers.length; i++) {
     const follower = await getUserById(user.followers[i]);
@@ -290,7 +290,7 @@ const getFollowersInformation = async (userId) => {
 const getFollowingInformation = async (userId) => {
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(userId) });
-  if (!user) throw "User not found";
+  if (!user) throw 'User not found';
   const following = [];
   for (let i = 0; i < user.following.length; i++) {
     const follower = await getUserById(user.following[i]);
@@ -306,7 +306,7 @@ const addCreatedEvent = async (userId, eventId) => {
     { $addToSet: { eventsCreated: eventId } }
   );
   if (updatedInfo.modifiedCount === 0) {
-    throw "could not update user successfully";
+    throw 'could not update user successfully';
   }
   return await getUserById(userId);
 };
@@ -318,7 +318,7 @@ const addrsvpEvent = async (userId, eventId) => {
     { $addToSet: { rsvped_events: eventId } }
   );
   if (updatedInfo.modifiedCount === 0) {
-    throw "could not update user";
+    throw 'could not update user';
   }
   return await getUserById(userId);
 };
