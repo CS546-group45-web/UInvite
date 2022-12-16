@@ -2,7 +2,9 @@ import { Chip } from "@mui/material";
 import moment from "moment";
 import React from "react";
 import { useNavigate } from "react-router";
-import { getAddressFormatted } from "../../../utils/helper";
+import { fullNameFormatter } from "../../../utils/helper";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 function EventCard({ event }) {
   const navigate = useNavigate();
@@ -17,52 +19,78 @@ function EventCard({ event }) {
             alt="event-poster"
           />
         </div>
-        <div className="flex flex-col justify-start py-2 pl-4">
-          <div className="flex items-baseline">
+        <div className="flex flex-col justify-between py-2 pl-4">
+          <div>
+            <div className="flex">
+              <div
+                className="text-2xl font-bold cursor-pointer"
+                onClick={() => navigate("/event/" + event._id)}
+              >
+                {event.eventTitle}
+              </div>
+            </div>
+
+            {/* <div className="text-lg font-light mt-1">
+            <p className="event_description">{event.description}</p>
+          </div> */}
+            <div className="mt-1 font-semibold">
+              {/* <div className="text-lg"><LocationOnIcon /> {getAddressFormatted(event.address)}</div> */}
+              <div className="text-lg flex items-center">
+                <LocationOnIcon /> <span className="ml-1">{event.address}</span>
+              </div>
+              <div className="text-lg flex items-center">
+                <DateRangeIcon />
+                <span className="ml-1">
+                  {moment(event.startDateTime).format("llll")}
+                </span>
+                <span className="mx-1">-</span>
+                <span>{moment(event.endDateTime).format("llll")}</span>
+              </div>
+            </div>
+
+            <div className="flex mt-2">
+              {event.tags.map((tag, i) => (
+                <span className="mr-1 text-logoBlue" key={i}>
+                  <Chip
+                    // label={"#" + tag}
+                    label={tag}
+                    variant="outlined"
+                    className={"tags_chip"}
+                  />
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="usercard_eventcard">
             <div
-              className="text-3xl font-bold cursor-pointer"
-              onClick={() => navigate("/event/" + event.event_id)}
+              className="cursor-pointer flex items-center"
+              onClick={
+                () => {}
+                // navigate(
+                //   loggedInUserId === event?.user_id
+                //     ? "/profile"
+                //     : "/profile/" + event?.username
+                // )
+              }
             >
-              {event.Name}
-            </div>
-
-            <div className="text-lg text-[#393e46] ml-1 font-thin">
-              posted on {moment(event.date_created).format("lll")}
-            </div>
-          </div>
-
-          <div className="text-lg font-light mt-1">
-            <p className="event_description">{event.Description}</p>
-          </div>
-          <div className="flex mt-1">
-            {event.tags.map((tag, i) => (
-              <span className="mr-1 text-logoBlue" key={i}>
-                <Chip
-                  label={"#" + tag}
-                  variant="outlined"
-                  className={"tags_chip"}
-                />
+              <span className="text-lg font-bold">{event?.username}&nbsp;</span>
+              <span className="text-lg font-light">
+                {fullNameFormatter(event?.firstName, event?.lastName)}
               </span>
-            ))}
-          </div>
-          <div className="mt-2 text-2xl font-semibold">
-            Event details
-            <div className="text-lg">{getAddressFormatted(event.address)}</div>
-            <div className="text-lg">
-              <span>{moment(event.start_date_time).format("lll")}</span>
-              <span className="mx-1">-</span>
-              <span>{moment(event.end_date_time).format("lll")}</span>
             </div>
+            <div>on {moment(event.dateCreated).format("ll")}</div>
           </div>
 
-          <div className="mt-2">
+          {/* <div className="mt-2 flex items-center font-light text-[#5f636a] text-xl">
+            By&nbsp;
             <div
-              className="text-[#393e46] text-xl cursor-pointer"
+              className="text-[#393e46] font-normal cursor-pointer"
               onClick={() => navigate("/profile/" + event?.user_id)}
             >
-              Posted by organizer name
+              {fullNameFormatter(event?.firstName, event?.lastName)}
             </div>
-          </div>
+            <div>&nbsp;{moment(event.dateCreated).format("ll")}</div>
+          </div> */}
         </div>
       </div>
     </div>

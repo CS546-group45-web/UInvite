@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import {
   FormControl,
@@ -27,16 +28,18 @@ import {
 import { typeOptions } from "../../../constants";
 import { getUserFollowers } from "../../../utils/apis/user";
 import { createEvent } from "../../../utils/apis/event";
+import { useNavigate } from "react-router";
 // import AvatarEditor from "react-avatar-editor";
 
 function CreateEvent() {
+  const navigate = useNavigate();
   const [eventData, setEventData] = React.useState({
-    arePicturedAllowed: true,
+    arePicturesAllowed: true,
     areCommentsAllowed: true,
-    ageResitricted: true,
+    ageRestricted: true,
     type: "in-person",
-    startDateTime: new Date(+new Date() + 86400000),
-    endDateTime: new Date(+new Date() + 87000000),
+    startDateTime: dayjs(new Date(+new Date() + 87000000)), //setting start date to be same time as of now + 1 day
+    endDateTime: dayjs(new Date(+new Date() + 3660000 + 87000000)), //setting end date to be same time as of now + 1 day + 1 hour
   });
   const [errors, setErrors] = React.useState({});
   const [invitees, setInvitees] = React.useState([]);
@@ -75,13 +78,9 @@ function CreateEvent() {
     if (eventData?.type === "online")
       if (!eventData?.onlineEventLink) errorObj.onlineEventLink = true;
 
-    if (
-      !validateDateDiff(
-        eventData?.startDateTime?.$d,
-        eventData?.endDateTime?.$d
-      )
-    ) {
-      toast.error("Duration of the event should be more than 1 hour");
+    const { startDateTime, endDateTime } = eventData;
+    if (!validateDateDiff(startDateTime?.$d, endDateTime?.$d)) {
+      return toast.error("Duration of the event should be more than 1 hour");
     }
 
     if (Object.keys(errorObj).length !== 0) return setErrors(errorObj);
@@ -93,13 +92,11 @@ function CreateEvent() {
       eventTitle,
       description,
       type,
-      startDateTime,
-      endDateTime,
       tags,
-      invitees,
-      arePicturedAllowed,
+      invites,
+      arePicturesAllowed,
       areCommentsAllowed,
-      ageResitricted,
+      ageRestricted,
     } = eventData;
 
     const apiBody = {
@@ -108,28 +105,22 @@ function CreateEvent() {
       type,
       startDateTime: new Date(startDateTime).toISOString(),
       endDateTime: new Date(endDateTime).toISOString(),
-      tags: tags,
-      invitees,
-      arePicturedAllowed,
+      tags,
+      invites: invites.join(","),
+      arePicturesAllowed,
       areCommentsAllowed,
-      ageResitricted,
+      ageRestricted,
     };
     if (type === "in-person") apiBody.address = eventData?.address;
     if (type === "online") apiBody.onlineEventLink = eventData?.onlineEventLink;
-    console.log(apiBody);
 
-    // const formData = new FormData();
-    // const img = editorRef.current?.getImageScaledToCanvas().toDataURL();
-    // formData.append("eventImage", dataURLtoFile(img, "event-image"));
-    // // formData.append("eventImage");
-    // for (const key in apiBody) {
-    //   console.log(key, apiBody[key]);
-    //   formData.append(key, apiBody[key]);
-    // }
-
-    const { data } = await createEvent(apiBody);
-    console.log({ data });
-
+    const { data, status } = await createEvent(apiBody);
+    console.log(data);
+    if (status !== 200) toast.error(data.error);
+    else {
+      toast.success("Event created. Redirecting to event page...");
+      setTimeout(() => navigate("/event/" + data?.data?.eventId), 4000);
+    }
     setCreateLoading(false);
   };
 
@@ -147,11 +138,6 @@ function CreateEvent() {
     setErrors(errorsObj);
   };
 
-  const populateDate = (currentYear, diff) => {
-    let validYear = currentYear - diff;
-    return new Date(validYear.toString()).toISOString();
-  };
-
   React.useEffect(() => {
     getUserFollowers().then((res) => {
       const { data, status } = res;
@@ -167,7 +153,7 @@ function CreateEvent() {
         Create an Event!
       </div>
       <div className="flex ">
-        <div className="space-y-4 p-4 w-full">
+        <div className="w-full">
           <div className="rounded-md">
             <div className="flex ">
               <div className="w-8/12">
@@ -321,7 +307,7 @@ function CreateEvent() {
                 </div>
               )}
               {eventData?.type === "online" && (
-                <div className="mr-1 w-6/12">
+                <div className="w-4/12">
                   <TextField
                     id="address"
                     label="Online Event Link"
@@ -354,13 +340,12 @@ function CreateEvent() {
                   />
                 </div>
               )}
-              <div className="ml-1 mr-1 w-3/12 mt-2">
+              <div className="w-4/12 mt-2">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start date"
                     disablePast
                     ampm={true}
-                    inputFormat="MM/DD/YYYY hh:mm"
                     value={eventData?.startDateTime ?? null}
                     renderInput={(params) => (
                       <TextField
@@ -389,16 +374,18 @@ function CreateEvent() {
                       if (e === "invalidDate") setError("startDateTime");
                       if (e === null) removeError("startDateTime");
                     }}
+                    minDateTime={dayjs(
+                      new Date(+new Date() + 86400000).toISOString()
+                    )}
                     openTo={"day"}
                   />
                 </LocalizationProvider>
               </div>
-              <div className="ml-1 w-3/12 mt-2">
+              <div className="w-4/12 ml-1 mt-2">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End date"
                     disablePast
-                    inputFormat="MM/DD/YYYY hh:mm"
                     value={eventData?.endDateTime ?? null}
                     renderInput={(params) => (
                       <TextField
@@ -427,7 +414,9 @@ function CreateEvent() {
                       if (e === "invalidDate") setError("endDateTime");
                       if (e === null) removeError("endDateTime");
                     }}
-                    minDate={populateDate(new Date().getFullYear(), 0)}
+                    minDateTime={dayjs(
+                      new Date(+new Date() + 86400000 + 3600000).toISOString()
+                    )}
                     openTo={"day"}
                   />
                 </LocalizationProvider>
@@ -449,6 +438,7 @@ function CreateEvent() {
                   name="description"
                   multiline={true}
                   minRows={5}
+                  maxRows={12}
                   error={errors?.description}
                   helperText={
                     errors?.description ? (
@@ -593,9 +583,9 @@ function CreateEvent() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={eventData?.arePicturedAllowed}
+                    checked={eventData?.arePicturesAllowed}
                     onChange={(e) =>
-                      setValues("arePicturedAllowed", e.target.checked)
+                      setValues("arePicturesAllowed", e.target.checked)
                     }
                   />
                 }
@@ -615,9 +605,9 @@ function CreateEvent() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={eventData?.ageResitricted}
+                    checked={eventData?.ageRestricted}
                     onChange={(e) =>
-                      setValues("ageResitricted", e.target.checked)
+                      setValues("ageRestricted", e.target.checked)
                     }
                   />
                 }
@@ -631,6 +621,7 @@ function CreateEvent() {
               className="btn_default"
               onClick={validateData}
               disabled={createLoading}
+              type="submit"
             >
               <Loading loading={createLoading} width={18} />
               Create
