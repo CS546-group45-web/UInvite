@@ -118,15 +118,14 @@ const checkAdress = (input, name = "address") => {
   return input;
 };
 
-const checkEventDate = (input, name = "start date") => {
-  checkInputString(input, name);
+const checkEventDate = (input, name = 'start date') => {
+  input = checkInputString(input, name);
   const dateParsed = new Date(Date.parse(input));
   if (dateParsed.toISOString() != input) throw "Date format should be in ISO";
   return input;
 };
 
-const checkRsvpCount = (input, name = "rsvp") => {
-  checkInputString(input, name);
+const checkRsvpCount = (input, name = 'rsvp') => {
   checkInputNumber(input, name);
   return input;
 };

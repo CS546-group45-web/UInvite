@@ -233,6 +233,66 @@ const addCreatedEvent = async (userId, eventId) => {
   return await getUserById(userId);
 };
 
+const rsvp_event = async(userId, eventId) =>{
+  eventId = validation.checkObjectId(eventId);
+  userId = validation.checkObjectId(userId);
+  const user_collection = await users();
+  const user = await user_collection.findOne(
+    {"invited_events._id" : ObjectId(eventId)}
+  );
+  if(user === null) throw 'No events with given Id for this user';
+  const updated_info = await user_collection.updateOne(
+    {_id : ObjectId(userId)},
+    {$pull : {invited_events: {_id: ObjectId(eventId)}}},
+    {returnDocument: "after"}
+  );
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not rsvp user to event successfully';
+  }
+  const event = await getEventById_Object(eventId);
+  const updated_info_after = await user_collection.updateOne(
+    {_id : ObjectId(userId)},
+    {$push : {rsvped_events: event}},
+    {returnDocument: "after"}
+  );
+  if(updated_info_after.modifiedCount === 0){
+    throw 'Could not rsvp user to event successfully';
+  }
+  await user_rsvped(userId,eventId);
+  return await getUserById(userId);
+}
+
+const user_rsvped = async (userId, eventId) => {
+  eventId = validation.checkObjectId(eventId);
+  userId = validation.checkObjectId(userId);
+  const event_collection = await events();
+  const event = await event_collection.findOne(
+    {"waitlist._id" : ObjectId(userId)}
+  );
+  if(event === null) throw 'No user with given id';
+  const user = await getUserById_Object(userId);
+  const updated_info = await event_collection.updateOne(
+    {_id : ObjectId(eventId)},
+    {$pull: {waitlist : {_id : ObjectId(userId)}}},
+    {returnDocument : "after"}
+  );
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not add user to rsvps list.';
+  }
+  const updated_info_after = await event_collection.updateOne(
+    {_id : ObjectId(eventId)},
+    {$push: {rsvps : user}},
+    {returnDocument : "after"}
+  );
+  if(updated_info_after.modifiedCount === 0){
+    throw 'Could not add user to rsvps list.';
+  }
+  return {"User rsvped" : "user_rsvp successfully rsvped."};
+}
+
+
+
+
 module.exports = {
   createUser,
   getUserById,
@@ -246,5 +306,7 @@ module.exports = {
   updateImageURL,
   getFollowingInformation,
   getFollowersInformation,
+  add_event,
+  rsvp_event,
   addCreatedEvent,
 };
