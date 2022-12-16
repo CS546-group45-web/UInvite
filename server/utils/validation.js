@@ -203,9 +203,11 @@ const checkUsername = (input) => {
   input = input.toLowerCase();
   return input;
 };
-const checkBool = (input, permission) => {
-  if (!input || typeof input !== 'boolean') {
-    throw `${permission} not a boolean`;
+
+const checkBoolean = (input, name = 'boolean') => {
+  checkInputString(input, name);
+  if (input !== 'true' && input !== 'false') {
+    throw `${name} must be a boolean`;
   }
   return input;
 };
@@ -230,4 +232,5 @@ module.exports = {
   checkEventURl,
   checkComments,
   checkReviews,
+  checkBoolean,
 };
