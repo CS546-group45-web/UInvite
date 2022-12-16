@@ -191,6 +191,23 @@ router
     }
   });
 
+// get invites
+router
+  .route('/invites')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const invites = await eventData.getInvites(req.user._id);
+      return res.json({
+        message: 'Invites fetched',
+        data: invites,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+//
+
 // get rspved evnents
 router
   .route('/rsvpEvents')
