@@ -142,9 +142,10 @@ const checkArrayObjectId = (input, name = 'countRsvp') => {
 };
 
 const checkTags = (input, name = 'tags') => {
-  if (!Array.isArray(input)) throw `${name} should be an array`;
-  input.forEach((elem) => checkInputString(elem, name));
-  return input;
+  checkInputString(input, name);
+  let tags = input.split(',');
+  if (tags.length < 1) throw `${name} should have max 3 tags`;
+  return tags;
 };
 
 const checkEventURl = (input, name = 'eventUrl') => {

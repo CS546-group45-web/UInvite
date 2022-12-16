@@ -380,6 +380,8 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 
 `GET /api/users/followers/639972ffb5f8386c8be79553`
 
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
 ##### Response
 
 ```json
@@ -436,18 +438,52 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+<!--
+Get User created events
+ -->
+
+#### Get User created events
+
+`GET /api/user/createdEvents`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "Created events fetched",
+  "data": [
+    {
+      "_id": "639aed8983d3e120e7494c19",
+      "eventTitle": "Danceee",
+      "dateCreated": "2022-12-15T09:48:57.931Z",
+      "rsvps": [],
+      "tags": ["party", "18+"]
+    },
+    {
+      "_id": "639aee5874e2a3341b949a64",
+      "eventTitle": "Danceee",
+      "dateCreated": "2022-12-15T09:52:24.532Z",
+      "rsvps": [],
+      "tags": ["party", "18+"]
+    }
+  ]
+}
+```
+
 ### Events
 
 #### Create Event
 
-`POST /api/events/create`
+`POST /api/events/`
 
 #### Request Body
 
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
 ```json
 {
-  {
-  "userId": "63785b6cfd19003dcdf3c6ee",
   "eventTitle": "LetsNachos121",
   "organizerName": "User Name",
   "description": "description",
@@ -456,8 +492,8 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "address": "Jersey City,New Jersey ,United States,07306",
   "maxRsvpsCount": "100",
   "type": "in-person",
-  "tags": ["party"]
-}
+  "tags": "party,18+", // should be a string followed by ','
+  "profileImage": "image.jpg" // file format
 }
 ```
 
@@ -465,7 +501,128 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 
 ```json
 {
-  "message": "Event added successfully"
+  "message": "Event added successfully",
+  "data": {
+    "eventId": "639aea871717b53eb381b5a2"
+  }
+}
+```
+
+#### Get Event Details by Id
+
+`GET /api/events/id/639ae3121e10cf0b97a0f7ad`
+
+##### Response
+
+```json
+{
+  "message": "event fetched",
+  "data": {
+    "_id": "639aee5874e2a3341b949a64",
+    "userId": "63997c767721a9d370c35712",
+    "eventTitle": "Danceee",
+    "description": "description",
+    "startDateTime": "2022-11-06T19:58:23.464Z",
+    "endDateTime": "2022-11-06T19:58:23.464Z",
+    "address": "69 Hutton ST",
+    "dateCreated": "2022-12-15T09:52:24.532Z",
+    "type": "in-person",
+    "rsvps": [],
+    "waitlist": [],
+    "tags": ["party", "18+"],
+    "like_count": 0,
+    "comments": [],
+    "reviews": [],
+    "overallRating": 0,
+    "event_photo_url": "1671097942156_manisai.JPG",
+    "username": "manisai",
+    "firstName": "Mani Sai Prasad",
+    "lastName": "Masupalli",
+    "profile_photo_url": "1671076586663_manisai.png"
+  }
+}
+```
+
+#### Get All Events
+
+`GET /api/events/`
+
+##### Response
+
+```json
+{
+  "message": "events fetched",
+  "data": [
+    {
+      "_id": "639ae3121e10cf0b97a0f7ad",
+      "userId": "63997c767721a9d370c35712",
+      "eventTitle": "DanceMani1",
+      "description": "description",
+      "startDateTime": "2022-11-06T19:58:23.464Z",
+      "endDateTime": "2022-11-06T19:58:23.464Z",
+      "address": "69 Hutton ST",
+      "date_created": "2022-12-15T09:04:18.337Z",
+      "type": "in-person",
+      "rsvps": [],
+      "waitlist": [],
+      "tags": ["party"],
+      "like_count": 0,
+      "Comments": [],
+      "reviews": [],
+      "overallRating": 0,
+      "ratings": [],
+      "username": "manisai",
+      "firstName": "Mani Sai Prasad",
+      "lastName": "Masupalli",
+      "profile_photo_url": "1671076586663_manisai.png"
+    },
+    {
+      "_id": "639aed8983d3e120e7494c19",
+      "eventTitle": "Danceee",
+      "description": "description",
+      "startDateTime": "2022-11-06T19:58:23.464Z",
+      "endDateTime": "2022-11-06T19:58:23.464Z",
+      "address": "69 Hutton ST",
+      "dateCreated": "2022-12-15T09:48:57.931Z",
+      "type": "in-person",
+      "rsvps": [],
+      "waitlist": [],
+      "tags": ["party", "18+"],
+      "like_count": 0,
+      "comments": [],
+      "reviews": [],
+      "overallRating": 0,
+      "event_photo_url": "1671097734360_manisai.JPG",
+      "userId": "63997c767721a9d370c35712",
+      "username": "manisai",
+      "firstName": "Mani Sai Prasad",
+      "lastName": "Masupalli",
+      "profile_photo_url": "1671076586663_manisai.png"
+    },
+    {
+      "_id": "639aee5874e2a3341b949a64",
+      "userId": "63997c767721a9d370c35712",
+      "eventTitle": "Danceee",
+      "description": "description",
+      "startDateTime": "2022-11-06T19:58:23.464Z",
+      "endDateTime": "2022-11-06T19:58:23.464Z",
+      "address": "69 Hutton ST",
+      "dateCreated": "2022-12-15T09:52:24.532Z",
+      "type": "in-person",
+      "rsvps": [],
+      "waitlist": [],
+      "tags": ["party", "18+"],
+      "like_count": 0,
+      "comments": [],
+      "reviews": [],
+      "overallRating": 0,
+      "event_photo_url": "1671097942156_manisai.JPG",
+      "username": "manisai",
+      "firstName": "Mani Sai Prasad",
+      "lastName": "Masupalli",
+      "profile_photo_url": "1671076586663_manisai.png"
+    }
+  ]
 }
 ```
 
