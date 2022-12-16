@@ -1,42 +1,40 @@
 const express = require("express");
 const router = express.Router();
 const data = require("../data");
-const mongoCollections = require("../config/mongoCollections");
 const userData = data.users;
 const eventData = data.events;
 const comments = data.comments;
-const events = mongoCollections.events;
 const validation = require("../utils/validation");
 const passport = require("passport");
-const { addRating } = require("../data/events");
-const { ObjectId, Logger } = require("mongodb");
+const upload = require("../utils/uploadImage");
 
 router
   .route("/")
   .post(passport.authenticate("jwt", { session: false }), async (req, res) => {
     let {
       eventTitle,
-      organizerName,
       description,
       startDateTime,
       endDateTime,
       address,
-      // maxRsvpsCount,
       type,
       tags,
+      invites,
+      arePicturesAllowed,
+      areCommentsAllowed,
+      ageRestricted,
     } = req.body;
     let userId = req.user._id;
     try {
       userId = validation.checkObjectId(userId);
       eventTitle = validation.checkTitle(eventTitle, "eventTitle");
-      organizerName = validation.checkNames(organizerName, "organizerName");
-      description = validation.checkNames(description, "description");
+      description = validation.checkInputString(description, "description");
       startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
       endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
       address = validation.checkInputString(address, "address");
-      // maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, 'maxRsvpsCount');
       type = validation.checkEventType(type, "type");
       tags = validation.checkTags(tags, "tags");
+      invites = validation.checkInvites(invites, "invites");
     } catch (e) {
       if (typeof e === "string") return res.status(400).json({ error: e });
       else
@@ -48,26 +46,209 @@ router
       let eventCreated = await eventData.createEvent(
         userId,
         eventTitle,
-        organizerName,
         description,
         startDateTime,
         endDateTime,
         address,
-        // maxRsvpsCount,
         type,
-        tags
+        tags,
+        arePicturesAllowed,
+        areCommentsAllowed,
+        ageRestricted
       );
-      return res
-        .status(200)
-        .json({ message: "Event added successfully", eventId: eventCreated });
+      // send invites, invites is a array of emails
+      if (invites.length > 0) {
+        for (let i = 0; i < invites.length; i++) {
+          try {
+            const invitee = await userData.getUserByEmail(invites[i]);
+            if (invitee) {
+              await userData.addInvite(eventCreated, invitee._id);
+            }
+          } catch (e) {
+            return res.status(500).json({ error: e });
+          }
+        }
+      }
+
+      return res.status(200).json({
+        message: "Event added successfully",
+        data: { eventId: eventCreated },
+      });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
   })
   .get(async (req, res) => {
-    const event = await eventData.getAllEvents();
-    return res.json({ EventList: event });
+    try {
+      const event = await eventData.getAllEvents();
+      return res.json({ message: "events fetched", data: event });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
   });
+
+// accpet invite
+router
+  .route("/accept/:eventId")
+  .post(passport.authenticate("jwt", { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+    try {
+      eventId = validation.checkObjectId(eventId);
+      userId = validation.checkObjectId(userId);
+    } catch (e) {
+      res
+        .status(400)
+        .json({ error: "The event is missing a  parameter, try again!" });
+    }
+    try {
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+      const invite = await userData.getInvite(eventId, userId);
+      if (!invite) {
+        return res.status(404).json({ error: "Invite not found" });
+      }
+      await userData.acceptInvite(eventId, userId);
+      return res.status(200).json({ message: "Invite accepted" });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// decline invite
+router
+  .route("/decline/:eventId")
+  .post(passport.authenticate("jwt", { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+    try {
+      eventId = validation.checkObjectId(eventId);
+      userId = validation.checkObjectId(userId);
+    } catch (e) {
+      res
+        .status(400)
+        .json({ error: "The event is missing a  parameter, try again!" });
+    }
+    try {
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+      const invite = await userData.getInvite(eventId, userId);
+      if (!invite) {
+        return res.status(404).json({ error: "Invite not found" });
+      }
+      await userData.declineInvite(eventId, userId);
+      return res.status(200).json({ message: "Invite declined" });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// update route
+router
+  .route("/update/:eventId")
+  .post(passport.authenticate("jwt", { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+    let {
+      eventTitle,
+      description,
+      startDateTime,
+      endDateTime,
+      address,
+      type,
+      tags,
+      arePicturesAllowed,
+      areCommentsAllowed,
+      ageRestricted,
+    } = req.body;
+    try {
+      eventId = validation.checkObjectId(eventId);
+      userId = validation.checkObjectId(userId);
+      eventTitle = validation.checkTitle(eventTitle, "eventTitle");
+      description = validation.checkInputString(description, "description");
+      startDateTime = validation.checkEventDate(startDateTime, "startDateTime");
+      endDateTime = validation.checkEventDate(endDateTime, "endDateTime");
+      address = validation.checkInputString(address, "address");
+      type = validation.checkEventType(type, "type");
+      tags = validation.checkTags(tags, "tags");
+    } catch (e) {
+      if (typeof e === "string") return res.status(400).json({ error: e });
+      else
+        return res
+          .status(400)
+          .json({ error: "The event is missing a  parameter, try again!" });
+    }
+
+    try {
+      const eventuser = await eventData.getEventById(eventId);
+      if (eventuser.userId != userId) {
+        return res
+          .status(401)
+          .json({ error: "You are not authorized to update this event" });
+      }
+      const event = await eventData.updateEvent(
+        eventId,
+        userId,
+        eventTitle,
+        description,
+        startDateTime,
+        endDateTime,
+        address,
+        type,
+        tags,
+        arePicturesAllowed,
+        areCommentsAllowed,
+        ageRestricted
+      );
+      return res.status(200).json({
+        message: "Event updated successfully",
+        data: event,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// eventImage  upload event image
+router
+  .route("/image/:eventId")
+  .post(
+    passport.authenticate("jwt", { session: false }),
+    upload.single("eventImage"),
+    async (req, res) => {
+      let eventId = req.params.eventId;
+      let userId = req.user._id;
+      const event_photo_url = req.file.filename;
+      try {
+        eventId = validation.checkObjectId(eventId);
+      } catch (e) {
+        return res.status(400).json({ error: e });
+      }
+      try {
+        const eventuser = await eventData.getEventById(eventId);
+        if (eventuser.userId != userId) {
+          return res
+            .status(401)
+            .json({ error: "You are not authorized to update this event" });
+        }
+        const event = await eventData.updateEventPhoto(
+          eventId,
+          userId,
+          event_photo_url
+        );
+        return res.status(200).json({
+          message: "Event photo updated successfully",
+          data: event,
+        });
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+    }
+  );
 
 router
   .route("/id/:eventId")
@@ -80,7 +261,10 @@ router
     }
     try {
       const event = await eventData.getEventById(eventId);
-      return res.json({ EventList: event });
+      return res.json({
+        message: "event fetched",
+        data: event,
+      });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
@@ -96,6 +280,36 @@ router
     try {
       const deletedEventId = await eventData.removeEvent(eventId);
       return res.status(200).json({ message: deletedEventId });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// get all upcoming events
+router.route("/upcoming").get(async (req, res) => {
+  try {
+    const events = await eventData.getAllUpcomingEvents();
+    return res.json({ message: "events fetched", data: events });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
+router
+  .route("/rsvp/:eventId")
+  .get(passport.authenticate("jwt", { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      const rsvp = await eventData.rsvp(eventId, userId);
+      res.status(200).json({ message: "RSVP added successfully", data: rsvp });
     } catch (e) {
       return res.status(500).json({ error: e });
     }

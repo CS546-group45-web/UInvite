@@ -118,14 +118,14 @@ const checkAdress = (input, name = "address") => {
   return input;
 };
 
-const checkEventDate = (input, name = 'start date') => {
+const checkEventDate = (input, name = "start date") => {
   input = checkInputString(input, name);
   const dateParsed = new Date(Date.parse(input));
   if (dateParsed.toISOString() != input) throw "Date format should be in ISO";
   return input;
 };
 
-const checkRsvpCount = (input, name = 'rsvp') => {
+const checkRsvpCount = (input, name = "rsvp") => {
   checkInputNumber(input, name);
   return input;
 };
@@ -141,9 +141,10 @@ const checkArrayObjectId = (input, name = "countRsvp") => {
 };
 
 const checkTags = (input, name = "tags") => {
-  if (!Array.isArray(input)) throw `${name} should be an array`;
-  input.forEach((elem) => checkInputString(elem, name));
-  return input;
+  checkInputString(input, name);
+  let tags = input.split(",");
+  if (tags.length < 1) throw `${name} should have max 3 tags`;
+  return tags;
 };
 
 const checkEventURl = (input, name = "eventUrl") => {
@@ -201,9 +202,11 @@ const checkUsername = (input) => {
   input = input.toLowerCase();
   return input;
 };
-const checkBool = (input, permission) => {
-  if (!input || typeof input !== "boolean") {
-    throw `${permission} not a boolean`;
+
+const checkBoolean = (input, name = "boolean") => {
+  checkInputString(input, name);
+  if (input !== "true" && input !== "false") {
+    throw `${name} must be a boolean`;
   }
   return input;
 };
@@ -217,6 +220,13 @@ const checkRating = (input, name = "rating") => {
     if (Number(input) > 5) throw "Rating cannot be greater than 5";
     return input;
   } else throw "invalid rating";
+};
+
+const checkInvites = (input, name = "invites") => {
+  checkInputString(input, name);
+  let invites = input.split(",");
+  invites.map((invite) => checkEmail(invite));
+  return invites;
 };
 
 module.exports = {
@@ -240,4 +250,6 @@ module.exports = {
   checkComments,
   checkReviews,
   checkRating,
+  checkBoolean,
+  checkInvites,
 };

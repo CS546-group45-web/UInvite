@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data');
 const userData = data.users;
+const eventData = data.events;
 const validation = require('../utils/validation');
 const passport = require('passport');
 const upload = require('../utils/uploadImage');
@@ -174,6 +175,53 @@ router.route('/following/:userId').get(async (req, res) => {
     return res.status(500).json({ error: e });
   }
 });
+
+// get createdEvents
+router
+  .route('/createdEvents')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const createdEvents = await eventData.getCreatedEvents(req.user._id);
+      return res.json({
+        message: 'Created events fetched',
+        data: createdEvents,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// get invites
+router
+  .route('/invites')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const invites = await eventData.getInvites(req.user._id);
+      return res.json({
+        message: 'Invites fetched',
+        data: invites,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+//
+
+// get rspved evnents
+router
+  .route('/rsvpEvents')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const rsvpEvents = await eventData.getRsvpEvents(req.user._id);
+      return res.json({
+        message: 'Rsvp events fetched',
+        data: rsvpEvents,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
 
 router.route('/:username').get(async (req, res) => {
   try {
