@@ -210,14 +210,11 @@ const rsvp = async (eventId, userId) => {
   const updated_info = await event_collection.updateOne(
     { _id: ObjectId(eventId) },
     {
-      $push: { rsvps: userId },
-    },
-    {
-      returnDocument: 'after',
+      $addToSet: { rsvps: userId },
     }
   );
   if (updated_info.modifiedCount === 0) {
-    throw 'could not rsvp';
+    throw 'Could not rsvp to event';
   }
   await user.addrsvpEvent(userId, eventId);
   return await getEventById(eventId);
