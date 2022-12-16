@@ -1,6 +1,7 @@
 const { ObjectId } = require("mongodb");
 const mongoCollections = require("../config/mongoCollections");
 const events = mongoCollections.events;
+const users = mongoCollections.users;
 const validation = require("../utils/validation");
 const user = require("./users");
 
@@ -57,9 +58,22 @@ const createEvent = async (
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw "Could not add event";
   const newId = insertInfo.insertedId;
-  await user.addCreatedEvent(userId, newId);
+  await user_create_event(userId, newId);
   return newId;
 };
+
+const user_create_event = async(userId, eventId) =>{
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    {_id : ObjectId(userId)},
+    {$push : {events_created : getEventById_Object(eventId)}},
+    {returnDocument: "after"}
+  );
+  if(updated_info.modifiedCount === 0){
+    throw 'Could not add created event to user successfully';
+  }
+  return {Event : "added to user successfully."};
+}
 
 const add_event = async (userId, eventId) => {
   const user_collection = await users();
