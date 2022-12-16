@@ -60,6 +60,15 @@ const getUserById = async (id) => {
   return user;
 };
 
+const getUserById_Object = async (id) => {
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(id) });
+  if (!user) throw 'User not found';
+  user._id = user._id;
+  delete user.hashed_password;
+  return user;
+};
+
 const getUserByEmail = async (email) => {
   email = validation.checkEmail(email);
   const user_collection = await users();
@@ -105,10 +114,7 @@ const updateUser = async (
   );
   if (updatedInfo.modifiedCount === 0 && updatedInfo.matchedCount !== 0) {
     throw 'No changes are made';
-  } else {
-    throw 'Could not update user';
-  }
-
+  } 
   return await getUserById(id);
 };
 
@@ -269,7 +275,7 @@ const user_rsvped = async (userId, eventId) => {
   const event = await event_collection.findOne(
     {"waitlist._id" : ObjectId(userId)}
   );
-  if(event === null) throw 'No user with given id';
+  if(event === null) throw 'No event with given id';
   const user = await getUserById_Object(userId);
   const updated_info = await event_collection.updateOne(
     {_id : ObjectId(eventId)},
@@ -290,8 +296,25 @@ const user_rsvped = async (userId, eventId) => {
   return {"User rsvped" : "user_rsvp successfully rsvped."};
 }
 
+const getEventById_Object = async (event_id) => {
+  event_id = validation.checkObjectId(event_id);
+  const eventCollection = await events();
+  const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
+  if (event === null) throw new Error("No event with that id");
+  return event;
+};
 
-
+const getAllUsers = async () => {
+  const userCollection = await users();
+  const users_list = await userCollection.find({}).toArray();
+  if (!users_list) {
+    throw new Error("Could not get all users.");
+  }
+  for (const element of users_list) {
+    element._id = element._id.toString();
+  }
+  return users_list; //changed from events to event_list
+};
 
 module.exports = {
   createUser,
@@ -306,7 +329,7 @@ module.exports = {
   updateImageURL,
   getFollowingInformation,
   getFollowersInformation,
-  add_event,
   rsvp_event,
   addCreatedEvent,
+  getAllUsers,
 };

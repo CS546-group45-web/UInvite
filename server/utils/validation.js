@@ -213,7 +213,7 @@ const checkRating = (input, name = "rating") => {
   // console.log(input);
 
   if (!isNaN(Number(input))) {
-    if (Number(input) < 1) throw "Rating cannot be less than 0";
+    if (Number(input) < 0) throw "Rating cannot be less than 0";
     if (Number(input) > 5) throw "Rating cannot be greater than 5";
     return input;
   } else throw "invalid rating";
@@ -240,4 +240,5 @@ module.exports = {
   checkComments,
   checkReviews,
   checkRating,
+  checkBool,
 };

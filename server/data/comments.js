@@ -50,7 +50,7 @@ const getAllComments = async (eventId) => {
   const event = await eventCollection.findOne({ _id: ObjectId(eventId) });
   if (event === null)
     throw new Error("Could not get Comments for this eventId.");
-  return event.Comments;
+  return event.comments;
 };
 
 const getComment = async (CommentId) => {
