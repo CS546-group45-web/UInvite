@@ -484,16 +484,16 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 
 ```json
 {
-  "eventTitle": "LetsNachos121",
-  "organizerName": "User Name",
+  "eventTitle": "DanceMani1",
   "description": "description",
   "startDateTime": "2022-11-06T19:58:23.464Z",
   "endDateTime": "2022-11-06T19:58:23.464Z",
-  "address": "Jersey City,New Jersey ,United States,07306",
-  "maxRsvpsCount": "100",
+  "address": "69 Hutton ST",
   "type": "in-person",
-  "tags": "party,18+", // should be a string followed by ','
-  "profileImage": "image.jpg" // file format
+  "tags": "party,helloo",
+  "arePicturesAllowed": "true",
+  "areCommentsAllowed": "true",
+  "ageRestricted": "true"
 }
 ```
 
@@ -504,6 +504,60 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "message": "Event added successfully",
   "data": {
     "eventId": "639aea871717b53eb381b5a2"
+  }
+}
+```
+
+#### Update event
+
+`POST /api/events/update/639aea871717b53eb381b5a2`
+
+#### Request Body
+
+```json
+{
+  "eventTitle": "DanceMani2",
+  "description": "Hellooooooooo",
+  "startDateTime": "2022-11-06T19:58:23.464Z",
+  "endDateTime": "2022-11-06T19:58:23.464Z",
+  "address": "69 Hutton ST",
+  "type": "in-person",
+  "tags": "party,helloo",
+  "arePicturesAllowed": "true",
+  "areCommentsAllowed": "true",
+  "ageRestricted": "true"
+}
+```
+
+#### Response
+
+```json
+{
+  "message": "Event updated successfully",
+  "data": {
+    "_id": "639c2ebdb8806952c83c8ad9",
+    "userId": "63997c767721a9d370c35712",
+    "eventTitle": "DanceMani2",
+    "description": "Hellooooooooo",
+    "startDateTime": "2022-11-06T19:58:23.464Z",
+    "endDateTime": "2022-11-06T19:58:23.464Z",
+    "address": "69 Hutton ST",
+    "dateCreated": "2022-12-16T08:48:14.287Z",
+    "arePicturesAllowed": true,
+    "areCommentsAllowed": true,
+    "ageRestricted": true,
+    "type": "in-person",
+    "rsvps": [],
+    "waitlist": [],
+    "tags": ["party", "helloo"],
+    "like_count": 0,
+    "comments": [],
+    "reviews": [],
+    "overallRating": 0,
+    "username": "manisai",
+    "firstName": "Mani Sai Prasad",
+    "lastName": "Masupalli",
+    "profile_photo_url": "1671106259009_manisai.png"
   }
 }
 ```

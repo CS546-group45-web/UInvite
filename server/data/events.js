@@ -80,25 +80,25 @@ const updateEvent = async (
   address = validation.checkInputString(address, 'address');
   type = validation.checkEventType(type, 'type');
 
+  const updatedEvent = {
+    userId: userId,
+    eventTitle: eventTitle,
+    description: description,
+    startDateTime: startDateTime,
+    endDateTime: endDateTime,
+    address: address,
+    dateCreated: new Date().toISOString(),
+    arePicturesAllowed: arePicturesAllowed && true,
+    areCommentsAllowed: areCommentsAllowed && true,
+    ageRestricted: ageRestricted && true,
+    type: type,
+  };
   const eventCollection = await events();
-  const updatedEvent = await eventCollection.updateOne(
-    { _id: ObjectId(eventId), userId: ObjectId(userId) },
-    {
-      $set: {
-        eventTitle: eventTitle,
-        description: description,
-        startDateTime: startDateTime,
-        endDateTime: endDateTime,
-        address: address,
-        type: type,
-        tags: tags,
-        arePicturesAllowed: arePicturesAllowed && true,
-        areCommentsAllowed: areCommentsAllowed && true,
-        ageRestricted: ageRestricted && true,
-      },
-    }
+  const updatedInfo = await eventCollection.updateOne(
+    { _id: ObjectId(eventId) },
+    { $set: updatedEvent }
   );
-  if (updatedEvent.modifiedCount === 0) {
+  if (updatedInfo.modifiedCount === 0) {
     throw 'Could not update event';
   }
   return await getEventById(eventId);
@@ -274,4 +274,5 @@ module.exports = {
   getEventsByTitle,
   rsvp,
   getCreatedEvents,
+  updateEvent,
 };
