@@ -191,6 +191,21 @@ router
     }
   });
 
+// get rspved evnents
+router
+  .route('/rsvpEvents')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const rsvpEvents = await eventData.getRsvpEvents(req.user._id);
+      return res.json({
+        message: 'Rsvp events fetched',
+        data: rsvpEvents,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
 router.route('/:username').get(async (req, res) => {
   try {
     req.params.username = validation.checkUsername(req.params.username);

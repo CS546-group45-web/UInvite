@@ -152,8 +152,13 @@ router
       } catch (e) {
         return res.status(400).json({ error: e });
       }
-
       try {
+        const eventuser = await eventData.getEventById(eventId);
+        if (eventuser.userId != userId) {
+          return res
+            .status(401)
+            .json({ error: 'You are not authorized to update this event' });
+        }
         const event = await eventData.updateEventPhoto(
           eventId,
           userId,
