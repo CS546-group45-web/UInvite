@@ -1,17 +1,17 @@
-import React from "react";
-import { Divider, Link, TextField } from "@mui/material";
-import { emailValidation } from "../../utils/helper";
-import CloseIcon from "@mui/icons-material/Close";
-import "./styles.css";
-import SVGComponent from "../common/Logo";
-import { forgotpassword } from "../../utils/apis/auth";
-import { toast } from "react-toastify";
-import Loading from "../common/Loading";
-import { useNavigate } from "react-router";
+import React from 'react';
+import { Divider, TextField } from '@mui/material';
+import { emailValidation } from '../../utils/helper';
+import CloseIcon from '@mui/icons-material/Close';
+import './styles.css';
+import SVGComponent from '../common/Logo';
+import { forgotpassword } from '../../utils/apis/auth';
+import { toast } from 'react-toastify';
+import Loading from '../common/Loading';
+import { useNavigate } from 'react-router';
 
 function ForgotPassword() {
   const navigate = useNavigate();
-  const [email, setEmail] = React.useState("");
+  const [email, setEmail] = React.useState('');
   // const [passwordVisibility, setPasswordVisibility] = React.useState(false);
   const [error, setError] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -83,7 +83,7 @@ function ForgotPassword() {
                 onChange={(e) => {
                   let { value } = e.target;
                   value = value.trim();
-                  if (value === "") setError(true);
+                  if (value === '') setError(true);
                   if (!emailValidation(value)) setError(true);
                   else setError(false);
                   setEmail(value);
@@ -103,7 +103,7 @@ function ForgotPassword() {
                 <Divider />
                 <span className="text-xl">
                   <div
-                    onClick={() => navigate("/login")}
+                    onClick={() => navigate('/login')}
                     className="text-[#393e46] cursor-pointer hover:underline "
                   >
                     back to login

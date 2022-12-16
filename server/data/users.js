@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 const events = mongoCollections.events;
-const events_func = require('./events');
 const validation = require('../utils/validation');
 
 const createUser = async (
@@ -41,7 +40,7 @@ const createUser = async (
     invited_events: [],
     rsvped_events: [],
     profile_photo_url: '',
-    events_created: [],
+    eventsCreated: [],
     followers: [],
     following: [],
   };
@@ -59,23 +58,6 @@ const getUserById = async (id) => {
   user._id = user._id.toString();
   delete user.hashed_password;
   return user;
-};
-
-const getUserById_Object = async (id) => {
-  const user_collection = await users();
-  const user = await user_collection.findOne({ _id: ObjectId(id) });
-  if (!user) throw 'User not found';
-  user._id = user._id.toString();
-  delete user.hashed_password;
-  return user;
-};
-
-const getEventById_Object = async (event_id) => {
-  event_id = validation.checkObjectId(event_id);
-  const eventCollection = await events();
-  const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
-  if (event === null) throw new Error("No event with that id");
-  return event;
 };
 
 const getUserByEmail = async (email) => {
@@ -121,23 +103,13 @@ const updateUser = async (
     { _id: ObjectId(id) },
     { $set: updatedUser }
   );
-  if (updatedInfo.modifiedCount === 0) {
-    throw 'could not update user successfully';
+  if (updatedInfo.modifiedCount === 0 && updatedInfo.matchedCount !== 0) {
+    throw 'No changes are made';
+  } else {
+    throw 'Could not update user';
   }
 
   return await getUserById(id);
-};
-
-const getAllUsers = async () => {
-  const userCollection = await users();
-  const users_list = await userCollection.find({}).toArray();
-  if (!users_list) {
-    throw new Error("Could not get all events.");
-  }
-  for (const element of users_list) {
-    element._id = element._id.toString();
-  }
-  return users_list; //changed from events to event_list
 };
 
 const verifyUser = async (id) => {
@@ -222,9 +194,6 @@ const updateImageURL = async (userId, imageURL) => {
     { _id: ObjectId(userId) },
     { $set: { profile_photo_url: imageURL } }
   );
-  if (updatedInfo.modifiedCount === 0) {
-    throw 'could not update user successfully';
-  }
   return await getUserById(userId);
 };
 
@@ -251,19 +220,18 @@ const getFollowingInformation = async (userId) => {
   }
   return following;
 };
-const add_event = async(userId, event_id) => {
+
+const addCreatedEvent = async (userId, eventId) => {
   const user_collection = await users();
-  const event = await events_func.getEventById(event_id);
-  const updated_info = await user_collection.updateOne(
-    {_id : ObjectId(userId)},
-    {$push : {invited_events : event}},
-    {returnDocument: "after"}
-  )
-  if(updated_info.modifiedCount ===0){
-    throw 'Could not add invited event to user successfully';
+  const updatedInfo = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    { $addToSet: { eventsCreated: eventId } }
+  );
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update user successfully';
   }
   return await getUserById(userId);
-}
+};
 
 const rsvp_event = async(userId, eventId) =>{
   eventId = validation.checkObjectId(eventId);
@@ -322,18 +290,7 @@ const user_rsvped = async (userId, eventId) => {
   return {"User rsvped" : "user_rsvp successfully rsvped."};
 }
 
-const user_create_event = async(userId, created_event) =>{
-  const user_collection = await users();
-  const updated_info = await user_collection.updateOne(
-    {_id : ObjectId(userId)},
-    {$push : {events_created : created_event}},
-    {returnDocument: "after"}
-  );
-  if(updated_info.modifiedCount === 0){
-    throw 'Could not add created event to user successfully';
-  }
-  return await getUserById(userId);
-}
+
 
 
 module.exports = {
@@ -351,6 +308,5 @@ module.exports = {
   getFollowersInformation,
   add_event,
   rsvp_event,
-  user_create_event,
-  getAllUsers,
+  addCreatedEvent,
 };

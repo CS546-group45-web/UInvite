@@ -20,23 +20,43 @@ router
     } catch (e) {
       return res.status(400).json({ error: e });
     }
+    // check for username already taken
     try {
-      const updatedUser = await userData.updateUser(
-        req.user._id,
-        user.firstName,
-        user.lastName,
-        user.email,
-        user.username,
-        user.phone,
-        user.dob,
-        user.gender
-      );
-      return res.status(200).json({
-        message: `User ${user.firstName} ${user.lastName} updated successfully`,
-        data: updatedUser,
-      });
-    } catch (e) {
-      return res.status(500).json({ error: e });
+      const user = await userData.getUserByUsername(req.body.username);
+      if (user && user._id != req.user._id) {
+        return res.status(409).json({ error: 'Username is already taken' });
+      } else {
+        throw 'Username is not taken';
+      }
+    } catch {
+      // check for username already taken
+      try {
+        const user = await userData.getUserByEmail(req.body.email);
+        if (user && user._id != req.user._id) {
+          return res.status(409).json({ error: 'Email is already taken' });
+        } else {
+          throw 'Email is not taken';
+        }
+      } catch {
+        try {
+          const updatedUser = await userData.updateUser(
+            req.user._id,
+            user.firstName,
+            user.lastName,
+            user.email,
+            user.username,
+            user.phone,
+            user.dob,
+            user.gender
+          );
+          return res.status(200).json({
+            message: `User ${user.firstName} ${user.lastName} updated successfully`,
+            data: updatedUser,
+          });
+        } catch (e) {
+          return res.status(500).json({ error: e });
+        }
+      }
     }
   });
 
