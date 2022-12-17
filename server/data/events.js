@@ -390,6 +390,22 @@ const getEventsBySearch = async (
   return events_list;
 };
 
+const addEventPhoto = async (eventId, userId, photo) => {
+  eventId = validation.checkObjectId(eventId);
+  const eventCollection = await events();
+  const event = await getEventById(eventId);
+  if (!event) throw 'Event not found';
+  // update to event_photos array
+  const updatedEvent = await eventCollection.updateOne(
+    { _id: ObjectId(eventId) },
+    { $push: { event_photos: photo } }
+  );
+  if (updatedEvent.modifiedCount === 0) {
+    throw 'Could not add photo to event.';
+  }
+  return await getEventById(eventId);
+};
+
 const getEventsByTitle = async (title) => {
   title = validation.checkTitle(title);
   const eventCollection = await events();
@@ -447,4 +463,5 @@ module.exports = {
   getInvites,
   getEventsBySearch,
   getRsvpList,
+  addEventPhoto,
 };

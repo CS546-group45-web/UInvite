@@ -372,6 +372,43 @@ router
     }
   });
 
+// any user can upload event photos
+router
+  .route('/eventPhoto/:eventId')
+  .post(
+    passport.authenticate('jwt', { session: false }),
+    upload.single('eventPhoto'),
+    async (req, res) => {
+      let eventId = req.params.eventId;
+      let userId = req.user._id;
+
+      try {
+        eventId = validation.checkObjectId(eventId);
+      } catch (e) {
+        return res.status(400).json({ error: e });
+      }
+
+      try {
+        const event = await eventData.getEventById(eventId);
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+
+      try {
+        const eventPhoto = await eventData.addEventPhoto(
+          eventId,
+          userId,
+          req.file.filename
+        );
+        res
+          .status(200)
+          .json({ message: 'Event photo added', data: eventPhoto });
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+    }
+  );
+
 router.route('/title/:eventTitle').get(async (req, res) => {
   let eventTitle = req.params.eventTitle;
   console.log(eventTitle);
