@@ -214,8 +214,6 @@ module.exports = {
   checkArrayObjectId,
   checkTags,
   checkEventURl,
-  checkComments,
-  checkReviews,
   checkRating,
   checkBoolean,
   checkInvites,
