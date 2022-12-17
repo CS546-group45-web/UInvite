@@ -130,3 +130,14 @@
   cursor: pointer;
   height: 30px;
 }
+
+.btn_default_modify_event {
+  width: 100%;
+  padding: 7px 20px;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 4px;
+  background-color: #393e46;
+  cursor: pointer;
+}

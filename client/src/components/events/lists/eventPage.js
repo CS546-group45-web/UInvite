@@ -102,14 +102,14 @@ function EventPage() {
           </div>
           <div className="mt-6 text-xl w-4/12 pl-1">
             {loggedInUserData?._id === eventData?.userId && (
-              <div
+              <button
                 onClick={() => {
                   setMode(true);
                 }}
-                className="btn_edit_profile"
+                className="btn_default_modify_event"
               >
-                Edit event
-              </div>
+                Modify Event
+              </button>
             )}
             <div className="font-bold text-xl section_divider">
               {" "}
