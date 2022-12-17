@@ -144,6 +144,10 @@ const checkTags = (input, name = 'tags') => {
   checkInputString(input, name);
   let tags = input.split(',');
   if (tags.length < 1) throw `${name} should have max 3 tags`;
+  // should only contain letters and numbers
+  if (!tags.every((tag) => /^[a-zA-Z0-9]+$/.test(tag)))
+    throw `${name} should only contain letters and numbers`;
+
   return tags;
 };
 
