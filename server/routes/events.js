@@ -34,7 +34,9 @@ router
       address = validation.checkInputString(address, 'address');
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
-      invites = validation.checkInvites(invites, 'invites');
+      if (invites && invites.length > 0) {
+        invites = validation.checkInvites(invites, 'invites');
+      }
     } catch (e) {
       if (typeof e === 'string') return res.status(400).json({ error: e });
       else
@@ -57,7 +59,7 @@ router
         ageRestricted
       );
       // send invites, invites is a array of emails
-      if (invites.length > 0) {
+      if (invites && invites.length > 0) {
         for (let i = 0; i < invites.length; i++) {
           try {
             const invitee = await userData.getUserByEmail(invites[i]);
