@@ -320,7 +320,7 @@ router
 // http://localhost:3000/api/events/search?eventTitle=party&eventDate=2020-12-12&eventLocation=Toronto&eventTags=party&eventRating=4&eventStartDateTime=2020-12-12&eventEndDateTime=2020-12-12
 router.route('/search').get(async (req, res) => {
   let eventTitle = req.query.eventTitle;
-  let eventDate = req.query.eventDate;
+  let dateCreated = req.query.dateCreated;
   let eventLocation = req.query.eventLocation;
   let eventTags = req.query.eventTags;
   let eventRating = req.query.eventRating;
@@ -330,17 +330,14 @@ router.route('/search').get(async (req, res) => {
   try {
     const event = await eventData.getEventsBySearch(
       eventTitle,
-      eventDate,
+      dateCreated,
       eventLocation,
       eventTags,
       eventRating,
       eventStartDateTime,
       eventEndDateTime
     );
-    return res.json(
-      { message: 'events fetched', data: event },
-      { eventTitle: eventTitle }
-    );
+    return res.json({ message: 'events fetched', data: event });
   } catch (e) {
     return res.status(500).json({ error: e });
   }

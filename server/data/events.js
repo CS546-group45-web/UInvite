@@ -257,36 +257,98 @@ const getRsvpEvents = async (userId) => {
 // getEventsBySearch
 const getEventsBySearch = async (
   eventTitle,
-  eventDate,
+  dateCreated,
   eventLocation,
   eventTags,
   eventRating,
   eventStartDateTime,
   eventEndDateTime
 ) => {
+  if (!eventTitle && !eventDate && !eventLocation && !eventTags) {
+    throw 'Please enter at least one search parameter';
+  }
   const eventCollection = await events();
-  const events_list = await eventCollection.find({}).toArray();
+  let events_list = await eventCollection.find({}).toArray();
   if (!events_list) {
     throw new Error('Could not get all events.');
   }
   for (const element of events_list) {
     element._id = element._id.toString();
-  }
-  let eventSearchList = [];
-  for (const element of events_list) {
-    if (
-      element.eventTitle.includes(eventTitle) &&
-      element.eventDate.includes(eventDate) &&
-      element.eventLocation.includes(eventLocation) &&
-      element.eventTags.includes(eventTags) &&
-      element.eventRating.includes(eventRating) &&
-      element.eventStartDateTime.includes(eventStartDateTime) &&
-      element.eventEndDateTime.includes(eventEndDateTime)
-    ) {
-      eventSearchList.push(element);
+    try {
+      let userData = await user.getUserById(element?.userId.toString());
+      element.username = userData.username;
+      element.firstName = userData.firstName;
+      element.lastName = userData.lastName;
+      element.profile_photo_url = userData.profile_photo_url;
+    } catch (e) {
+      throw e;
     }
   }
-  return eventSearchList;
+  if (eventTitle) {
+    events_list = events_list.filter((event) => {
+      return event.eventTitle.toLowerCase().includes(eventTitle.toLowerCase());
+    });
+  }
+
+  if (dateCreated) {
+    const date = new Date(dateCreated);
+    events_list = events_list.filter((event) => {
+      const eventDate = new Date(event.dateCreated);
+      return (
+        eventDate.getFullYear() === date.getFullYear() &&
+        eventDate.getMonth() === date.getMonth() &&
+        eventDate.getDate() === date.getDate()
+      );
+    });
+  }
+
+  if (eventLocation) {
+    events_list = events_list.filter((event) => {
+      return event.address.toLowerCase().includes(eventLocation.toLowerCase());
+    });
+  }
+
+  if (eventTags) {
+    events_list = events_list.filter((event) => {
+      // event.tags is an array of strings
+      for (let i = 0; i < event.tags.length; i++) {
+        if (event.tags[i].toLowerCase().includes(eventTags.toLowerCase())) {
+          return true;
+        }
+      }
+    });
+  }
+
+  if (eventRating) {
+    events_list = events_list.filter((event) => {
+      return event.overallRating >= eventRating;
+    });
+  }
+
+  if (eventStartDateTime) {
+    const date = new Date(eventStartDateTime);
+    events_list = events_list.filter((event) => {
+      const eventDate = new Date(event.eventStartDateTime);
+      return (
+        eventDate.getFullYear() >= date.getFullYear() &&
+        eventDate.getMonth() >= date.getMonth() &&
+        eventDate.getDate() >= date.getDate()
+      );
+    });
+    return events_list;
+  }
+  if (eventEndDateTime) {
+    const date = new Date(eventEndDateTime);
+    events_list = events_list.filter((event) => {
+      const eventDate = new Date(event.eventEndDateTime);
+      return (
+        eventDate.getFullYear() <= date.getFullYear() &&
+        eventDate.getMonth() <= date.getMonth() &&
+        eventDate.getDate() <= date.getDate()
+      );
+    });
+  }
+  return events_list;
 };
 
 const getEventsByTitle = async (title) => {
