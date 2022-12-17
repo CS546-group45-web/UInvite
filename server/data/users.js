@@ -54,7 +54,19 @@ const createUser = async (
 const getUserById = async (id) => {
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(id) });
-  if (!user) throw 'User not found';
+  if (!user) {
+    const event_collection = await events();
+    const events = await event_collection.find({ userId: id }).toArray();
+    if (events.length === 0) {
+      throw 'User not found';
+    }
+    //if found delete all user events
+    const deletedInfo = await event_collection.deleteMany({ userId: id });
+    if (deletedInfo.deletedCount === 0) {
+      throw 'User not found and Could not delete user events';
+    }
+    throw 'User not found';
+  }
   user._id = user._id.toString();
   delete user.hashed_password;
   return user;
