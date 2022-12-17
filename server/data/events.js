@@ -43,7 +43,7 @@ const createEvent = async (
     tags: tags,
     like_count: 0,
     comments: [],
-    reviews: [],
+    ratings: [],
     overallRating: 0,
   };
   const insertInfo = await event_collection.insertOne(newEvent);
@@ -404,9 +404,9 @@ const getEventsByDate = async (date) => {
   date = validation.checkEventDate(date); //changed from checkDate to checkEventDate --> using ISO to verify date
   const eventCollection = await events();
   //Adding get all events on same date
-  const event = await eventCollection.find({}).toArray();
+  const event = await getAllEvents();
   if (event === null) {
-    throw new Error('No events with that date.');
+    throw new Error('No events');
   }
   date = date.split('T')[0];
   let getEventsListByDate = [];
@@ -414,6 +414,8 @@ const getEventsByDate = async (date) => {
     if (elem.date_created.toISOString().substring(0, 10).includes(date)) {
       elem._id = elem._id.toString();
       getEventsListByDate.push(elem);
+    } else {
+      throw 'No event by that date';
     }
   }
   return getEventsListByDate;
@@ -428,6 +430,114 @@ const removeEvent = async (id) => {
     throw new Error(`Could not delete movie with id of ${id}`);
   }
   return `${eventName} has been successfully deleted!`;
+};
+
+const addRating = async (event_id, user_id, rating) => {
+  event_id = validation.checkObjectId(event_id);
+  rating = validation.checkRating(rating);
+  const eventCollection = await events();
+  const ratingObj = {
+    _id: ObjectId(),
+    user_id,
+    rating,
+  };
+
+  const updatedInfo = await eventCollection.updateOne(
+    { _id: ObjectId(event_id) },
+    { $push: { ratings: ratingObj } }
+  );
+  let orating = await updateOverallRating(event_id);
+
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update event successfully';
+  }
+
+  const event = await eventCollection.findOne({
+    _id: ObjectId(event_id),
+  });
+
+  return event;
+};
+
+const updateOverallRating = async (eventId) => {
+  let oRating = 0;
+  const eventCollection = await events();
+  const { ratings } = await eventCollection.findOne({ _id: ObjectId(eventId) });
+  if (ratings.length !== 0) {
+    for (rating of ratings) {
+      oRating += rating.rating;
+    }
+    oRating = (oRating / ratings.length).toFixed(1);
+  }
+  const ratingAdd = await eventCollection.updateOne(
+    {
+      _id: ObjectId(eventId),
+    },
+    { $set: { overallRating: Number(oRating) } }
+  );
+  let eventList = getEventById(eventId);
+  return eventList;
+};
+
+const updateRating = async (event_id, user_id, rating, rating_id) => {
+  event_id = validation.checkObjectId(event_id);
+  rating = validation.checkRating(rating);
+  const eventCollection = await events();
+  const { ratings } = await eventCollection.findOne({
+    ratings: { $elemMatch: { user_id: user_id } },
+  });
+
+  for (rate of ratings) {
+    if (rate.user_id === user_id) {
+      break;
+    }
+  }
+  ratings[ratings.indexOf(rate)]['rating'] = rating;
+
+  const updatedInfo = await eventCollection.updateOne(
+    {
+      'ratings._id': rating_id,
+    },
+    {
+      $set: {
+        ratings: ratings,
+      },
+    }
+  );
+  const oRating = await updateOverallRating(event_id);
+
+  if (!updatedInfo.acknowledged) {
+    throw 'could not update event successfully';
+  }
+  const event = await eventCollection.findOne({
+    _id: ObjectId(event_id),
+  });
+  return event;
+};
+
+const getRatingIfExists = async (eventId, userId, rating) => {
+  let event = await getEventById(eventId);
+
+  if (!event['ratings']) {
+    data = await addRating(eventId, userId, rating);
+  } else {
+    let rating_id = null;
+    const { ratings } = event;
+
+    for (rate of ratings) {
+      if (rate['user_id'] === userId) {
+        rating_id = rate['_id'];
+        break;
+      }
+    }
+
+    if (rating_id !== null) {
+      data = await updateRating(eventId, userId, rating, rating_id);
+    } else {
+      data = await addRating(eventId, userId, rating);
+    }
+  }
+  return data;
 };
 
 module.exports = {
@@ -445,6 +555,7 @@ module.exports = {
   getCreatedEvents,
   updateEvent,
   getInvites,
+  getRatingIfExists,
   getEventsBySearch,
   getRsvpList,
 };

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const data = require('../data');
+const mongoCollections = require('../config/mongoCollections');
+const events = mongoCollections.events;
 const userData = data.users;
 const eventData = data.events;
 const comments = data.comments;
@@ -376,7 +378,6 @@ router
 
 router.route('/title/:eventTitle').get(async (req, res) => {
   let eventTitle = req.params.eventTitle;
-  console.log(eventTitle);
   try {
     title = validation.checkTitle(eventTitle);
   } catch (e) {
@@ -384,7 +385,6 @@ router.route('/title/:eventTitle').get(async (req, res) => {
   }
   try {
     const event = await eventData.getEventsByTitle(eventTitle);
-    console.log(event);
     return res.json({ EventList: event });
   } catch (e) {
     return res.status(500).json({ error: e });
@@ -400,7 +400,6 @@ router.route('/date/:eventDate').get(async (req, res) => {
   }
   try {
     const event = await eventData.getEventsByDate(eventDate);
-    console.log(event);
     return res.json({ EventList: event });
   } catch (e) {
     return res.status(500).json({ error: e });
@@ -408,7 +407,7 @@ router.route('/date/:eventDate').get(async (req, res) => {
 });
 
 router
-  .route('/:eventId/comment')
+  .route('/comment/:eventId')
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
     let eventId = req.params.eventId;
     let comment = req.body.comment;
@@ -423,10 +422,36 @@ router
 
     try {
       comment = await comments.createComment(eventId, userId, comment);
-      let event = await eventData.getEventById(eventId);
+      let data = await eventData.getEventById(eventId);
       res
         .status(200)
-        .json({ message: 'Comment added successfully', data: event });
+        .json({ message: 'Comment added successfully', data: data });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+router
+  .route('/rating/:eventId')
+  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let rating = req.body.rating;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+      rating = validation.checkRating(rating);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      let data = null;
+      data = await eventData.getRatingIfExists(eventId, userId, rating);
+
+      return res
+        .status(200)
+        .json({ message: 'Rating added successfully', data: { data } });
     } catch (e) {
       return res.status(500).json({ error: e });
     }

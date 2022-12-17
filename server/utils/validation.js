@@ -119,14 +119,13 @@ const checkAdress = (input, name = 'address') => {
 };
 
 const checkEventDate = (input, name = 'start date') => {
-  checkInputString(input, name);
+  input = checkInputString(input, name);
   const dateParsed = new Date(Date.parse(input));
   if (dateParsed.toISOString() != input) throw 'Date format should be in ISO';
   return input;
 };
 
 const checkRsvpCount = (input, name = 'rsvp') => {
-  checkInputString(input, name);
   checkInputNumber(input, name);
   return input;
 };
@@ -212,6 +211,17 @@ const checkBoolean = (input, name = 'boolean') => {
   return input;
 };
 
+const checkRating = (input, name = 'rating') => {
+  // checkInputString(input, name);
+  // console.log(input);
+
+  if (!isNaN(Number(input))) {
+    if (Number(input) < 1) throw 'Rating cannot be less than 0';
+    if (Number(input) > 5) throw 'Rating cannot be greater than 5';
+    return input;
+  } else throw 'invalid rating';
+};
+
 const checkInvites = (input, name = 'invites') => {
   checkInputString(input, name);
   let invites = input.split(',');
@@ -239,6 +249,7 @@ module.exports = {
   checkEventURl,
   checkComments,
   checkReviews,
+  checkRating,
   checkBoolean,
   checkInvites,
 };
