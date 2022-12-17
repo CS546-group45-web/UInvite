@@ -405,7 +405,7 @@ router.route('/date/:eventDate').get(async (req, res) => {
 });
 
 router
-  .route('/:eventId/comment')
+  .route('/comment/:eventId')
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
     let eventId = req.params.eventId;
     let comment = req.body.comment;
@@ -430,7 +430,7 @@ router
   });
 
 router
-  .route('/:eventId/rating')
+  .route('/rating/:eventId')
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
     let eventId = req.params.eventId;
     let rating = req.body.rating;

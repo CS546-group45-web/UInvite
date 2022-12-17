@@ -10,7 +10,7 @@ const createComment = async (eventId, userId, comment) => {
   //----------------------------validation--------------------------------------
   eventId = validation.checkObjectId(eventId);
   // userId = validation.checkObjectId(userId);
-  comment = validation.checkInputString(comment);
+  comment = validation.checkInputString(comment, 'comment');
   //----------------------------validation ends---------------------------------
   const today = new Date().toISOString();
 
