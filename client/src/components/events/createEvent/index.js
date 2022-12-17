@@ -27,20 +27,24 @@ import {
 } from "../../../utils/helper";
 import { typeOptions } from "../../../constants";
 import { getUserFollowers } from "../../../utils/apis/user";
-import { createEvent } from "../../../utils/apis/event";
+import { createEvent, editEvent } from "../../../utils/apis/event";
 import { useNavigate } from "react-router";
 // import AvatarEditor from "react-avatar-editor";
 
-function CreateEvent() {
+function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
   const navigate = useNavigate();
-  const [eventData, setEventData] = React.useState({
-    arePicturesAllowed: true,
-    areCommentsAllowed: true,
-    ageRestricted: true,
-    type: "in-person",
-    startDateTime: dayjs(new Date(+new Date() + 87000000)), //setting start date to be same time as of now + 1 day
-    endDateTime: dayjs(new Date(+new Date() + 3660000 + 87000000)), //setting end date to be same time as of now + 1 day + 1 hour
-  });
+  const [eventData, setEventData] = React.useState(
+    editMode
+      ? event
+      : {
+          arePicturesAllowed: true,
+          areCommentsAllowed: true,
+          ageRestricted: true,
+          type: "in-person",
+          startDateTime: dayjs(new Date(+new Date() + 87000000)), //setting start date to be same time as of now + 1 day
+          endDateTime: dayjs(new Date(+new Date() + 3660000 + 87000000)), //setting end date to be same time as of now + 1 day + 1 hour
+        }
+  );
   const [errors, setErrors] = React.useState({});
   const [invitees, setInvitees] = React.useState([]);
   // const [imageObj, setImageObj] = React.useState(null);
@@ -79,7 +83,12 @@ function CreateEvent() {
       if (!eventData?.onlineEventLink) errorObj.onlineEventLink = true;
 
     const { startDateTime, endDateTime } = eventData;
-    if (!validateDateDiff(startDateTime?.$d, endDateTime?.$d)) {
+    if (
+      !validateDateDiff(
+        startDateTime?.$d ?? startDateTime,
+        endDateTime?.$d ?? endDateTime
+      )
+    ) {
       return toast.error("Duration of the event should be more than 1 hour");
     }
 
@@ -105,8 +114,8 @@ function CreateEvent() {
       type,
       startDateTime: new Date(startDateTime).toISOString(),
       endDateTime: new Date(endDateTime).toISOString(),
-      tags,
-      invites: invites.join(","),
+      tags: editMode ? tags.join(",") : tags,
+      invites: editMode ? "" : invites.join(","),
       arePicturesAllowed,
       areCommentsAllowed,
       ageRestricted,
@@ -114,12 +123,23 @@ function CreateEvent() {
     if (type === "in-person") apiBody.address = eventData?.address;
     if (type === "online") apiBody.onlineEventLink = eventData?.onlineEventLink;
 
-    const { data, status } = await createEvent(apiBody);
-    console.log(data);
-    if (status !== 200) toast.error(data.error);
-    else {
-      toast.success("Event created. Redirecting to event page...");
-      setTimeout(() => navigate("/event/" + data?.data?.eventId), 4000);
+    if (editMode) {
+      const { data, status } = await editEvent(eventData?._id, apiBody);
+      if (status !== 200) toast.error(data.error);
+      else {
+        toast.success("Event updated!");
+        saveData();
+        setTimeout(() => navigate("/event/" + data?.data?._id), 2000);
+      }
+    } else {
+      const { data, status } = await createEvent(apiBody);
+      if (status !== 200) toast.error(data.error);
+      else {
+        toast.success("Event created. Redirecting to event page...");
+        setTimeout(() => {
+          navigate("/event/" + data?.data?.eventId);
+        }, 4000);
+      }
     }
     setCreateLoading(false);
   };
@@ -139,18 +159,19 @@ function CreateEvent() {
   };
 
   React.useEffect(() => {
-    getUserFollowers().then((res) => {
-      const { data, status } = res;
-      const list = data?.data?.map((item) => item.email);
-      if (status !== 200) return toast.error(data.error);
-      setInvitees(list);
-    });
-  }, []);
+    !editMode &&
+      getUserFollowers().then((res) => {
+        const { data, status } = res;
+        const list = data?.data?.map((item) => item.email);
+        if (status !== 200) return toast.error(data.error);
+        setInvitees(list);
+      });
+  }, [editMode]);
 
   return (
     <div>
       <div className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-        Create an Event!
+        {editMode ? "Edit event" : "Create an Event!"}
       </div>
       <div className="flex ">
         <div className="w-full">
@@ -498,36 +519,38 @@ function CreateEvent() {
                     }}
                   />
                 </div>
-                <div>
-                  <FormControl sx={{ width: "100%" }}>
-                    <InputLabel id="multiple-invitees">
-                      Invite people
-                    </InputLabel>
-                    <Select
-                      labelId="multiple-invitees"
-                      id="multiple-invitees"
-                      multiple
-                      value={eventData?.invites ?? []}
-                      onChange={(e) => {
-                        const { value } = e.target;
-                        setValues("invites", value);
-                      }}
-                      input={
-                        <OutlinedInput
-                          label="Invite people"
-                          fullWidth
-                          // size="small"
-                        />
-                      }
-                    >
-                      {invitees?.map((name) => (
-                        <MenuItem key={name} value={name}>
-                          {name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </div>
+                {!editMode && (
+                  <div>
+                    <FormControl sx={{ width: "100%" }}>
+                      <InputLabel id="multiple-invitees">
+                        Invite people
+                      </InputLabel>
+                      <Select
+                        labelId="multiple-invitees"
+                        id="multiple-invitees"
+                        multiple
+                        value={eventData?.invites ?? []}
+                        onChange={(e) => {
+                          const { value } = e.target;
+                          setValues("invites", value);
+                        }}
+                        input={
+                          <OutlinedInput
+                            label="Invite people"
+                            fullWidth
+                            // size="small"
+                          />
+                        }
+                      >
+                        {invitees?.map((name) => (
+                          <MenuItem key={name} value={name}>
+                            {name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </div>
+                )}
               </div>
             </div>
             {/* <IconButton
@@ -618,14 +641,23 @@ function CreateEvent() {
 
           <div>
             <button
-              className="btn_default"
+              className="btn_default mr-2"
               onClick={validateData}
               disabled={createLoading}
               type="submit"
             >
               <Loading loading={createLoading} width={18} />
-              Create
+              {editMode ? "Edit" : "Create"}
             </button>
+
+            {editMode && (
+              <button
+                className="btn_default__cancel"
+                onClick={() => setMode(false)}
+              >
+                Cancel
+              </button>
+            )}
           </div>
         </div>
       </div>

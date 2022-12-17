@@ -23,10 +23,47 @@ body {
 
 .btn_default {
   width: auto;
-  padding: 8px 20px;
+  padding: 7px 20px;
   color: white;
   font-size: 18px;
   font-weight: 500;
   border-radius: 4px;
   background-color: #393e46;
+  cursor: pointer;
+}
+
+.btn_default__cancel {
+  width: auto;
+  height: 43px;
+  padding: 5px 18px;
+  border-radius: 4px;
+  color: #393e46;
+  font-size: 18px;
+  font-weight: 500;
+  border: 2px solid #393e46;
+  margin-left: 10px;
+}
+
+.btn_edit_event {
+  border: 2px solid #393e46;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 16px;
+  line-height: 18px;
+  margin-left: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 30px;
+}
+
+.btn_edit_profile {
+  border: 2px solid #393e46;
+  border-radius: 6px;
+  padding: 4px;
+  font-size: 16px;
+  line-height: 18px;
+  margin-left: 14px;
+  margin-bottom: 12px;
+  font-weight: 500;
+  cursor: pointer;
 }

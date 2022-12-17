@@ -1,128 +1,58 @@
 import moment from "moment";
 import React from "react";
 import { useParams } from "react-router";
-import { getAddressFormatted } from "../../../utils/helper";
+// import { getAddressFormatted } from "../../../utils/helper";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 // import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import Comments from "./comments";
 import { getUserDetails } from "../../../utils/apis/user";
 import { toast } from "react-toastify";
 import { getEventsDetailsById, postComment } from "../../../utils/apis/event";
+import CreateEvent from "../createEvent";
+
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import Loading from "../../common/Loading";
+import { Chip } from "@mui/material";
 
 function EventPage() {
   const params = useParams();
-  const sample = {
-    user_id: "manisaiprasad",
-    _id: "6398241071002c31e7614f1e",
-    eventTitle: "DancePeChance",
-    description:
-      "We are so excited to be hosting our very first dance competition! This competition is open to all pupils in our school and will be taking place during the month of October. The competition will consist of a variety of dances including modern, salsa, ballroom, and country dances. There will be a total of 4 competitions which will be held on different days. The first competition will be held on the 8th of October and the last competition will be held on the 22nd of October.",
-    startDateTime: "2022-12-08T19:58:23.464Z",
-    endDateTime: "2022-12-12T19:58:23.464Z",
-    address: {
-      City: "Jersey City",
-      State: "New Jersey",
-      Country: "United States",
-      Zipcode: "07306",
-    },
-    dateCreated: "2022-11-06T19:58:23.464Z",
-    Max_rsvps_count: 100,
-    event_type: "in-person",
-    rsvps: [
-      "1d1f7b081e422efe1422b17bf7aeb766",
-      "2d1f7b081e422efe1422b17bf7aeb766",
-    ],
-    waitlist: [
-      "1d1f7b081e422efe1422b17bf7aeb766",
-      "2d1f7b081e422efe1422b17bf7aeb766",
-    ],
-    tags: ["Free Food", "18+", "Alcohol", "DJ", "Free Entry"],
-    event_banner_url: "https://localhost:4000/dance.jpg",
-    like_count: 100,
-    comments: [
-      {
-        name: "Suman M",
-        username: "SumanM",
-        comment:
-          "We are so excited to be hosting our very first dance competition! This competition is open to all pupils in our school and will be taking place during the month of October. The competition will consist of a variety of dances including modern, salsa, ballroom, and country dances. There will be a total of 4 competitions which will be held on different days. The first competition will be held on the 8th of October and the last competition will be held on the 22nd of October.",
-        dateCreated: "2022-11-06T19:58:23.464Z",
-        user_id: "2d1f7b081e422efe1422b17bf7aeb766",
-      },
-      {
-        name: "Suman M",
-        username: "SumanM",
-        comment: "It was a great Event",
-        dateCreated: "2022-11-06T19:58:23.464Z",
-        user_id: "2d1f7b081e422efe1422b17bf7aeb766",
-      },
-      {
-        name: "Suman M",
-        username: "SumanM",
-        comment:
-          "We are so excited to be hosting our very first dance competition! This competition is open to all pupils in our school and will be taking place during the month of October. The competition will consist of a variety of dances including modern, salsa, ballroom, and country dances. There will be a total of 4 competitions which will be held on different days. The first competition will be held on the 8th of October and the last competition will be held on the 22nd of October.",
-        dateCreated: "2022-11-06T19:58:23.464Z",
-        user_id: "2d1f7b081e422efe1422b17bf7aeb766",
-      },
-      {
-        name: "Suman M",
-        username: "SumanM",
-        comment: "It was a great Event",
-        dateCreated: "2022-11-06T19:58:23.464Z",
-        user_id: "2d1f7b081e422efe1422b17bf7aeb766",
-      },
-      {
-        name: "Suman M",
-        username: "SumanM",
-        comment:
-          "We are so excited to be hosting our very first dance competition! This competition is open to all pupils in our school and will be taking place during the month of October. The competition will consist of a variety of dances including modern, salsa, ballroom, and country dances. There will be a total of 4 competitions which will be held on different days. The first competition will be held on the 8th of October and the last competition will be held on the 22nd of October.",
-        dateCreated: "2022-11-06T19:58:23.464Z",
-        user_id: "2d1f7b081e422efe1422b17bf7aeb766",
-      },
-      {
-        name: "Suman M",
-        username: "SumanM",
-        comment: "It was a great Event",
-        dateCreated: "2022-11-06T19:58:23.464Z",
-        user_id: "2d1f7b081e422efe1422b17bf7aeb766",
-      },
-    ],
-    reviews: [
-      {
-        user_id: "1d1f7b081e422efe1422b17bf7aeb766",
-        Name: "Suam",
-        Review: "It was a great Event",
-        Date: "2022-11-06T19:58:23.464Z",
-        Rating: 4,
-      },
-    ],
-    overall_rating: 3.5,
-  };
-  const [eventData, setEventData] = React.useState(sample);
+  const [eventData, setEventData] = React.useState({});
   const [loggedInUserData, setLoggedInUserData] = React.useState({});
   const [pageLoading, setPageLoading] = React.useState(false);
+  const [mode, setMode] = React.useState(false);
   const [commentLoading, setCommentLoading] = React.useState(false);
 
   const getEventsDetails = React.useCallback(
     (showLoader = false) => {
+      showLoader && setPageLoading(true);
       getEventsDetailsById(params?.id).then((res) => {
-        showLoader && setPageLoading(true);
-        if (res.status !== 200) return toast.error(res.data.error);
-        setEventData(res?.data);
+        const { data, status } = res;
+        if (status !== 200) return toast.error(data.error);
+        setEventData(data?.data);
         getUserDetails().then((res) => {
           const { data, status } = res;
           if (status !== 200) return toast.error(data.error);
           setLoggedInUserData(data);
+          setPageLoading(false);
         });
       });
     },
     [params?.id]
   );
 
+  const saveData = async () => {
+    await getEventsDetails();
+    setMode(false);
+  };
+
   const postCommentByUser = async (comment) => {
     setCommentLoading(true);
     const { data, status } = await postComment(comment, eventData?._id);
-    // console.log({ data, status });
+    console.log({ data, status });
     setEventData(data?.data);
     setCommentLoading(false);
   };
@@ -131,66 +61,151 @@ function EventPage() {
     getEventsDetails(true);
   }, [getEventsDetails]);
 
-  const {
-    event_banner_url,
-    eventTitle,
-    _id,
-    dateCreated,
-    description,
-    address,
-    startDateTime,
-    endDateTime,
-    comments,
-  } = eventData;
-  return (
-    <div>
+  const viewMode = () => {
+    const {
+      event_banner_url,
+      eventTitle,
+      dateCreated,
+      description,
+      address,
+      startDateTime,
+      endDateTime,
+      comments,
+      ageRestricted,
+      areCommentsAllowed,
+      userId,
+      tags,
+    } = eventData;
+
+    return (
       <div>
         <div className="event_page_top flex items-baseline justify-between mt-5">
           <div className="text-4xl font-bold cursor-pointer flex">
             {eventTitle}
-            <div>
-              <BookmarkBorderOutlinedIcon fontSize="large" />
-            </div>
+            {loggedInUserData?._id === userId && (
+              <div
+                onClick={() => {
+                  setMode(true);
+                }}
+                className="btn_edit_profile"
+              >
+                Edit event
+              </div>
+            )}
           </div>
 
-          <div className="text-lg text-[#393e46] ml-1 font-thin">
-            posted on {moment(dateCreated).format("lll")}
+          <div className="text-2xl text-[#393e46]">
+            posted on {moment(dateCreated).format("ll")}
           </div>
         </div>
-      </div>
-      <div>
-        <img
-          // src={event_banner_url}
-          src="https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F336872189%2F412671342061%2F1%2Foriginal.20220817-060523?w=940&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=47201003009aab40a827c78813e5f381"
-          alt="event-poster"
-          className="object-contain rounded-md mb-2 mt-[64px]"
-        />
-      </div>
-      <div>
-        <div className="text-lg font-light mt-1">
+        <div className="flex mt-[36px]">
+          <div className="w-8/12 pr-1">
+            <img
+              src={
+                event_banner_url ??
+                "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F336872189%2F412671342061%2F1%2Foriginal.20220817-060523?w=940&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=47201003009aab40a827c78813e5f381"
+              }
+              alt="event-poster"
+              className="object-contain rounded-md mb-2 w-full aspect-video"
+            />
+          </div>
+          <div className="mt-6 text-xl w-4/12 pl-1">
+            <div className="font-bold text-xl section_divider">
+              {" "}
+              <NotesOutlinedIcon /> Location & Time
+            </div>
+
+            <div className="pl-2 ">
+              <div className="text-lg font-semibold">
+                {/* {getAddressFormatted(address)} */}
+                <LocationOnIcon /> {address}
+              </div>
+              <div className="text-lg font-semibold mb-2">
+                <div>
+                  <DateRangeIcon />
+                  &nbsp;{moment(startDateTime).format("lll")}&nbsp;-
+                </div>
+                <div className="ml-8">{moment(endDateTime).format("lll")}</div>
+              </div>
+
+              {ageRestricted && (
+                <div>
+                  <div className="warning_note">
+                    {" "}
+                    <ErrorOutlineOutlinedIcon sx={{ color: "#f1c40f" }} />
+                    <span className="ml-2">
+                      Warning: This event is{" "}
+                      <span className="font-semibold">age restricted</span>. You
+                      may need to provide{" "}
+                      <span className="underline">Government ID proof</span> to
+                      attend this event.
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                {loggedInUserData?._id === userId ? (
+                  <button className="btn_default__cancel">
+                    <PeopleOutlineIcon /> Guest list
+                  </button>
+                ) : (
+                  <div>
+                    <button className="btn_default">
+                      <BookmarkBorderOutlinedIcon /> Bookmark
+                    </button>
+
+                    <button className="btn_default__cancel">RVSP</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="text-xl -mt-4">
           <p className="event_desc">{description}</p>
         </div>
 
-        <div className="mt-3 text-xl">
-          <div className="font-bold text-2xl">
-            {" "}
-            <NotesOutlinedIcon fontSize="large" /> Event Details
-          </div>
-          <div className="text-lg">{getAddressFormatted(address)}</div>
-          <div className="text-lg">
-            <span>{moment(startDateTime).format("lll")}</span>
-            <span className="mx-1">-</span>
-            <span>{moment(endDateTime).format("lll")}</span>
-          </div>
+        <div className="flex mt-2">
+          {tags?.map((tag, i) => (
+            <span className="mr-1 text-logoBlue" key={i}>
+              <Chip label={tag} variant="outlined" className={"tags_chip"} />
+            </span>
+          ))}
         </div>
-      </div>
 
-      <Comments
-        comments={comments}
-        loggedInUserId={loggedInUserData?._id}
-        postCommentByUser={postCommentByUser}
-        commentLoading={commentLoading}
-      />
+        <Comments
+          areCommentsAllowed={areCommentsAllowed}
+          comments={comments}
+          loggedInUserId={loggedInUserData?._id}
+          postCommentByUser={postCommentByUser}
+          commentLoading={commentLoading}
+        />
+      </div>
+    );
+  };
+
+  return (
+    <div className="h-full w-full">
+      {pageLoading ? (
+        <div className="h-full w-full flex items-center justify-center">
+          <Loading
+            loading={pageLoading}
+            width={40}
+            color="#393e46"
+            thickness={5}
+          />
+        </div>
+      ) : mode ? (
+        <CreateEvent
+          event={eventData}
+          editMode={mode}
+          saveData={saveData}
+          setMode={setMode}
+        />
+      ) : (
+        viewMode()
+      )}
     </div>
   );
 }

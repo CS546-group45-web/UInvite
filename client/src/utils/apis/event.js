@@ -4,8 +4,8 @@ export const createEvent = async (data) =>
   await makeApiCall("/api/events", "post", data);
 export const getEventsDetailsById = async (id) =>
   await makeApiCall("/api/events/id/" + id, "get");
-export const editEvent = async (data) =>
-  await makeApiCall("/api/events/edit", "post", data);
+export const editEvent = async (id, data) =>
+  await makeApiCall("/api/events/update/" + id, "post", data);
 
 export const getAllEventsForHomePage = async () =>
   await makeApiCall("/api/events", "get");

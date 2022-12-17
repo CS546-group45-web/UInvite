@@ -9,8 +9,8 @@
 
 .tags_chip {
   /* color: #393e67 !important;
-  border: 1px solid #393e67 !important;
-  /* font-weight: 900; */
+    border: 1px solid #393e67 !important;
+    /* font-weight: 900; */
   /* font-size: 15px !important; */
   font-size: 15px !important;
   background-color: #393e46d1 !important;
@@ -38,8 +38,8 @@
 }
 
 .event_desc {
-  font-size: 20px;
   text-align: justify;
+  white-space: pre-line;
 }
 
 .event_page_top {
@@ -48,9 +48,10 @@
   top: 0px;
   border-bottom: 1px solid #393e4638;
   width: -webkit-fill-available;
-  padding: 15px 0px 8px 0px;
-  margin: 12px 20px 0px -5px;
-  z-index: 999;
+  padding: 10px 10px 4px 10px;
+  margin: 0px 0px 0px -16px;
+  z-index: 1;
+  box-shadow: 2px 3px 6px 0px #151e27;
 }
 
 .commenters_profile_pic {
@@ -103,4 +104,28 @@
   border-radius: 10px;
   width: fit-content;
   margin: 10px 0px 0px 0px;
+}
+
+.section_divider {
+  border-bottom: 2px solid #393e4659;
+}
+
+.warning_note {
+  padding: 4px 10px;
+  border-radius: 5px;
+  background-color: #f1c40f69;
+  margin: 10px 0px;
+  font-size: 16px;
+}
+
+.btn_edit_event {
+  border: 2px solid #393e46;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 16px;
+  line-height: 18px;
+  margin-left: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 30px;
 }

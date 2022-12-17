@@ -21,7 +21,7 @@ import EventPage from "./components/events/lists/eventPage";
 function App() {
   const styles = () =>
     isAuthenticated()
-      ? "col-span-10 px-5 py-5 overflow-y-auto scroller"
+      ? "col-span-10 my-4 px-4 overflow-y-auto scroller"
       : "col-span-12 px-5 py-5 h-[100%] overflow-y-auto";
 
   const isAuthenticated = () => {
