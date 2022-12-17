@@ -1,0 +1,131 @@
+.event_banner {
+  width: 350px;
+  aspect-ratio: 2/1.5;
+  /* object-fit: contain; */
+  border-radius: 4px;
+  height: inherit;
+  margin-top: 5px;
+}
+
+.tags_chip {
+  /* color: #393e67 !important;
+    border: 1px solid #393e67 !important;
+    /* font-weight: 900; */
+  /* font-size: 15px !important; */
+  font-size: 15px !important;
+  background-color: #393e46d1 !important;
+  color: white !important;
+  border: 1px solid #393e46d1 !important;
+  font-weight: 600 !important;
+}
+
+.event_description {
+  width: 450px;
+  overflow: hidden;
+  white-space: pre-wrap;
+  text-overflow: ellipsis;
+  max-width: 470px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.event_desc:first-letter {
+  margin-left: 12px;
+  text-transform: capitalize;
+  font-weight: lighter;
+  font-size: 35px;
+}
+
+.event_desc {
+  text-align: justify;
+  white-space: pre-line;
+}
+
+.event_page_top {
+  position: fixed;
+  background-color: white;
+  top: 0px;
+  border-bottom: 1px solid #393e4638;
+  width: -webkit-fill-available;
+  padding: 10px 10px 4px 10px;
+  margin: 0px 0px 0px -16px;
+  z-index: 1;
+  box-shadow: 2px 3px 6px 0px #151e27;
+}
+
+.commenters_profile_pic {
+  width: 40px;
+  aspect-ratio: 1/1;
+  border-radius: 50px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+.comment {
+  border-top: 1px solid #393e4621;
+  margin: 8px 5px;
+  padding: 8px 0px 0px 0px;
+  text-align: justify;
+}
+.commented_user_tag {
+  font-size: 16px;
+  border-radius: 5px;
+  background-color: #393e4682;
+  padding: 0px 4px;
+  color: #393e46;
+  border: 2px solid #393e46;
+  height: 30px;
+  cursor: pointer;
+  margin: 0px 8px;
+  font-weight: 700;
+}
+.comment_section {
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+.scroller::-webkit-scrollbar {
+  width: 5px;
+}
+
+.scroller::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px #393e46;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background-color: #353a42;
+  border-radius: 4px;
+}
+
+.usercard_eventcard {
+  background-color: #393e4624;
+  padding: 4px 10px;
+  border-radius: 10px;
+  width: fit-content;
+  margin: 10px 0px 0px 0px;
+}
+
+.section_divider {
+  border-bottom: 2px solid #393e4659;
+}
+
+.warning_note {
+  padding: 4px 10px;
+  border-radius: 5px;
+  background-color: #f1c40f69;
+  margin: 10px 0px;
+  font-size: 16px;
+}
+
+.btn_edit_event {
+  border: 2px solid #393e46;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 16px;
+  line-height: 18px;
+  margin-left: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 30px;
+}
