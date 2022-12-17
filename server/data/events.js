@@ -122,16 +122,26 @@ const updateEventPhoto = async (eventId, userId, event_photo_url) => {
 // get all upcoming events
 const getAllUpcomingEvents = async () => {
   const eventCollection = await events();
+  //  dateCreated: new Date().toISOString(),
   const events_list = await eventCollection
-    .find({ startDateTime: { $gte: new Date() } })
+    .find({ startDateTime: { $gte: new Date().toISOString() } })
     .toArray();
   if (!events_list) {
-    throw new Error('Could not get all upcoming events.');
+    throw new Error('Could not get all events.');
   }
   for (const element of events_list) {
     element._id = element._id.toString();
+    try {
+      let userData = await user.getUserById(element?.userId.toString());
+      element.username = userData.username;
+      element.firstName = userData.firstName;
+      element.lastName = userData.lastName;
+      element.profile_photo_url = userData.profile_photo_url;
+    } catch (e) {
+      throw e;
+    }
   }
-  return events_list;
+  return events_list; //changed from events to event_list
 };
 
 const getAllEvents = async () => {
