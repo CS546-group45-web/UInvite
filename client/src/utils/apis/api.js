@@ -27,12 +27,12 @@ export const makeApiCall = async (endpoint, method, body, headers = null) => {
   } catch (err) {
     const { response } = err;
     const { status, data } = response;
-    if (errosStatusCodes.includes(response?.status)) {
-      toast.error(response?.data?.error);
+    if (errosStatusCodes.includes(status)) {
+      toast.error(data?.error);
       const err = { status, data };
       return err;
     }
-    if (response?.status === 401) setTimeout(logoutUser, 3000);
+    if (status === 401 || status === 502) setTimeout(logoutUser, 3000);
     toast.error("Something went wrong!");
     // setTimeout(logoutUser, 4000);
   }
