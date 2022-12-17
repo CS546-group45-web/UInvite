@@ -315,6 +315,37 @@ router
     }
   });
 
+//events  Search and filter based on Date, Location, Rating, Age-restricted events and tags
+// example query
+// http://localhost:3000/api/events/search?eventTitle=party&eventDate=2020-12-12&eventLocation=Toronto&eventTags=party&eventRating=4&eventStartDateTime=2020-12-12&eventEndDateTime=2020-12-12
+router.route('/search').get(async (req, res) => {
+  let eventTitle = req.query.eventTitle;
+  let eventDate = req.query.eventDate;
+  let eventLocation = req.query.eventLocation;
+  let eventTags = req.query.eventTags;
+  let eventRating = req.query.eventRating;
+  let eventStartDateTime = req.query.eventStartDateTime;
+  let eventEndDateTime = req.query.eventEndDateTime;
+
+  try {
+    const event = await eventData.getEventsBySearch(
+      eventTitle,
+      eventDate,
+      eventLocation,
+      eventTags,
+      eventRating,
+      eventStartDateTime,
+      eventEndDateTime
+    );
+    return res.json(
+      { message: 'events fetched', data: event },
+      { eventTitle: eventTitle }
+    );
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
 router.route('/title/:eventTitle').get(async (req, res) => {
   let eventTitle = req.params.eventTitle;
   console.log(eventTitle);

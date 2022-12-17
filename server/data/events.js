@@ -254,6 +254,41 @@ const getRsvpEvents = async (userId) => {
   return eventsRsvp;
 };
 
+// getEventsBySearch
+const getEventsBySearch = async (
+  eventTitle,
+  eventDate,
+  eventLocation,
+  eventTags,
+  eventRating,
+  eventStartDateTime,
+  eventEndDateTime
+) => {
+  const eventCollection = await events();
+  const events_list = await eventCollection.find({}).toArray();
+  if (!events_list) {
+    throw new Error('Could not get all events.');
+  }
+  for (const element of events_list) {
+    element._id = element._id.toString();
+  }
+  let eventSearchList = [];
+  for (const element of events_list) {
+    if (
+      element.eventTitle.includes(eventTitle) &&
+      element.eventDate.includes(eventDate) &&
+      element.eventLocation.includes(eventLocation) &&
+      element.eventTags.includes(eventTags) &&
+      element.eventRating.includes(eventRating) &&
+      element.eventStartDateTime.includes(eventStartDateTime) &&
+      element.eventEndDateTime.includes(eventEndDateTime)
+    ) {
+      eventSearchList.push(element);
+    }
+  }
+  return eventSearchList;
+};
+
 const getEventsByTitle = async (title) => {
   title = validation.checkTitle(title);
   const eventCollection = await events();
@@ -309,4 +344,5 @@ module.exports = {
   getCreatedEvents,
   updateEvent,
   getInvites,
+  getEventsBySearch,
 };
