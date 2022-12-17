@@ -11,8 +11,8 @@ const createReview = async (
 ) => {
   //----------------------------validation--------------------------------------
   eventId = validation.checkObjectId(eventId);
-  reviewerName = validation.checkNames(reviewerName, "Full Name");
-  if(!(/^([1-5]|[1-4].[0-9])$/gm.test(rating))){ throw new Error("Invalid Rating."); } // test valid rating
+  reviewerName = validation.checkNames(reviewerName, 'Full Name');
+  if(!(/^([1-5]|[1-4].[0-9])$/gm.test(rating))){ throw new Error('Invalid Rating.'); } // test valid rating
   //----------------------------validation ends---------------------------------
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -40,7 +40,7 @@ const createReview = async (
       $set : {overallRating : overall_rating}
     },
     {
-      returnDocument : "after"
+      returnDocument : 'after'
     }
   )
   if (updatedInfo.modifiedCount === 0 || updatedInfo.matchedCount === 0) {
@@ -53,19 +53,19 @@ const createReview = async (
 const getAllReviews = async (eventId) => {
   //----------------------------validation--------------------------------------
   eventId = validation.checkObjectId(eventId);
-  if(!ObjectId.isValid(eventId)){ throw new Error("event id is not a valid ObjectID."); } //test valid objectid
+  if(!ObjectId.isValid(eventId)){ throw new Error('event id is not a valid ObjectID.'); } //test valid objectid
   //----------------------------validation ends---------------------------------
   const eventCollection = await events();
   const event = await eventCollection.findOne({_id : ObjectId(eventId)});
-  if(event === null) throw new Error("Could not get reviews for this eventId.");
+  if(event === null) throw new Error('Could not get reviews for this eventId.');
   return event.reviews;
 };
 
 const getReview = async (reviewId) => {
   reviewId = validation.checkObjectId(reviewId);
   const eventCollection = await events();
-  const event = await eventCollection.findOne({"reviews._id" : ObjectId(reviewId)});
-  if(event === null) throw new Error("No reviews with given review ID.");
+  const event = await eventCollection.findOne({'reviews._id' : ObjectId(reviewId)});
+  if(event === null) throw new Error('No reviews with given review ID.');
   const reviews = event.reviews;
   for(const rev of reviews){
     if(reviewId === rev._id.toString()){
@@ -79,7 +79,7 @@ const getReview = async (reviewId) => {
 const removeReview = async (reviewId) => {
   reviewId = validation.checkObjectId(reviewId);
   const eventCollection = await events();
-  const event = await eventCollection.findOne({"reviews._id" : ObjectId(reviewId)});
+  const event = await eventCollection.findOne({'reviews._id' : ObjectId(reviewId)});
   const review = await getReview(reviewId);
   let new_rating = Math.round(((event.overallRating*event.reviews.length)-review.rating)/(event.reviews.length-1)*10)/10;
   if(event.reviews.length === 1 ){
@@ -92,7 +92,7 @@ const removeReview = async (reviewId) => {
       $pull : {reviews : { _id : ObjectId(reviewId) }}
     }
     );
-  if(updated_event.modifiedCount === 0) throw new Error("Cannot remove review");
+  if(updated_event.modifiedCount === 0) throw new Error('Cannot remove review');
   const event_after = await eventCollection.findOne({_id : event._id});
   return event_after;
 };
