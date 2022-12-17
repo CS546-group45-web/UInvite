@@ -218,9 +218,11 @@ const getInvites = async (userId) => {
   const userData = await user.getUserById(userId);
   if (!userData) throw 'User not found';
   const invites = [];
-  for (let i = 0; i < userData?.invites.length; i++) {
+  for (let i = 0; i < userData?.invited_events.length; i++) {
     try {
-      let eventData = await getEventMinById(userData?.invites[i].toString());
+      let eventData = await getEventMinById(
+        userData?.invited_events[i].toString()
+      );
       invites.push(eventData);
     } catch (e) {
       throw e;

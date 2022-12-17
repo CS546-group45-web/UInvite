@@ -495,6 +495,29 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Get User rsvped events
+
+`GET /api/user/invites`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "Invites fetched",
+  "data": [
+    {
+      "_id": "639d39ef2383fad00853fda3",
+      "eventTitle": "DanceMani1",
+      "dateCreated": "2022-12-17T03:39:27.940Z",
+      "rsvps": [],
+      "tags": ["party", "helloo"]
+    }
+  ]
+}
+```
+
 ### Events
 
 #### Create Event
@@ -516,7 +539,8 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "tags": "party,helloo",
   "arePicturesAllowed": "true",
   "areCommentsAllowed": "true",
-  "ageRestricted": "true"
+  "ageRestricted": "true",
+  "invites": "manisaiprasadam@gmail.com"
 }
 ```
 
@@ -712,6 +736,30 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Accept Invite
+
+`GET /api/events/accept/639c2ebdb8806952c83c8ad9`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+```json
+{
+  "message": "Invite accepted"
+}
+```
+
+#### Decline Invite
+
+`GET /api/events/decline/639c2ebdb8806952c83c8ad9`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+```json
+{
+  "message": "Invite declined"
+}
+```
+
 #### Get All Events
 
 `GET /api/events/`
@@ -790,6 +838,132 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
       "firstName": "Mani Sai Prasad",
       "lastName": "Masupalli",
       "profile_photo_url": "1671076586663_manisai.png"
+    }
+  ]
+}
+```
+
+#### Get All upcoming events
+
+`GET /api/events/`
+
+##### Response
+
+```json
+{
+  "message": "events fetched",
+  "data": [
+    {
+      "_id": "639c3e679bca6345b7ea47ea",
+      "userId": "63997d7bb5f8386c8be79555",
+      "eventTitle": "WINTER WONDERLAND",
+      "description": "BEAT OF HOBOKEN! LIVE PERCUSSIONIST & ENTERTAINMENT ALL NIGHT\nPOWER HOUR 10-11PM: $3 Green Tea, $4 Bud Lights, $5 House Mixed Drinks!\nMusic by LORENZO AND DJ U-F-OSO!\nTo book your bottle service call/text 201.744.5117 or email VIP@birchhoboken.com !",
+      "startDateTime": "2022-12-24T02:30:15.000Z",
+      "endDateTime": "2022-12-24T09:00:15.000Z",
+      "address": "93 River St, JC 03703",
+      "dateCreated": "2022-12-16T09:46:15.135Z",
+      "arePicturesAllowed": false,
+      "areCommentsAllowed": true,
+      "ageRestricted": true,
+      "type": "in-person",
+      "rsvps": [],
+      "waitlist": [],
+      "tags": ["NJ", "party", "boys", "girls", "fun", "food", "drinks"],
+      "like_count": 0,
+      "comments": [],
+      "reviews": [],
+      "overallRating": 0,
+      "username": "tarundadlani",
+      "firstName": "Tarun",
+      "lastName": "Dadlani",
+      "profile_photo_url": "1671075660532_tarundadlani.png"
+    },
+    {
+      "_id": "639c3f779bca6345b7ea47eb",
+      "userId": "63997d7bb5f8386c8be79555",
+      "eventTitle": "DRAG ME TO BRUNCH",
+      "description": "DRAG ME TO BIRCH BRUNCH IS BACK AGAIN!!!\n\nWelcome to one of a kind experience at BIRCH featuring: KIMMY SUMONY, LUXX NOIR LONDON & from RuPauls Drag Race MILK!\n\nUnlimited Brunch Buffet & Drink Specials!\n\nDADDY YANKEE TICKET GIVEAWAY!\n\nCOSTUME CONTEST!\n\nTicket valid for entry, show & unlimited brunch buffet!\n\nLive Entertainment!\n\nMust reserve a table with a minimum spend if you would like to secure seating - contact 201.581.7776 for VIP reservations",
+      "startDateTime": "2022-12-24T02:45:07.000Z",
+      "endDateTime": "2022-12-24T09:00:07.000Z",
+      "address": "93 River street, JC 07307",
+      "dateCreated": "2022-12-16T09:50:47.528Z",
+      "arePicturesAllowed": false,
+      "areCommentsAllowed": true,
+      "ageRestricted": true,
+      "type": "in-person",
+      "rsvps": [],
+      "waitlist": [],
+      "tags": ["NJ", "party", "breakfast", "brunch", "lunch", "family"],
+      "like_count": 0,
+      "comments": [],
+      "reviews": [],
+      "overallRating": 0,
+      "username": "tarundadlani",
+      "firstName": "Tarun",
+      "lastName": "Dadlani",
+      "profile_photo_url": "1671075660532_tarundadlani.png"
+    },
+    {
+      "_id": "639c40e59bca6345b7ea47ec",
+      "userId": "63997d7bb5f8386c8be79555",
+      "eventTitle": "DRAG ME TO BRUNCH",
+      "description": "DRAG ME TO BIRCH BRUNCH IS BACK AGAIN!!!\nWelcome to one of a kind experience at BIRCH featuring: KIMMY SUMONY, LUXX NOIR LONDON & from RuPauls Drag Race MILK!\nUnlimited Brunch Buffet & Drink Specials!\nDADDY YANKEE TICKET GIVEAWAY!\nCOSTUME CONTEST!\nTicket valid for entry, show & unlimited brunch buffet!\nLive Entertainment!\nMust reserve a table with a minimum spend if you would like to secure seating - contact 201.581.7776 for VIP reservations",
+      "startDateTime": "2022-12-25T17:15:26.000Z",
+      "endDateTime": "2022-12-25T19:30:26.000Z",
+      "address": "94 River St, Jc, 07307",
+      "dateCreated": "2022-12-17T01:24:57.187Z",
+      "arePicturesAllowed": false,
+      "areCommentsAllowed": true,
+      "ageRestricted": true,
+      "type": "in-person",
+      "rsvps": [],
+      "waitlist": [],
+      "tags": ["NJ", "birch", "breakfast", "brunch", "lunch"],
+      "like_count": 0,
+      "comments": [
+        {
+          "_id": "639d1a7b60b7498df0e11662",
+          "user_id": "63997d7bb5f8386c8be79555",
+          "dateCreated": "2022-12-17T01:25:15.678Z",
+          "name": "Tarun Dadlani",
+          "username": "tarundadlani",
+          "profile_photo_url": "1671075660532_tarundadlani.png",
+          "comment": "This is my first comment"
+        },
+        {
+          "_id": "639d1ad860b7498df0e11663",
+          "user_id": "63997d7bb5f8386c8be79555",
+          "dateCreated": "2022-12-17T01:26:48.158Z",
+          "name": "Tarun Dadlani",
+          "username": "tarundadlani",
+          "profile_photo_url": "1671075660532_tarundadlani.png",
+          "comment": "This is my 2nd comment"
+        },
+        {
+          "_id": "639d1bfa60b7498df0e11664",
+          "user_id": "63997d7bb5f8386c8be79555",
+          "dateCreated": "2022-12-17T01:31:37.972Z",
+          "name": "Tarun Dadlani",
+          "username": "tarundadlani",
+          "profile_photo_url": "1671075660532_tarundadlani.png",
+          "comment": "hello"
+        },
+        {
+          "_id": "639d1c1e60b7498df0e11665",
+          "user_id": "63997d7bb5f8386c8be79555",
+          "dateCreated": "2022-12-17T01:32:14.233Z",
+          "name": "Tarun Dadlani",
+          "username": "tarundadlani",
+          "profile_photo_url": "1671075660532_tarundadlani.png",
+          "comment": "Hello 2"
+        }
+      ],
+      "reviews": [],
+      "overallRating": 0,
+      "username": "tarundadlani",
+      "firstName": "Tarun",
+      "lastName": "Dadlani",
+      "profile_photo_url": "1671075660532_tarundadlani.png"
     }
   ]
 }

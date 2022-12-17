@@ -2,6 +2,7 @@ const { ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
+const events = mongoCollections.events;
 const validation = require('../utils/validation');
 const createUser = async (
   firstName,
@@ -91,6 +92,7 @@ const getInvite = async (eventId, userId) => {
 const acceptInvite = async (eventId, userId) => {
   eventId = validation.checkObjectId(eventId);
   const user_collection = await users();
+  const event_collection = await events();
   const updated_info = await user_collection.updateOne(
     { _id: ObjectId(userId) },
     {

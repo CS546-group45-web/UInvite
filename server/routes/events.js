@@ -90,7 +90,7 @@ router
 // accpet invite
 router
   .route('/accept/:eventId')
-  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
     let eventId = req.params.eventId;
     let userId = req.user._id;
     try {
@@ -120,7 +120,7 @@ router
 // decline invite
 router
   .route('/decline/:eventId')
-  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
     let eventId = req.params.eventId;
     let userId = req.user._id;
     try {
