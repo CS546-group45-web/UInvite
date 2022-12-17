@@ -16,7 +16,7 @@ import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import Loading from "../../common/Loading";
-import { Button, Chip } from "@mui/material";
+import { Chip } from "@mui/material";
 
 function EventPage() {
   const params = useParams();
