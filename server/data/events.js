@@ -249,6 +249,12 @@ const rsvp = async (eventId, userId) => {
     throw 'Could not rsvp to event';
   }
   await user.addrsvpEvent(userId, eventId);
+  // check if user is invited
+  let userData = await user.getUserById(userId);
+  if (userData.invited_events && userData.invited_events.includes(eventId)) {
+    await user.removeInvite(userId, eventId);
+  }
+
   return await getEventById(eventId);
 };
 
@@ -259,9 +265,7 @@ const getRsvpEvents = async (userId) => {
   const eventsRsvp = [];
   for (let i = 0; i < userData?.rsvped_events.length; i++) {
     try {
-      let eventData = await getEventMinById(
-        userData?.rsvped_events[i].toString()
-      );
+      let eventData = await getEventById(userData?.rsvped_events[i].toString());
       eventsRsvp.push(eventData);
     } catch (e) {
       throw e;
@@ -404,6 +408,19 @@ const addEventPhoto = async (eventId, userId, photo) => {
     throw 'Could not add photo to event.';
   }
   return await getEventById(eventId);
+};
+
+const getBookmarks = async (userId) => {
+  userId = validation.checkObjectId(userId);
+  const userData = await user.getUserById(userId);
+  if (!userData) throw 'User not found';
+  const bookmarks = userData.bookmarks;
+  const events = [];
+  for (let i = 0; i < bookmarks.length; i++) {
+    const event = await getEventMinById(bookmarks[i]);
+    events.push(event);
+  }
+  return events;
 };
 
 const getEventsByTitle = async (title) => {
@@ -575,4 +592,5 @@ module.exports = {
   getEventsBySearch,
   getRsvpList,
   addEventPhoto,
+  getBookmarks,
 };

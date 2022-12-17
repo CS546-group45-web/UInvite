@@ -144,6 +144,10 @@ const checkTags = (input, name = 'tags') => {
   checkInputString(input, name);
   let tags = input.split(',');
   if (tags.length < 1) throw `${name} should have max 3 tags`;
+  // should only contain letters and numbers
+  if (!tags.every((tag) => /^[a-zA-Z0-9]+$/.test(tag)))
+    throw `${name} should only contain letters and numbers`;
+
   return tags;
 };
 
@@ -153,41 +157,6 @@ const checkEventURl = (input, name = 'eventUrl') => {
   } catch (e) {
     throw `${name} should be valid Url`;
   }
-  return input;
-};
-
-const checkComments = (input, name = 'comments') => {
-  if (typeof input !== 'object') throw `${name} should be of type object `;
-  Object.keys(input).forEach((elem) => checkInputString(elem));
-  if (
-    !Object.keys(input).forEach((elem) =>
-      ['user_id', 'Name', 'Comment', 'Date'].includes(elem)
-    )
-  )
-    throw `${name} should be user_id,Name,Comment,Date `;
-  checkObjectId(input['user_id']);
-  checkNames(input['Name']);
-  checkInputString(input['Comment']);
-  checkDate(input['Date']);
-  return input;
-};
-
-const checkReviews = (input, name = 'Reviews') => {
-  if (typeof input !== 'object') throw `${name} should be of type object `;
-  Object.keys(input).forEach((elem) => checkInputString(elem));
-  if (
-    !Object.keys(input).forEach((elem) =>
-      ['user_id', 'Name', 'Review', 'Date', 'Rating'].includes(elem)
-    )
-  )
-    throw `${name} should be user_id,Name,Comment,Date `;
-  checkObjectId(input['user_id']);
-  checkNames(input['Name']);
-  checkInputString(input['Review']);
-  checkDate(input['Date']);
-  checkInputNumber(input['Rating']);
-  if (Number(input['Rating']) < 0) return 'Rating cannot be less than 0';
-  if (Number(input['Rating']) > 5) return 'Rating cannot be greater than 5';
   return input;
 };
 
@@ -204,7 +173,7 @@ const checkUsername = (input) => {
 };
 
 const checkBoolean = (input, name = 'boolean') => {
-  checkInputString(input, name);
+  input = checkInputString(input, name);
   if (input !== 'true' && input !== 'false') {
     throw `${name} must be a boolean`;
   }
@@ -212,9 +181,7 @@ const checkBoolean = (input, name = 'boolean') => {
 };
 
 const checkRating = (input, name = 'rating') => {
-  // checkInputString(input, name);
-  // console.log(input);
-
+  input = checkInputString(input, name);
   if (!isNaN(Number(input))) {
     if (Number(input) < 1) throw 'Rating cannot be less than 0';
     if (Number(input) > 5) throw 'Rating cannot be greater than 5';
@@ -247,8 +214,6 @@ module.exports = {
   checkArrayObjectId,
   checkTags,
   checkEventURl,
-  checkComments,
-  checkReviews,
   checkRating,
   checkBoolean,
   checkInvites,
