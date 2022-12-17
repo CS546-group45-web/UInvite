@@ -30,13 +30,13 @@ const createComment = async (eventId, userId, comment) => {
   const updatedInfo = await eventCollection.updateOne(
     { _id: ObjectId(eventId) },
     {
-      $push: { comments: newComment },
+      $push: { comments : newComment },
     },
     {
       returnDocument: 'after',
     }
   );
-  if (updatedInfo.matchedCount === 0) {
+  if (updatedInfo.modifiedCount === 0 || updatedInfo.matchedCount === 0 ) {
     throw new Error('could not update event successfully');
   }
   let comments = await getAllComments(eventId);
@@ -45,16 +45,16 @@ const createComment = async (eventId, userId, comment) => {
     return new Date(b.dateCreated) - new Date(a.dateCreated);
   });
   const updatedCommentInfo = await eventCollection.updateOne(
-    { _id: ObjectId(eventId) },
+    { _id : ObjectId(eventId) },
     {
-      $set: { comments: comments },
+      $set : { comments: comments },
     },
     {
       returnDocument: 'after',
     }
   );
 
-  if (updatedCommentInfo.matchedCount === 0) {
+  if (updatedCommentInfo.modifiedCount === 0 || updatedCommentInfo.matchedCount === 0) {
     throw new Error('could not update event successfully');
   }
 
@@ -69,7 +69,7 @@ const getAllComments = async (eventId) => {
   } //test valid objectid
   //----------------------------validation ends---------------------------------
   const eventCollection = await events();
-  const event = await eventCollection.findOne({ _id: ObjectId(eventId) });
+  const event = await eventCollection.findOne({ _id : ObjectId(eventId) });
   if (event === null)
     throw new Error('Could not get Comments for this eventId.');
   return event.comments;
@@ -79,7 +79,7 @@ const getComment = async (CommentId) => {
   CommentId = validation.checkId(CommentId);
   const eventCollection = await events();
   const event = await eventCollection.findOne({
-    'Comments._id': ObjectId(CommentId),
+    'comments._id': ObjectId(CommentId),
   });
   if (event === null) throw new Error('No Comments with given Comment ID.');
   const Comments = event.Comments;
@@ -100,14 +100,14 @@ const removeComment = async (CommentId) => {
   });
   const Comment = await getComment(CommentId);
   const updated_event = await eventCollection.findOneAndUpdate(
-    { _id: event._id },
+    { _id : event._id },
     {
-      $pull: { Comments: { _id: ObjectId(CommentId) } },
+      $pull : { Comments: { _id: ObjectId(CommentId) } },
     }
   );
-  if (updated_event.modifiedCount === 0)
+  if (updated_event.modifiedCount === 0 || updated_event.matchedCount === 0)
     throw new Error('Cannot remove Comment');
-  const event_after = await eventCollection.findOne({ _id: event._id });
+  const event_after = await eventCollection.findOne({ _id : event._id });
   return event_after;
 };
 
