@@ -336,8 +336,6 @@ module.exports = {
   updateImageURL,
   getFollowingInformation,
   getFollowersInformation,
-  add_event,
-  rsvp_event,
   addCreatedEvent,
   addrsvpEvent,
   addInvite,

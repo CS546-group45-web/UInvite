@@ -314,19 +314,11 @@ const addRating = async (event_id, user_id, rating) => {
   if (updatedInfo.modifiedCount === 0) {
     throw 'could not update event successfully';
   }
-  // let rating_id = ratings._id;
-  // console.log("Original Rating");
-  // console.log(rating_id);
-  // console.log(rating);
 
   const event = await eventCollection.findOne({
     _id: ObjectId(event_id),
   });
-  // console.log("Added");
 
-  // const event = await eventCollection.findOne({
-  //   ratings: { $elemMatch: { user_id: user_id } },
-  // });
   return event;
 };
 
@@ -386,6 +378,31 @@ const updateRating = async (event_id, user_id, rating, rating_id) => {
   return event;
 };
 
+const getRatingIfExists = async (eventId, userId, rating) => {
+  let event = await getEventById(eventId);
+
+  if (!event['ratings']) {
+    data = await addRating(eventId, userId, rating);
+  } else {
+    let rating_id = null;
+    const { ratings } = event;
+
+    for (rate of ratings) {
+      if (rate['user_id'] === userId) {
+        rating_id = rate['_id'];
+        break;
+      }
+    }
+
+    if (rating_id !== null) {
+      data = await updateRating(eventId, userId, rating, rating_id);
+    } else {
+      data = await addRating(eventId, userId, rating);
+    }
+  }
+  return data;
+};
+
 module.exports = {
   createEvent,
   updateEventPhoto,
@@ -401,4 +418,5 @@ module.exports = {
   getCreatedEvents,
   updateEvent,
   getInvites,
+  getRatingIfExists,
 };

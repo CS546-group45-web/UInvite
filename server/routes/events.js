@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const data = require('../data');
+const mongoCollections = require('../config/mongoCollections');
+const events = mongoCollections.events;
 const userData = data.users;
 const eventData = data.events;
 const comments = data.comments;
@@ -390,37 +392,7 @@ router
 
     try {
       let data = null;
-      let eventCollection = await events();
-      const ratings = await eventCollection.findOne({
-        _id: ObjectId(eventId),
-      });
-
-      if (!ratings['ratings']) {
-        data = await eventData.addRating(eventId, userId, rating);
-      } else {
-        let rating_id = null;
-        const { ratings } = await eventCollection.findOne({
-          _id: ObjectId(eventId),
-        });
-
-        for (rate of ratings) {
-          if (rate['user_id'] === userId) {
-            rating_id = rate['_id'];
-            break;
-          }
-        }
-
-        if (rating_id !== null) {
-          data = await eventData.updateRating(
-            eventId,
-            userId,
-            rating,
-            rating_id
-          );
-        } else {
-          data = await eventData.addRating(eventId, userId, rating);
-        }
-      }
+      data = await eventData.getRatingIfExists(eventId, userId, rating);
 
       return res
         .status(200)
