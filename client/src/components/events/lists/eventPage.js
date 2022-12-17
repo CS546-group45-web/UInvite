@@ -83,16 +83,6 @@ function EventPage() {
         <div className="event_page_top flex items-baseline justify-between mt-5">
           <div className="text-4xl font-bold cursor-pointer flex">
             {eventData?.eventTitle}
-            {loggedInUserData?._id === eventData?.userId && (
-              <div
-                onClick={() => {
-                  setMode(true);
-                }}
-                className="btn_edit_profile"
-              >
-                Edit event
-              </div>
-            )}
           </div>
 
           <div className="text-2xl text-[#393e46]">
@@ -111,6 +101,16 @@ function EventPage() {
             />
           </div>
           <div className="mt-6 text-xl w-4/12 pl-1">
+            {loggedInUserData?._id === eventData?.userId && (
+              <div
+                onClick={() => {
+                  setMode(true);
+                }}
+                className="btn_edit_profile"
+              >
+                Edit event
+              </div>
+            )}
             <div className="font-bold text-xl section_divider">
               {" "}
               <NotesOutlinedIcon /> Location & Time

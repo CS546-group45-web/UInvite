@@ -328,7 +328,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                 </div>
               )}
               {eventData?.type === "online" && (
-                <div className="w-4/12">
+                <div className="w-6/12">
                   <TextField
                     id="address"
                     label="Online Event Link"
@@ -361,7 +361,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                   />
                 </div>
               )}
-              <div className="w-4/12 mt-2">
+              <div className="w-3/12 mt-2">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start date"
@@ -402,7 +402,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                   />
                 </LocalizationProvider>
               </div>
-              <div className="w-4/12 ml-1 mt-2">
+              <div className="w-3/12 ml-1 mt-2">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End date"
@@ -647,7 +647,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
               type="submit"
             >
               <Loading loading={createLoading} width={18} />
-              {editMode ? "Edit" : "Create"}
+              {editMode ? "Update" : "Create"}
             </button>
 
             {editMode && (
