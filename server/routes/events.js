@@ -90,7 +90,7 @@ router
 // accpet invite
 router
   .route('/accept/:eventId')
-  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
     let eventId = req.params.eventId;
     let userId = req.user._id;
     try {
@@ -120,7 +120,7 @@ router
 // decline invite
 router
   .route('/decline/:eventId')
-  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
     let eventId = req.params.eventId;
     let userId = req.user._id;
     try {
@@ -187,7 +187,7 @@ router
       const eventuser = await eventData.getEventById(eventId);
       if (eventuser.userId != userId) {
         return res
-          .status(401)
+          .status(403)
           .json({ error: 'You are not authorized to update this event' });
       }
       const event = await eventData.updateEvent(
@@ -232,7 +232,7 @@ router
         const eventuser = await eventData.getEventById(eventId);
         if (eventuser.userId != userId) {
           return res
-            .status(401)
+            .status(403)
             .json({ error: 'You are not authorized to update this event' });
         }
         const event = await eventData.updateEventPhoto(
@@ -310,6 +310,63 @@ router
     try {
       const rsvp = await eventData.rsvp(eventId, userId);
       res.status(200).json({ message: 'RSVP added successfully', data: rsvp });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+//events  Search and filter based on Date, Location, Rating, Age-restricted events and tags
+// example query
+// http://localhost:4000/api/events/search?eventTitle=party&eventDate=2020-12-12&eventLocation=Toronto&eventTags=party&eventRating=4&eventStartDateTime=2020-12-12&eventEndDateTime=2020-12-12
+router.route('/search').get(async (req, res) => {
+  let eventTitle = req.query.eventTitle;
+  let dateCreated = req.query.dateCreated;
+  let eventLocation = req.query.eventLocation;
+  let eventTags = req.query.eventTags;
+  let eventRating = req.query.eventRating;
+  let eventStartDateTime = req.query.eventStartDateTime;
+  let eventEndDateTime = req.query.eventEndDateTime;
+
+  try {
+    const event = await eventData.getEventsBySearch(
+      eventTitle,
+      dateCreated,
+      eventLocation,
+      eventTags,
+      eventRating,
+      eventStartDateTime,
+      eventEndDateTime
+    );
+    return res.json({ message: 'events fetched', data: event });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
+// get rsvp list
+router
+  .route('/rsvpList/:eventId')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      // check user owns the event
+      const eventuser = await eventData.getEventById(eventId);
+      if (eventuser.userId != userId) {
+        return res
+          .status(403)
+          .json({ error: 'You are not authorized to view this event' });
+      }
+
+      const rsvp = await eventData.getRsvpList(eventId, userId);
+      res.status(200).json({ message: 'RSVP list fetched', data: rsvp });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
