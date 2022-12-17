@@ -319,7 +319,6 @@ router
 
 router.route('/title/:eventTitle').get(async (req, res) => {
   let eventTitle = req.params.eventTitle;
-  console.log(eventTitle);
   try {
     title = validation.checkTitle(eventTitle);
   } catch (e) {
@@ -327,7 +326,6 @@ router.route('/title/:eventTitle').get(async (req, res) => {
   }
   try {
     const event = await eventData.getEventsByTitle(eventTitle);
-    console.log(event);
     return res.json({ EventList: event });
   } catch (e) {
     return res.status(500).json({ error: e });
@@ -343,7 +341,6 @@ router.route('/date/:eventDate').get(async (req, res) => {
   }
   try {
     const event = await eventData.getEventsByDate(eventDate);
-    console.log(event);
     return res.json({ EventList: event });
   } catch (e) {
     return res.status(500).json({ error: e });
@@ -356,7 +353,6 @@ router
     let eventId = req.params.eventId;
     let comment = req.body.comment;
     let userId = req.user._id;
-    // console.log(userId);
 
     try {
       eventId = validation.checkObjectId(eventId);

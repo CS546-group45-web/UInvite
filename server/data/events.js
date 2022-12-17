@@ -268,9 +268,9 @@ const getEventsByDate = async (date) => {
   date = validation.checkEventDate(date); //changed from checkDate to checkEventDate --> using ISO to verify date
   const eventCollection = await events();
   //Adding get all events on same date
-  const event = await eventCollection.find({}).toArray();
+  const event = await getAllEvents();
   if (event === null) {
-    throw new Error('No events with that date.');
+    throw new Error('No events');
   }
   date = date.split('T')[0];
   let getEventsListByDate = [];
@@ -278,6 +278,8 @@ const getEventsByDate = async (date) => {
     if (elem.date_created.toISOString().substring(0, 10).includes(date)) {
       elem._id = elem._id.toString();
       getEventsListByDate.push(elem);
+    } else {
+      throw 'No event by that date';
     }
   }
   return getEventsListByDate;
@@ -308,7 +310,6 @@ const addRating = async (event_id, user_id, rating) => {
     { _id: ObjectId(event_id) },
     { $push: { ratings: ratingObj } }
   );
-  console.log({ updatedInfo });
   let orating = await updateOverallRating(event_id);
 
   if (updatedInfo.modifiedCount === 0) {
