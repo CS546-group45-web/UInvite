@@ -8,7 +8,6 @@ export const emailValidation = (email) => {
 };
 
 // this function will return true if password is correct or else will return an error
-// NOTE: Think about more cases to make password strong
 export const passwordValidation = (password) => {
   if (!password) return false;
   // password = password.trim();
@@ -81,6 +80,20 @@ export const phoneNumberFormatter = (phone) =>
 export const capitalizeFirstLetter = (str) =>
   str?.charAt(0).toUpperCase() + str?.slice(1);
 
+export const getFormattedDate = (date) => {
+  date = new Date(date).toISOString();
+  console.log(date);
+
+  return (
+    date.split("T")[0].replaceAll("-", "/") +
+    " " +
+    date.split("T")[1].substr(0, 5)
+  );
+};
+
+export const getAddressFormatted = (address) =>
+  address?.street + ", " + address?.City + ", " + address?.Zipcode;
+
 export const dataURLtoFile = (dataurl, filename) => {
   var arr = dataurl.split(","),
     mime = arr[0].match(/:(.*?);/)[1],
@@ -93,4 +106,31 @@ export const dataURLtoFile = (dataurl, filename) => {
   }
 
   return new File([u8arr], filename + ".png", { type: mime });
+};
+
+export const eventNameValidation = (name) => {
+  const regex = /^[a-zA-Z!-@+#$& ]{4,20}$/;
+  return regex.test(name);
+};
+
+export const validateUrl = (url) => {
+  try {
+    return Boolean(new URL(url));
+  } catch (e) {
+    return false;
+  }
+};
+
+export const validateTags = (value) => {
+  const regexTags = /^[A-Za-z0-9]+((,)[A-Za-z0-9]+)*[A-Za-z0-9]+$/g;
+  return regexTags.test(value);
+};
+
+export const validateDescription = (value) => value.length > 20;
+export const validateComment = (value) => value.trim().length > 0;
+
+export const validateDateDiff = (startDate, endDate) => {
+  startDate = new Date(startDate).getTime();
+  endDate = new Date(endDate).getTime();
+  return endDate - startDate > 0;
 };

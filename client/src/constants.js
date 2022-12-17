@@ -20,3 +20,8 @@ export const genderOptions = [
     value: "-",
   },
 ];
+
+export const typeOptions = [
+  { label: "In-person", value: "in-person" },
+  { label: "Online", value: "online" },
+];

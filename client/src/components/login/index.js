@@ -45,11 +45,10 @@ function Login() {
     setErrors(errorObj);
     if (Object.keys(errorObj).length === 0) {
       const loginData = await login(userData);
+      console.log(loginData);
       const { data, status } = loginData;
-      if (status !== 200) {
-        console.log("2");
-        toast.error(data?.error);
-      } else {
+      if (status !== 200) toast.error(data?.error);
+      else {
         localStorage.setItem("auth", true);
         localStorage.setItem("token", data?.token);
         window.location.href = "/";
