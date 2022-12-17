@@ -171,10 +171,39 @@ const getBookmark = async (eventId, userId) => {
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(userId) });
   if (!user) throw 'User not found';
-  if (user.bookmarks.includes(eventId)) {
+  if (user.bookmarks && user?.bookmarks.includes(eventId)) {
     return true;
   } else {
     return false;
+  }
+};
+
+// removeFromBookmarks
+const removeFromBookmarks = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $pull: { bookmarks: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove bookmark';
+  }
+  return await getUserById(userId);
+};
+
+// getUnbookmark
+const getUnbookmark = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  if (user.bookmarks && user?.bookmarks.includes(eventId)) {
+    return false;
+  } else {
+    return true;
   }
 };
 
@@ -374,4 +403,6 @@ module.exports = {
   declineInvite,
   addToBookmarks,
   getBookmark,
+  removeFromBookmarks,
+  getUnbookmark,
 };
