@@ -5,8 +5,6 @@ import { Route, BrowserRouter, Routes, Navigate } from "react-router-dom";
 import SignUp from "./components/signup";
 import CreateEvent from "./components/events/createEvent";
 import EventsList from "./components/events/lists";
-import EventsListInvited from "./components/events/invitedEvents";
-import EventsListRSVP from "./components/events/rsvpEvents";
 import Profile from "./components/profile";
 import Calendar from "./components/Calendar";
 import Nav from "./components/navbar";
@@ -17,6 +15,8 @@ import VerifyUser from "./components/verifyUser";
 import ResetPassword from "./components/resetPassword";
 import FollowerProfile from "./components/profile/followerProfile";
 import EventPage from "./components/events/lists/eventPage";
+import RsvpedEvents from "./components/events/rsvpEvents";
+import InvitedEvents from "./components/events/invitedEvents";
 
 function App() {
   const styles = () =>
@@ -110,7 +110,7 @@ function App() {
                 exact
                 element={
                   isAuthenticated() ? (
-                    <EventsListRSVP />
+                    <RsvpedEvents />
                   ) : (
                     <Navigate to="/login" replace />
                   )
@@ -132,7 +132,7 @@ function App() {
                 exact
                 element={
                   isAuthenticated() ? (
-                    <EventsListInvited />
+                    <InvitedEvents />
                   ) : (
                     <Navigate to="/login" replace />
                   )

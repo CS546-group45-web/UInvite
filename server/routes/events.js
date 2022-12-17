@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const data = require('../data');
+const mongoCollections = require('../config/mongoCollections');
+const events = mongoCollections.events;
 const userData = data.users;
 const eventData = data.events;
 const comments = data.comments;
@@ -34,7 +36,9 @@ router
       address = validation.checkInputString(address, 'address');
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
-      invites = validation.checkInvites(invites, 'invites');
+      if (invites && invites.length > 0) {
+        invites = validation.checkInvites(invites, 'invites');
+      }
     } catch (e) {
       if (typeof e === 'string') return res.status(400).json({ error: e });
       else
@@ -57,7 +61,7 @@ router
         ageRestricted
       );
       // send invites, invites is a array of emails
-      if (invites.length > 0) {
+      if (invites && invites.length > 0) {
         for (let i = 0; i < invites.length; i++) {
           try {
             const invitee = await userData.getUserByEmail(invites[i]);
@@ -315,6 +319,86 @@ router
     }
   });
 
+// bookmark event to user
+router
+  .route('/bookmark/:eventId')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      // check if event exists
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event does not exist' });
+      }
+      // check if user owns the event then return error
+      if (event.userId == userId) {
+        return res
+          .status(403)
+          .json({ error: 'You cannot bookmark your own event' });
+      }
+      // check if user has already bookmarked the event
+      const bookmarked = await userData.getBookmark(eventId, userId);
+      if (bookmarked) {
+        return res
+          .status(403)
+          .json({ error: 'You have already bookmarked this event' });
+      }
+
+      const bookmark = await userData.addToBookmarks(eventId, userId);
+      res.status(200).json({ message: 'Bookmark added successfully' });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// unbookmark event from user
+router
+  .route('/unbookmark/:eventId')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      // check if event exists
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event does not exist' });
+      }
+      // check if user owns the event then return error
+      if (event.userId == userId) {
+        return res
+          .status(403)
+          .json({ error: 'You cannot unbookmark your own event' });
+      }
+      // check if user has already unbookmarked the event
+      const unbookmarked = await userData.getUnbookmark(eventId, userId);
+      if (unbookmarked) {
+        return res
+          .status(403)
+          .json({ error: 'You have already unbookmarked this event' });
+      }
+
+      const unbookmark = await userData.removeFromBookmarks(eventId, userId);
+      res.status(200).json({ message: 'Unbookmark added successfully' });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
 //events  Search and filter based on Date, Location, Rating, Age-restricted events and tags
 // example query
 // http://localhost:4000/api/events/search?eventTitle=party&eventDate=2020-12-12&eventLocation=Toronto&eventTags=party&eventRating=4&eventStartDateTime=2020-12-12&eventEndDateTime=2020-12-12
@@ -372,9 +456,45 @@ router
     }
   });
 
+// any user can upload event photos
+router
+  .route('/eventPhoto/:eventId')
+  .post(
+    passport.authenticate('jwt', { session: false }),
+    upload.single('eventPhoto'),
+    async (req, res) => {
+      let eventId = req.params.eventId;
+      let userId = req.user._id;
+
+      try {
+        eventId = validation.checkObjectId(eventId);
+      } catch (e) {
+        return res.status(400).json({ error: e });
+      }
+
+      try {
+        const event = await eventData.getEventById(eventId);
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+
+      try {
+        const eventPhoto = await eventData.addEventPhoto(
+          eventId,
+          userId,
+          req.file.filename
+        );
+        res
+          .status(200)
+          .json({ message: 'Event photo added', data: eventPhoto });
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+    }
+  );
+
 router.route('/title/:eventTitle').get(async (req, res) => {
   let eventTitle = req.params.eventTitle;
-  console.log(eventTitle);
   try {
     title = validation.checkTitle(eventTitle);
   } catch (e) {
@@ -382,7 +502,6 @@ router.route('/title/:eventTitle').get(async (req, res) => {
   }
   try {
     const event = await eventData.getEventsByTitle(eventTitle);
-    console.log(event);
     return res.json({ EventList: event });
   } catch (e) {
     return res.status(500).json({ error: e });
@@ -398,7 +517,6 @@ router.route('/date/:eventDate').get(async (req, res) => {
   }
   try {
     const event = await eventData.getEventsByDate(eventDate);
-    console.log(event);
     return res.json({ EventList: event });
   } catch (e) {
     return res.status(500).json({ error: e });
@@ -406,7 +524,7 @@ router.route('/date/:eventDate').get(async (req, res) => {
 });
 
 router
-  .route('/:eventId/comment')
+  .route('/comment/:eventId')
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
     let eventId = req.params.eventId;
     let comment = req.body.comment;
@@ -421,10 +539,36 @@ router
 
     try {
       comment = await comments.createComment(eventId, userId, comment);
-      let event = await eventData.getEventById(eventId);
+      let data = await eventData.getEventById(eventId);
       res
         .status(200)
-        .json({ message: 'Comment added successfully', data: event });
+        .json({ message: 'Comment added successfully', data: data });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+router
+  .route('/rating/:eventId')
+  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let rating = req.body.rating;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+      rating = validation.checkRating(rating);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      let data = null;
+      data = await eventData.getRatingIfExists(eventId, userId, rating);
+
+      return res
+        .status(200)
+        .json({ message: 'Rating added successfully', data: { data } });
     } catch (e) {
       return res.status(500).json({ error: e });
     }

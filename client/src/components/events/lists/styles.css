@@ -1,10 +1,11 @@
 .event_banner {
-  width: 350px;
-  aspect-ratio: 2/1.5;
-  /* object-fit: contain; */
+  width: 100%;
   border-radius: 4px;
   height: inherit;
   margin-top: 5px;
+  object-fit: cover;
+  aspect-ratio: 16/9;
+  outline: 1px solid;
 }
 
 .tags_chip {
@@ -40,19 +41,6 @@
 .event_desc {
   text-align: justify;
   white-space: pre-line;
-}
-
-.event_page_top {
-  position: fixed;
-  background-color: white;
-  top: 0px;
-  border-bottom: 1px solid #393e4638;
-  width: -webkit-fill-available;
-  padding: 10px 10px 4px 10px;
-  margin: 0px 0px 0px -16px;
-  z-index: 1;
-  box-shadow: 2px 3px 6px 0px #151e27;
-  width: -moz-available;
 }
 
 .commenters_profile_pic {
@@ -140,4 +128,39 @@
   border-radius: 4px;
   background-color: #393e46;
   cursor: pointer;
+}
+.uplaod_image_btn {
+  position: absolute;
+  right: 0px;
+  bottom: 30px;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 12px !important;
+  height: 40px;
+  line-height: 10px;
+  outline: 2px solid black;
+}
+
+.cover_image {
+  border: 2px solid #393e4662;
+  object-fit: cover;
+  aspect-ratio: 16/9;
+  width: 100%;
+  border-radius: 6px;
+}
+
+.cover_image_upload_modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  width: 600px;
+  height: 550px;
+  border-radius: 10px;
+  padding: 10px;
+  justify-content: space-evenly;
 }
