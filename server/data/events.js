@@ -22,7 +22,6 @@ const createEvent = async (
   startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
   endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
   address = validation.checkInputString(address, 'address');
-  // maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
   type = validation.checkEventType(type, 'type');
 
   const event_collection = await events();
@@ -95,8 +94,8 @@ const updateEvent = async (
   };
   const eventCollection = await events();
   const updatedInfo = await eventCollection.updateOne(
-    { _id: ObjectId(eventId) },
-    { $set: updatedEvent }
+    { _id : ObjectId(eventId) },
+    { $set : updatedEvent }
   );
   if (updatedInfo.modifiedCount === 0) {
     throw 'Could not update event';
@@ -110,8 +109,8 @@ const updateEventPhoto = async (eventId, userId, event_photo_url) => {
   userId = validation.checkObjectId(userId);
   const eventCollection = await events();
   const updatedEvent = await eventCollection.updateOne(
-    { _id: ObjectId(eventId) },
-    { $set: { event_photo_url: event_photo_url } }
+    { _id : ObjectId(eventId) },
+    { $set : { event_photo_url: event_photo_url } }
   );
   if (updatedEvent.modifiedCount === 0) {
     throw 'Could not update event photo';
@@ -124,7 +123,7 @@ const getAllUpcomingEvents = async () => {
   const eventCollection = await events();
   //  dateCreated: new Date().toISOString(),
   const events_list = await eventCollection
-    .find({ startDateTime: { $gte: new Date().toISOString() } })
+    .find({ startDateTime : { $gte : new Date().toISOString() } })
     .toArray();
   if (!events_list) {
     throw new Error('Could not get all events.');
@@ -168,7 +167,7 @@ const getAllEvents = async () => {
 const getEventById = async (event_id) => {
   event_id = validation.checkObjectId(event_id);
   const eventCollection = await events();
-  const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
+  const event = await eventCollection.findOne({ _id : ObjectId(event_id) });
   if (!event) throw 'No event with that id';
   event._id = event._id.toString();
   const userData = await user.getUserById(event.userId);
@@ -182,7 +181,7 @@ const getEventById = async (event_id) => {
 const getEventMinById = async (event_id) => {
   event_id = validation.checkObjectId(event_id);
   const eventCollection = await events();
-  const event = await eventCollection.findOne({ _id: ObjectId(event_id) });
+  const event = await eventCollection.findOne({ _id : ObjectId(event_id) });
   if (!event) throw 'Event not found';
   event._id = event._id.toString();
   // only neeed eventTitle, dateCreated, rsvps, tags
