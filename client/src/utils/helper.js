@@ -80,17 +80,6 @@ export const phoneNumberFormatter = (phone) =>
 export const capitalizeFirstLetter = (str) =>
   str?.charAt(0).toUpperCase() + str?.slice(1);
 
-export const getFormattedDate = (date) => {
-  date = new Date(date).toISOString();
-  console.log(date);
-
-  return (
-    date.split("T")[0].replaceAll("-", "/") +
-    " " +
-    date.split("T")[1].substr(0, 5)
-  );
-};
-
 export const getAddressFormatted = (address) =>
   address?.street + ", " + address?.City + ", " + address?.Zipcode;
 
@@ -109,7 +98,7 @@ export const dataURLtoFile = (dataurl, filename) => {
 };
 
 export const eventNameValidation = (name) => {
-  const regex = /^[a-zA-Z!-@+#$& ]{4,20}$/;
+  const regex = /^[a-zA-Z!-@+#$& ]{4,}$/;
   return regex.test(name);
 };
 
@@ -122,7 +111,7 @@ export const validateUrl = (url) => {
 };
 
 export const validateTags = (value) => {
-  const regexTags = /^[A-Za-z0-9]+((,)[A-Za-z0-9]+)*[A-Za-z0-9]+$/g;
+  const regexTags = /^[A-Za-z0-9]+((,)[ A-Za-z0-9]+)*[A-Za-z0-9]+$/g;
   return regexTags.test(value);
 };
 

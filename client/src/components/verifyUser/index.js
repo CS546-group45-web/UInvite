@@ -20,7 +20,7 @@ function VerifyUser() {
           setMsg(res?.data?.message);
         }
       })
-      .catch((error) => console.log({ error }));
+      .catch((error) => { });
   }, [params]);
 
   return (

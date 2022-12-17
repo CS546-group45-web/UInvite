@@ -114,8 +114,8 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
       type,
       startDateTime: new Date(startDateTime).toISOString(),
       endDateTime: new Date(endDateTime).toISOString(),
-      tags: editMode ? tags.join(",") : tags,
-      invites: editMode ? "" : invites.join(","),
+      tags: editMode ? tags?.join(",") : tags,
+      invites: editMode ? "" : invites?.join(","),
       arePicturesAllowed,
       areCommentsAllowed,
       ageRestricted,
@@ -132,12 +132,12 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
         setTimeout(() => navigate("/event/" + data?.data?._id), 2000);
       }
     } else {
-      const { data, status } = await createEvent(apiBody);
-      if (status !== 200) toast.error(data.error);
+      const data = await createEvent(apiBody);
+      if (data.status !== 200) return setCreateLoading(false);
       else {
         toast.success("Event created. Redirecting to event page...");
         setTimeout(() => {
-          navigate("/event/" + data?.data?.eventId);
+          navigate("/event/" + data?.data?.data?.eventId);
         }, 4000);
       }
     }

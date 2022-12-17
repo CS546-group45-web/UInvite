@@ -11,4 +11,4 @@ export const getAllEventsForHomePage = async () =>
   await makeApiCall("/api/events", "get");
 
 export const postComment = async (comment, id) =>
-  await makeApiCall("/api/events/" + id + "/comment", "post", { comment });
+  await makeApiCall("/api/events/comment/" + id, "post", { comment });
