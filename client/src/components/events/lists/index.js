@@ -30,13 +30,17 @@ function EventsList() {
   const eventsList = () => {
     return (
       <div className="">
-        {events?.map((event) => (
-          <EventCard
-            event={event}
-            userId={loggedInUserData?._id}
-            key={event?._id}
-          />
-        ))}
+        {events?.length !== 0 ? (
+          events?.map((event) => (
+            <EventCard
+              event={event}
+              userId={loggedInUserData?._id}
+              key={event?._id}
+            />
+          ))
+        ) : (
+          <div>No Events Found.</div>
+        )}
       </div>
     );
   };
