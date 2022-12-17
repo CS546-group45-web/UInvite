@@ -206,7 +206,20 @@ router
     }
   });
 
-//
+//get bookmarks
+router
+  .route('/bookmarks')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const bookmarks = await eventData.getBookmarks(req.user._id);
+      return res.json({
+        message: 'Bookmarks fetched',
+        data: bookmarks,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
 
 // get rspved evnents
 router
