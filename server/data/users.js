@@ -171,7 +171,7 @@ const getBookmark = async (eventId, userId) => {
   const user_collection = await users();
   const user = await user_collection.findOne({ _id: ObjectId(userId) });
   if (!user) throw 'User not found';
-  if (user.bookmarks.includes(eventId)) {
+  if (user.bookmarks && user?.bookmarks.includes(eventId)) {
     return true;
   } else {
     return false;
