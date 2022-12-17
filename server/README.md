@@ -830,6 +830,31 @@ Filters:
 }
 ```
 
+ <!--http://localhost:4000/api/events/rsvpList/639d3d46ce166a2ef6543cd4 -->
+
+#### RSVP List
+
+`GET /api/events/rsvpList/639d3d46ce166a2ef6543cd4`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+##### Response
+
+```json
+{
+  "message": "RSVP list fetched",
+  "data": [
+    {
+      "userId": "63997c767721a9d370c35712",
+      "username": "manisai",
+      "firstName": "Mani Sai Prasad",
+      "lastName": "Masupalli",
+      "profile_photo_url": "1671106259009_manisai.png"
+    }
+  ]
+}
+```
+
 #### Get All Events
 
 `GET /api/events/`
