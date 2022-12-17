@@ -521,6 +521,32 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Get User bookmarked events
+
+`GET /api/user/bookmarks`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "Bookmarks fetched",
+  "data": [
+    {
+      "_id": "639d6792aa2ae7661cd90695",
+      "eventTitle": "HOLIDAY HANGOVER",
+      "dateCreated": "2022-12-17T06:54:10.652Z",
+      "rsvps": [],
+      "tags": ["fun"],
+      "address": "Jersey City",
+      "startDateTime": "2022-12-18T07:03:47.946Z",
+      "endDateTime": "2022-12-18T08:04:47.946Z"
+    }
+  ]
+}
+```
+
 ### Events
 
 #### Create Event
@@ -764,6 +790,20 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 ```json
 {
   "message": "Invite declined"
+}
+```
+
+#### Bookmark Event
+
+`GET /api/events/bookmark/639d686ca8b7d67d29cb921d`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "Bookmark added successfully"
 }
 ```
 

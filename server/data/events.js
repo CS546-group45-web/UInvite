@@ -406,6 +406,19 @@ const addEventPhoto = async (eventId, userId, photo) => {
   return await getEventById(eventId);
 };
 
+const getBookmarks = async (userId) => {
+  userId = validation.checkObjectId(userId);
+  const userData = await user.getUserById(userId);
+  if (!userData) throw 'User not found';
+  const bookmarks = userData.bookmarks;
+  const events = [];
+  for (let i = 0; i < bookmarks.length; i++) {
+    const event = await getEventMinById(bookmarks[i]);
+    events.push(event);
+  }
+  return events;
+};
+
 const getEventsByTitle = async (title) => {
   title = validation.checkTitle(title);
   const eventCollection = await events();
@@ -575,4 +588,5 @@ module.exports = {
   getEventsBySearch,
   getRsvpList,
   addEventPhoto,
+  getBookmarks,
 };
