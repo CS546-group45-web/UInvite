@@ -45,7 +45,6 @@ function Login() {
     setErrors(errorObj);
     if (Object.keys(errorObj).length === 0) {
       const loginData = await login(userData);
-      console.log(loginData);
       const { data, status } = loginData;
       if (status !== 200) toast.error(data?.error);
       else {

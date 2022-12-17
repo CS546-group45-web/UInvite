@@ -53,6 +53,7 @@ function EventPage() {
     setCommentLoading(true);
     const { data, status } = await postComment(comment, eventData?._id);
     console.log({ data, status });
+    if (status !== 200) return;
     setEventData(data?.data);
     setCommentLoading(false);
   };
@@ -62,27 +63,27 @@ function EventPage() {
   }, [getEventsDetails]);
 
   const viewMode = () => {
-    const {
-      event_banner_url,
-      eventTitle,
-      dateCreated,
-      description,
-      address,
-      startDateTime,
-      endDateTime,
-      comments,
-      ageRestricted,
-      areCommentsAllowed,
-      userId,
-      tags,
-    } = eventData;
+    // const {
+    //   event_banner_url,
+    //   eventTitle,
+    //   dateCreated,
+    //   description,
+    //   address,
+    //   startDateTime,
+    //   endDateTime,
+    //   comments,
+    //   ageRestricted,
+    //   areCommentsAllowed,
+    //   userId,
+    //   tags,
+    // } = eventData?.;
 
     return (
       <div>
         <div className="event_page_top flex items-baseline justify-between mt-5">
           <div className="text-4xl font-bold cursor-pointer flex">
-            {eventTitle}
-            {loggedInUserData?._id === userId && (
+            {eventData?.eventTitle}
+            {loggedInUserData?._id === eventData?.userId && (
               <div
                 onClick={() => {
                   setMode(true);
@@ -95,14 +96,14 @@ function EventPage() {
           </div>
 
           <div className="text-2xl text-[#393e46]">
-            posted on {moment(dateCreated).format("ll")}
+            posted on {moment(eventData?.dateCreated).format("ll")}
           </div>
         </div>
         <div className="flex mt-[36px]">
           <div className="w-8/12 pr-1">
             <img
               src={
-                event_banner_url ??
+                eventData?.event_banner_url ??
                 "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F336872189%2F412671342061%2F1%2Foriginal.20220817-060523?w=940&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=47201003009aab40a827c78813e5f381"
               }
               alt="event-poster"
@@ -118,17 +119,19 @@ function EventPage() {
             <div className="pl-2 ">
               <div className="text-lg font-semibold">
                 {/* {getAddressFormatted(address)} */}
-                <LocationOnIcon /> {address}
+                <LocationOnIcon /> {eventData?.address}
               </div>
               <div className="text-lg font-semibold mb-2">
                 <div>
                   <DateRangeIcon />
-                  &nbsp;{moment(startDateTime).format("lll")}&nbsp;-
+                  &nbsp;{moment(eventData?.startDateTime).format("lll")}&nbsp;-
                 </div>
-                <div className="ml-8">{moment(endDateTime).format("lll")}</div>
+                <div className="ml-8">
+                  {moment(eventData?.endDateTime).format("lll")}
+                </div>
               </div>
 
-              {ageRestricted && (
+              {eventData?.ageRestricted && (
                 <div>
                   <div className="warning_note">
                     {" "}
@@ -145,7 +148,7 @@ function EventPage() {
               )}
 
               <div>
-                {loggedInUserData?._id === userId ? (
+                {loggedInUserData?._id === eventData?.userId ? (
                   <button className="btn_default__cancel">
                     <PeopleOutlineIcon /> Guest list
                   </button>
@@ -163,11 +166,11 @@ function EventPage() {
           </div>
         </div>
         <div className="text-xl -mt-4">
-          <p className="event_desc">{description}</p>
+          <p className="event_desc">{eventData?.description}</p>
         </div>
 
         <div className="flex mt-2">
-          {tags?.map((tag, i) => (
+          {eventData?.tags?.map((tag, i) => (
             <span className="mr-1 text-logoBlue" key={i}>
               <Chip label={tag} variant="outlined" className={"tags_chip"} />
             </span>
@@ -175,8 +178,8 @@ function EventPage() {
         </div>
 
         <Comments
-          areCommentsAllowed={areCommentsAllowed}
-          comments={comments}
+          areCommentsAllowed={eventData?.areCommentsAllowed}
+          comments={eventData?.comments}
           loggedInUserId={loggedInUserData?._id}
           postCommentByUser={postCommentByUser}
           commentLoading={commentLoading}
