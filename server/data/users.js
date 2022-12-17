@@ -142,6 +142,22 @@ const declineInvite = async (eventId, userId) => {
   return await getUserById(userId);
 };
 
+// removeInvite
+const removeInvite = async (userId, eventId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $pull: { invited_events: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove invite';
+  }
+  return await getUserById(userId);
+};
+
 const getUserByEmail = async (email) => {
   email = validation.checkEmail(email);
   const user_collection = await users();
@@ -405,4 +421,5 @@ module.exports = {
   getBookmark,
   removeFromBookmarks,
   getUnbookmark,
+  removeInvite,
 };

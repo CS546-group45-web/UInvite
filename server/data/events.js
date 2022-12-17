@@ -249,6 +249,12 @@ const rsvp = async (eventId, userId) => {
     throw 'Could not rsvp to event';
   }
   await user.addrsvpEvent(userId, eventId);
+  // check if user is invited
+  let userData = await user.getUserById(userId);
+  if (userData.invited_events && userData.invited_events.includes(eventId)) {
+    await user.removeInvite(userId, eventId);
+  }
+
   return await getEventById(eventId);
 };
 
