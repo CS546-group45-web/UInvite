@@ -508,11 +508,14 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
   "message": "Invites fetched",
   "data": [
     {
-      "_id": "639d39ef2383fad00853fda3",
-      "eventTitle": "DanceMani1",
-      "dateCreated": "2022-12-17T03:39:27.940Z",
+      "_id": "639d42beb57f2bf6ca535ce5",
+      "eventTitle": "Hellll",
+      "dateCreated": "2022-12-17T04:17:02.841Z",
       "rsvps": [],
-      "tags": ["party", "helloo"]
+      "tags": ["party", "helloo"],
+      "address": "69 Hutton ST",
+      "startDateTime": "2022-11-06T19:58:23.464Z",
+      "endDateTime": "2022-11-06T19:58:23.464Z"
     }
   ]
 }

@@ -192,6 +192,10 @@ const getEventMinById = async (event_id) => {
     dateCreated: event.dateCreated,
     rsvps: event.rsvps,
     tags: event.tags,
+    address: event.address,
+    startDateTime: event.startDateTime,
+    endDateTime: event.endDateTime,
+    dateCreated: event.dateCreated,
   };
   return eventMin;
 };
