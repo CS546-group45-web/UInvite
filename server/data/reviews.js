@@ -31,13 +31,13 @@ const createReview = async (
     rating : rating
   }
   const eventCollection = await events();
-  const event = await eventCollection.findOne({_id: ObjectId(eventId)});
+  const event = await eventCollection.findOne({ _id : ObjectId(eventId)});
   const overall_rating = Math.round((event.overallRating*event.reviews.length+rating)/(event.reviews.length+1)*10)/10;
   const updatedInfo = await eventCollection.updateOne(
     {_id : ObjectId(eventId)},
     {
-      $push : {reviews : new_review},
-      $set : {overallRating : overall_rating}
+      $push : { reviews : new_review},
+      $set : { overallRating : overall_rating}
     },
     {
       returnDocument : 'after'
@@ -56,7 +56,7 @@ const getAllReviews = async (eventId) => {
   if(!ObjectId.isValid(eventId)){ throw new Error('event id is not a valid ObjectID.'); } //test valid objectid
   //----------------------------validation ends---------------------------------
   const eventCollection = await events();
-  const event = await eventCollection.findOne({_id : ObjectId(eventId)});
+  const event = await eventCollection.findOne({ _id : ObjectId(eventId)});
   if(event === null) throw new Error('Could not get reviews for this eventId.');
   return event.reviews;
 };
@@ -64,7 +64,7 @@ const getAllReviews = async (eventId) => {
 const getReview = async (reviewId) => {
   reviewId = validation.checkObjectId(reviewId);
   const eventCollection = await events();
-  const event = await eventCollection.findOne({'reviews._id' : ObjectId(reviewId)});
+  const event = await eventCollection.findOne({ 'reviews._id' : ObjectId(reviewId)});
   if(event === null) throw new Error('No reviews with given review ID.');
   const reviews = event.reviews;
   for(const rev of reviews){
@@ -92,8 +92,8 @@ const removeReview = async (reviewId) => {
       $pull : {reviews : { _id : ObjectId(reviewId) }}
     }
     );
-  if(updated_event.modifiedCount === 0) throw new Error('Cannot remove review');
-  const event_after = await eventCollection.findOne({_id : event._id});
+  if(updated_event.modifiedCount === 0 || updatedInfo.matchedCount === 0) throw new Error('Cannot remove review');
+  const event_after = await eventCollection.findOne({ _id : event._id});
   return event_after;
 };
 
