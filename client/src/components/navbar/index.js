@@ -51,7 +51,7 @@ function Nav() {
   };
 
   return (
-    <div className="max-w-[280px] flex flex-col justify-between pl-2 pr-4 pt-8 pb-2 text-[#ffffff] border-r-logoBlue border-r-2 col-span-2 bg-logoBlue">
+    <div className="max-w-[280px] flex flex-col justify-between pl-2 pr-4 pt-8 pb-2 text-[#ffffff] border-r-logoBlue border-r-2 col-span-2 bg-logoBlue h-[101%]">
       <div>
         <div className="h-20 pl-4 flex items-center text-ellipsis overflow-hidden whitespace-nowrap">
           {/* <img src={HomepageLogo} alt="HomepageLogo" /> */}

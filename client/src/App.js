@@ -16,21 +16,22 @@ import "react-toastify/dist/ReactToastify.css";
 import VerifyUser from "./components/verifyUser";
 import ResetPassword from "./components/resetPassword";
 import FollowerProfile from "./components/profile/followerProfile";
+import EventPage from "./components/events/lists/eventPage";
 
 function App() {
   const styles = () =>
     isAuthenticated()
-      ? "col-span-10 px-5 py-5 overflow-auto scroller"
-      : "col-span-12 px-5 py-5";
+      ? "col-span-10 my-4 px-4 overflow-y-auto scroller"
+      : "col-span-12 px-5 py-5 h-[100%] overflow-y-auto";
 
   const isAuthenticated = () => {
     return JSON.parse(localStorage.getItem("auth") === "true");
   };
 
   return (
-    <div className="App bg-gray-50 h-screen">
+    <div className="App bg-gray-50">
       <BrowserRouter>
-        <div className="grid grid-cols-12 h-[101%]">
+        <div className="grid grid-cols-12 h-screen">
           {isAuthenticated() && <Nav />}
           <div className={styles()}>
             <Routes>
@@ -40,6 +41,17 @@ function App() {
                 element={
                   isAuthenticated() ? (
                     <EventsList />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+              <Route
+                path="/event/:id"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <EventPage />
                   ) : (
                     <Navigate to="/login" replace />
                   )

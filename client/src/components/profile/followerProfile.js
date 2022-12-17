@@ -31,8 +31,8 @@ function FollowerProfile() {
 
   const getUserAllDetails = React.useCallback(
     (showLoader = false) => {
+      showLoader && setPageLoading(true);
       getUserDetailsByUsername(params?.username).then((res) => {
-        showLoader && setPageLoading(true);
         if (res.status !== 200) return toast.error(res.data.error);
         setUserData(res?.data);
         getUserDetails().then((res) => {
@@ -101,7 +101,9 @@ function FollowerProfile() {
               <img
                 src={
                   userData?.profile_photo_url
-                    ? userData?.profile_photo_url
+                    ? process.env.REACT_APP_BASE_URL +
+                      "/images/" +
+                      userData?.profile_photo_url
                     : DefaultProfile
                 }
                 onError={(e) => {
