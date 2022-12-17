@@ -122,16 +122,26 @@ const updateEventPhoto = async (eventId, userId, event_photo_url) => {
 // get all upcoming events
 const getAllUpcomingEvents = async () => {
   const eventCollection = await events();
+  //  dateCreated: new Date().toISOString(),
   const events_list = await eventCollection
-    .find({ startDateTime: { $gte: new Date() } })
+    .find({ startDateTime: { $gte: new Date().toISOString() } })
     .toArray();
   if (!events_list) {
-    throw new Error('Could not get all upcoming events.');
+    throw new Error('Could not get all events.');
   }
   for (const element of events_list) {
     element._id = element._id.toString();
+    try {
+      let userData = await user.getUserById(element?.userId.toString());
+      element.username = userData.username;
+      element.firstName = userData.firstName;
+      element.lastName = userData.lastName;
+      element.profile_photo_url = userData.profile_photo_url;
+    } catch (e) {
+      throw e;
+    }
   }
-  return events_list;
+  return events_list; //changed from events to event_list
 };
 
 const getAllEvents = async () => {
@@ -182,6 +192,10 @@ const getEventMinById = async (event_id) => {
     dateCreated: event.dateCreated,
     rsvps: event.rsvps,
     tags: event.tags,
+    address: event.address,
+    startDateTime: event.startDateTime,
+    endDateTime: event.endDateTime,
+    dateCreated: event.dateCreated,
   };
   return eventMin;
 };
@@ -208,9 +222,11 @@ const getInvites = async (userId) => {
   const userData = await user.getUserById(userId);
   if (!userData) throw 'User not found';
   const invites = [];
-  for (let i = 0; i < userData?.invites.length; i++) {
+  for (let i = 0; i < userData?.invited_events.length; i++) {
     try {
-      let eventData = await getEventMinById(userData?.invites[i].toString());
+      let eventData = await getEventMinById(
+        userData?.invited_events[i].toString()
+      );
       invites.push(eventData);
     } catch (e) {
       throw e;
@@ -252,6 +268,126 @@ const getRsvpEvents = async (userId) => {
     }
   }
   return eventsRsvp;
+};
+
+const getRsvpList = async (eventId) => {
+  eventId = validation.checkObjectId(eventId);
+  const event = await getEventById(eventId);
+  if (!event) throw 'Event not found';
+  const rsvpList = [];
+  for (let i = 0; i < event?.rsvps.length; i++) {
+    try {
+      let userData = await user.getUserById(event?.rsvps[i].toString());
+      minUserData = {
+        userId: userData._id,
+        username: userData.username,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        profile_photo_url: userData.profile_photo_url,
+      };
+      rsvpList.push(minUserData);
+    } catch (e) {
+      throw e;
+    }
+  }
+  return rsvpList;
+};
+
+// getEventsBySearch
+const getEventsBySearch = async (
+  eventTitle,
+  dateCreated,
+  eventLocation,
+  eventTags,
+  eventRating,
+  eventStartDateTime,
+  eventEndDateTime
+) => {
+  if (!eventTitle && !eventDate && !eventLocation && !eventTags) {
+    throw 'Please enter at least one search parameter';
+  }
+  const eventCollection = await events();
+  let events_list = await eventCollection.find({}).toArray();
+  if (!events_list) {
+    throw new Error('Could not get all events.');
+  }
+  for (const element of events_list) {
+    element._id = element._id.toString();
+    try {
+      let userData = await user.getUserById(element?.userId.toString());
+      element.username = userData.username;
+      element.firstName = userData.firstName;
+      element.lastName = userData.lastName;
+      element.profile_photo_url = userData.profile_photo_url;
+    } catch (e) {
+      throw e;
+    }
+  }
+  if (eventTitle) {
+    events_list = events_list.filter((event) => {
+      return event.eventTitle.toLowerCase().includes(eventTitle.toLowerCase());
+    });
+  }
+
+  if (dateCreated) {
+    const date = new Date(dateCreated);
+    events_list = events_list.filter((event) => {
+      const eventDate = new Date(event.dateCreated);
+      return (
+        eventDate.getFullYear() === date.getFullYear() &&
+        eventDate.getMonth() === date.getMonth() &&
+        eventDate.getDate() === date.getDate()
+      );
+    });
+  }
+
+  if (eventLocation) {
+    events_list = events_list.filter((event) => {
+      return event.address.toLowerCase().includes(eventLocation.toLowerCase());
+    });
+  }
+
+  if (eventTags) {
+    events_list = events_list.filter((event) => {
+      // event.tags is an array of strings
+      for (let i = 0; i < event.tags.length; i++) {
+        if (event.tags[i].toLowerCase().includes(eventTags.toLowerCase())) {
+          return true;
+        }
+      }
+    });
+  }
+
+  if (eventRating) {
+    events_list = events_list.filter((event) => {
+      return event.overallRating >= eventRating;
+    });
+  }
+
+  if (eventStartDateTime) {
+    const date = new Date(eventStartDateTime);
+    events_list = events_list.filter((event) => {
+      const eventDate = new Date(event.eventStartDateTime);
+      return (
+        eventDate.getFullYear() >= date.getFullYear() &&
+        eventDate.getMonth() >= date.getMonth() &&
+        eventDate.getDate() >= date.getDate()
+      );
+    });
+    return events_list;
+  }
+  if (eventEndDateTime) {
+    const date = new Date(eventEndDateTime);
+    events_list = events_list.filter((event) => {
+      const eventDate = new Date(event.eventEndDateTime);
+      return (
+        eventDate.getFullYear() <= date.getFullYear() &&
+        eventDate.getMonth() <= date.getMonth() &&
+        eventDate.getDate() <= date.getDate()
+      );
+    });
+  }
+  return events_list;
 };
 
 const getEventsByTitle = async (title) => {
@@ -420,4 +556,6 @@ module.exports = {
   updateEvent,
   getInvites,
   getRatingIfExists,
+  getEventsBySearch,
+  getRsvpList,
 };
