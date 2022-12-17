@@ -270,6 +270,29 @@ const getRsvpEvents = async (userId) => {
   return eventsRsvp;
 };
 
+const getRsvpList = async (eventId) => {
+  eventId = validation.checkObjectId(eventId);
+  const event = await getEventById(eventId);
+  if (!event) throw 'Event not found';
+  const rsvpList = [];
+  for (let i = 0; i < event?.rsvps.length; i++) {
+    try {
+      let userData = await user.getUserById(event?.rsvps[i].toString());
+      minUserData = {
+        userId: userData._id,
+        username: userData.username,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        profile_photo_url: userData.profile_photo_url,
+      };
+      rsvpList.push(minUserData);
+    } catch (e) {
+      throw e;
+    }
+  }
+  return rsvpList;
+};
+
 // getEventsBySearch
 const getEventsBySearch = async (
   eventTitle,
@@ -423,4 +446,5 @@ module.exports = {
   updateEvent,
   getInvites,
   getEventsBySearch,
+  getRsvpList,
 };

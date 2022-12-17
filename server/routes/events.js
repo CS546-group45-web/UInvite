@@ -187,7 +187,7 @@ router
       const eventuser = await eventData.getEventById(eventId);
       if (eventuser.userId != userId) {
         return res
-          .status(401)
+          .status(403)
           .json({ error: 'You are not authorized to update this event' });
       }
       const event = await eventData.updateEvent(
@@ -232,7 +232,7 @@ router
         const eventuser = await eventData.getEventById(eventId);
         if (eventuser.userId != userId) {
           return res
-            .status(401)
+            .status(403)
             .json({ error: 'You are not authorized to update this event' });
         }
         const event = await eventData.updateEventPhoto(
@@ -342,6 +342,35 @@ router.route('/search').get(async (req, res) => {
     return res.status(500).json({ error: e });
   }
 });
+
+// get rsvp list
+router
+  .route('/rsvpList/:eventId')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      // check user owns the event
+      const eventuser = await eventData.getEventById(eventId);
+      if (eventuser.userId != userId) {
+        return res
+          .status(403)
+          .json({ error: 'You are not authorized to view this event' });
+      }
+
+      const rsvp = await eventData.getRsvpList(eventId, userId);
+      res.status(200).json({ message: 'RSVP list fetched', data: rsvp });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
 
 router.route('/title/:eventTitle').get(async (req, res) => {
   let eventTitle = req.params.eventTitle;
