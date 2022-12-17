@@ -265,9 +265,7 @@ const getRsvpEvents = async (userId) => {
   const eventsRsvp = [];
   for (let i = 0; i < userData?.rsvped_events.length; i++) {
     try {
-      let eventData = await getEventMinById(
-        userData?.rsvped_events[i].toString()
-      );
+      let eventData = await getEventById(userData?.rsvped_events[i].toString());
       eventsRsvp.push(eventData);
     } catch (e) {
       throw e;
