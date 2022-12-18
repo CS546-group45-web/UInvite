@@ -38,7 +38,7 @@ app.post('/createAuthLink', cors(), (req, res) => {
   res.send({ url });
 });
 
-app.get('/handleGoogleRedirect', cors(), (req, res) => {
+app.get('/api/handleGoogleRedirect', cors(), (req, res) => {
   const code = req.query.code;
   if (code) {
     oauth2Client.getToken(code, (err, token) => {
@@ -57,7 +57,7 @@ app.get('/handleGoogleRedirect', cors(), (req, res) => {
 });
 
 app.get(
-  '/storeGoogleTokens',
+  '/api/storeGoogleTokens',
   cors(),
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
@@ -109,7 +109,7 @@ app.get(
 );
 
 app.get(
-  '/getGoogleEvents',
+  '/api/getGoogleEvents',
   cors(),
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
