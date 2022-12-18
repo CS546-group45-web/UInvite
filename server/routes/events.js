@@ -35,7 +35,9 @@ router
       endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
-      invites = validation.checkInvites(invites, 'invites');
+      if (invites && invites.length > 0) {
+        invites = validation.checkInvites(invites, 'invites');
+      }
       if (type.toLowerCase() === 'in-person') {
         address = validation.checkInputString(address, 'address');
       }
