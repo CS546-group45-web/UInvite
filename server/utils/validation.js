@@ -192,7 +192,8 @@ const checkRating = (input, name = 'rating') => {
 const checkInvites = (input, name = 'invites') => {
   checkInputString(input, name);
   let invites = input.split(',');
-  invites.map((invite) => checkEmail(invite));
+  if (invites.length < 1) throw `${name} should have atleast 1 invite`;
+  invites.map((invite) => checkInputString(invite));
   return invites;
 };
 

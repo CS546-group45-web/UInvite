@@ -64,7 +64,7 @@ router
       if (invites && invites.length > 0) {
         for (let i = 0; i < invites.length; i++) {
           try {
-            const invitee = await userData.getUserByEmail(invites[i]);
+            const invitee = await userData.getUserByUsername(invites[i]);
             if (invitee) {
               await userData.addInvite(eventCreated, invitee._id);
             }
@@ -86,6 +86,54 @@ router
     try {
       const event = await eventData.getAllEvents();
       return res.json({ message: 'events fetched', data: event });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// addInvite
+router
+  .route('/sendInvites/:eventId')
+  .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+    try {
+      eventId = validation.checkObjectId(eventId);
+      userId = validation.checkObjectId(userId);
+      invites = validation.checkInvites(req.body.invites, 'invites');
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+    try {
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
+
+      if (invites && invites.length > 0) {
+        for (let i = 0; i < invites.length; i++) {
+          try {
+            const invitee = await userData.getUserByUsername(invites[i]);
+            // if user is invited before, do nothing
+            const invite = await userData.getInvite(eventId, invitee._id);
+            if (invite) {
+              return res.status(400).json({ error: 'User is already invited' });
+            }
+
+            const rsvp = await userData.getRsvp(eventId, invitee._id);
+            if (rsvp) {
+              return res.status(400).json({ error: 'User is already rsvped' });
+            }
+
+            if (invitee) {
+              await userData.addInvite(eventId, invitee._id);
+            }
+          } catch (e) {
+            return res.status(500).json({ error: e });
+          }
+        }
+      }
+      return res.status(200).json({ message: 'Invites sent' });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
@@ -430,7 +478,6 @@ router
 // http://localhost:4000/api/events/search?eventTitle=party&eventDate=2020-12-12&eventLocation=Toronto&eventTags=party&eventRating=4&eventStartDateTime=2020-12-12&eventEndDateTime=2020-12-12
 router.route('/search').get(async (req, res) => {
   let eventTitle = req.query.eventTitle;
-  let dateCreated = req.query.dateCreated;
   let eventLocation = req.query.eventLocation;
   let eventTags = req.query.eventTags;
   let eventRating = req.query.eventRating;
@@ -440,7 +487,6 @@ router.route('/search').get(async (req, res) => {
   try {
     const event = await eventData.getEventsBySearch(
       eventTitle,
-      dateCreated,
       eventLocation,
       eventTags,
       eventRating,
