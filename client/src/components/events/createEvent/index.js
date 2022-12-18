@@ -29,7 +29,7 @@ import { getUserFollowers } from "../../../utils/apis/user";
 import { createEvent, editEvent } from "../../../utils/apis/event";
 import { useNavigate } from "react-router";
 import GoogleAutoCompleteAddress from "../../common/googleAddressComponent";
-// import GoogleMaps from "../../common/googleComponentAddressMUI";
+import GoogleMaps from "../../common/googleComponentAddressMUI";
 
 function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
   const navigate = useNavigate();
@@ -86,6 +86,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
         return toast.error("Duration of the event should be more than 1 hour");
       }
     }
+    console.log(errorObj, eventData);
 
     if (Object.keys(errorObj).length !== 0) return setErrors(errorObj);
     else setErrors({});
@@ -144,8 +145,10 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
     setCreateLoading(false);
   };
 
-  const setValues = (name, value) =>
+  const setValues = (name, value) => {
+    console.log(name, value);
     setEventData({ ...eventData, [name]: value });
+  };
 
   const setError = (name) => setErrors({ ...errors, [name]: true });
 
@@ -155,12 +158,23 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
     setErrors(errorsObj);
   };
 
-  const setAddress = (place) => {
-    const { formatted_address, address_components } = place;
-    removeError("address");
-    setValues("address", formatted_address);
-    setValues("city", address_components[3]?.long_name);
-    // console.log({ eventData, errors });
+  // const setAddress = (place) => {
+  //   const { formatted_address, address_components } = place;
+  //   removeError("address");
+  //   setValues("address", formatted_address);
+  //   setValues("city", address_components[3]?.long_name);
+  //   // console.log({ eventData, errors });
+  // };
+  const setGGAddress = (addressObj) => {
+    const { description, terms } = addressObj;
+    setValues("address", description);
+    setTimeout(() => {
+      setValues("city", terms[2]?.value);
+      removeError("address");
+    }, 2000);
+    console.log(eventData);
+    // setValues("city", terms[2]?.value);
+    // removeError("address");
   };
 
   React.useEffect(() => {
@@ -304,7 +318,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                     sendAddress={setAddress}
                     error={errors?.address}
                   /> */}
-                  <TextField
+                  {/* <TextField
                     id="address"
                     label="Address"
                     variant="outlined"
@@ -333,8 +347,11 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                       else removeError(name);
                       setValues(name, value);
                     }}
+                  /> */}
+                  <GoogleMaps
+                    setGGAddress={setGGAddress}
+                    error={errors?.address}
                   />
-                  {/* <GoogleMaps /> */}
                 </div>
               )}
               {eventData?.type === "online" && (
