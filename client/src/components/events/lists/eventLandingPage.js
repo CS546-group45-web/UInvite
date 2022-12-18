@@ -11,6 +11,7 @@ import Comments from "./commentSection";
 import { getUserDetails } from "../../../utils/apis/user";
 import { toast } from "react-toastify";
 import {
+  acceptRsvpEvent,
   bookmarkEvent,
   cancelRsvpEvent,
   deleteEventsDetailsById,
@@ -19,7 +20,6 @@ import {
   getRsvpedListToEvent,
   postComment,
   removeBookmarkedEvent,
-  rsvpEvent,
 } from "../../../utils/apis/event";
 import CreateEvent from "../createEvent";
 
@@ -124,7 +124,7 @@ function EventPage() {
 
   const deleteEvent = async () => {
     const { status } = await deleteEventsDetailsById(eventData?._id);
-    if (status !== 200) return toast.error("Failed to delete event");
+    if (status !== 200) return toast.error("Failed to delete");
     toast.success("Event deleted");
     return navigate("/");
   };
@@ -160,32 +160,32 @@ function EventPage() {
   };
 
   const addBookmark = async () => {
-    const { status } = await bookmarkEvent(eventData?._id);
-    if (status !== 200) return toast.error("Failed to bookmark this event");
-    toast.success("Event added to Bookmarks");
+    const { status, data } = await bookmarkEvent(eventData?._id);
+    if (status !== 200) return toast.error("Failed to bookmark");
+    setLoggedInUserData(data?.data);
+    toast.success("Bookmark Added");
   };
 
   const removeBookmark = async () => {
-    const { status } = await removeBookmarkedEvent(eventData?._id);
-    if (status !== 200)
-      return toast.error("Failed to remove this event from bookmarks");
-    toast.success("Event added to Bookmarks");
+    const { status, data } = await removeBookmarkedEvent(eventData?._id);
+    if (status !== 200) return toast.error("Failed to remove bookmark");
+    setLoggedInUserData(data?.data);
+    toast.success("Bookmark removed");
   };
 
   const sendRVSPEvent = async () => {
-    const { status, data } = await rsvpEvent(eventData?._id);
-    if (status !== 200) return toast.error("Failed to RSVP this event");
+    const { status, data } = await acceptRsvpEvent(eventData?._id);
+    if (status !== 200) return toast.error("Failed to RSVP");
     setEventData(data?.data);
-    toast.success("Event RSVPed");
+    toast.success("RSVPed status updated");
   };
 
   const removeRSVPEvent = async () => {
     const { status, data } = await cancelRsvpEvent(eventData?._id);
-    if (status !== 200)
-      return toast.error("Failed to cancel RSVP for this event");
+    if (status !== 200) return toast.error("Failed to cancel RSVP");
     console.log(data?.data);
     setEventData(data?.data);
-    toast.success("Event removed from RSVPed events");
+    toast.success("RSVPed status updated");
     checkIfRsvped();
   };
 
@@ -234,7 +234,7 @@ function EventPage() {
               aria-describedby="modal-modal-description"
             >
               <div className="cover_image_upload_modal">
-                <div className="event_banner">
+                <div className="event_photo">
                   <AvatarEditor
                     ref={editorRef}
                     image={
