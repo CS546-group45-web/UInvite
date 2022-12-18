@@ -36,10 +36,11 @@ router
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
       invites = validation.checkInvites(invites, 'invites');
-      if (type.toLowerCase().includes('person')) {
+      if (type.toLowerCase() === 'in-person') {
         address = validation.checkInputString(address, 'address');
       }
-      if (type.toLowerCase().includes('online')) {
+
+      if (type.toLowerCase() === 'online') {
         address = validation.checkEventURl(address, 'onlineEventLink');
       }
     } catch (e) {

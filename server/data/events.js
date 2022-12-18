@@ -23,12 +23,12 @@ const createEvent = async (
   endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
   type = validation.checkEventType(type, 'type');
 
-  if (type.toLowerCase().includes('person')) {
+  if (type.toLowerCase() === 'in-person') {
     address = validation.checkInputString(address, 'address');
   }
 
-  if (type.toLowerCase().includes('online')) {
-    onlineEventLink = validation.checkEventURl(address, 'onlineEventLink');
+  if (type.toLowerCase()==='online') {
+    address = validation.checkEventURl(address, 'onlineEventLink');
   }
 
   const event_collection = await events();
