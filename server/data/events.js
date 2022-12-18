@@ -196,6 +196,7 @@ const getEventMinById = async (event_id) => {
     startDateTime: event.startDateTime,
     endDateTime: event.endDateTime,
     dateCreated: event.dateCreated,
+    event_photo_url: event.event_photo_url,
   };
   return eventMin;
 };
@@ -317,7 +318,6 @@ const getRsvpList = async (eventId) => {
 // getEventsBySearch
 const getEventsBySearch = async (
   eventTitle,
-  dateCreated,
   eventLocation,
   eventTags,
   eventRating,
@@ -347,18 +347,6 @@ const getEventsBySearch = async (
   if (eventTitle) {
     events_list = events_list.filter((event) => {
       return event.eventTitle.toLowerCase().includes(eventTitle.toLowerCase());
-    });
-  }
-
-  if (dateCreated) {
-    const date = new Date(dateCreated);
-    events_list = events_list.filter((event) => {
-      const eventDate = new Date(event.dateCreated);
-      return (
-        eventDate.getFullYear() === date.getFullYear() &&
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getDate() === date.getDate()
-      );
     });
   }
 

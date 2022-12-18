@@ -413,6 +413,20 @@ const addrsvpEvent = async (userId, eventId) => {
   return await getUserById(userId);
 };
 
+// getRsvp
+const getRsvp = async (eventId, userId) => {
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  const rsvped_events = user.rsvped_events;
+  for (let i = 0; i < rsvped_events.length; i++) {
+    if (rsvped_events[i] == eventId) {
+      return true;
+    }
+  }
+  return false;
+};
+
 module.exports = {
   createUser,
   getUserById,
@@ -438,4 +452,5 @@ module.exports = {
   getUnbookmark,
   removeInvite,
   removeRsvpEvent,
+  getRsvp,
 };
