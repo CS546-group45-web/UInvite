@@ -120,7 +120,7 @@ router
         for (let i = 0; i < invites.length; i++) {
           try {
             const invitee = await userData.getUserByUsername(invites[i]);
-            if (invitee._id.toString() === event.ownerId.toString()) {
+            if (invitee._id.toString() === req.user._id) {
               return res.status(400).json({ error: 'User owns the event' });
             }
             const invite = await userData.getInvite(eventId, invitee._id);

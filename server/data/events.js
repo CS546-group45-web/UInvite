@@ -27,7 +27,7 @@ const createEvent = async (
     address = validation.checkInputString(address, 'address');
   }
 
-  if (type.toLowerCase()==='online') {
+  if (type.toLowerCase() === 'online') {
     address = validation.checkEventURl(address, 'onlineEventLink');
   }
 
@@ -471,6 +471,11 @@ const removeEvent = async (id) => {
   const eventCollection = await events();
   const eventObject = await getEventById(id);
   const eventName = eventObject['eventTitle'];
+  let rsvp = await user.updateRsvpDeleteEvent(id);
+  let bookmark = await user.updateBookmarkDeleteEvent(id);
+  let invite = await user.updateInviteDeleteEvent(id);
+  let userEvent = await user.updateUserDeleteEvent(id);
+
   const deletionInfo = await eventCollection.deleteOne({ _id: ObjectId(id) });
   if (deletionInfo.deletedCount === 0) {
     throw new Error(`Could not delete movie with id of ${id}`);
