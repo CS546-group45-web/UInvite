@@ -406,11 +406,15 @@ const getEventsBySearch = async (
   }
 
   if (eventTags) {
+    eventTags = validation.checkTags(eventTags);
     events_list = events_list.filter((event) => {
       // event.tags is an array of strings
-      for (let i = 0; i < event.tags.length; i++) {
-        if (event.tags[i].toLowerCase().includes(eventTags.toLowerCase())) {
-          return true;
+      // for each tag in the eventTags array, check if it is in the event.tags array
+      for (let i = 0; i < eventTags.length; i++) {
+        for (let j = 0; j < event.tags.length; j++) {
+          if (eventTags[i].toLowerCase() === event.tags[j].toLowerCase()) {
+            return true;
+          }
         }
       }
     });
