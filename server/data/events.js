@@ -599,11 +599,9 @@ const getAllTags = async () => {
   }
   let tagList = [];
   for (elem of events_list) {
-    // console.log(elem);
     for (tag of elem.tags) {
-      // console.log(tag);
       if (tagList.indexOf(tag) === -1) {
-        tagList.push(tag);
+        tagList.push(tag.toLowerCase());
       }
     }
   }
