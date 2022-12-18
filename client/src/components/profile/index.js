@@ -1,23 +1,23 @@
-import React from "react";
-import { MenuItem, Modal, Slider, TextField } from "@mui/material";
-import { genderOptions } from "../../constants";
+import React from 'react';
+import { MenuItem, Modal, Slider, TextField } from '@mui/material';
+import { genderOptions } from '../../constants';
 import {
   dataURLtoFile,
   emailValidation,
   nameValidation,
   usernameValidation,
-} from "../../utils/helper";
-import CloseIcon from "@mui/icons-material/Close";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DatePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { toast } from "react-toastify";
-import Loading from "../common/Loading";
-import IconButton from "@mui/material/IconButton";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import PhoneAndroidOutlinedIcon from "@mui/icons-material/PhoneAndroidOutlined";
-import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
-import "./styles.css";
+} from '../../utils/helper';
+import CloseIcon from '@mui/icons-material/Close';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { toast } from 'react-toastify';
+import Loading from '../common/Loading';
+import IconButton from '@mui/material/IconButton';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
+import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
+import './styles.css';
 import {
   editUserDetails,
   followUser,
@@ -28,20 +28,23 @@ import {
   getUserFollowing,
   profilePhotoUpload,
   unfollowUser,
-} from "../../utils/apis/user";
+} from '../../utils/apis/user';
 import {
   capitalizeFirstLetter,
   fullNameFormatter,
   phoneNumberFormatter,
-} from "../../utils/helper";
-import { PhotoCamera } from "@mui/icons-material";
-import ProfileSectionMiddle from "./profileSectionMiddle";
-import DefaultProfile from "../../assets/images/default_profile_pic.png";
-import AvatarEditor from "react-avatar-editor";
-import Bookmarks from "./bookmarks";
-import dayjs from "dayjs";
-import UserEvents from "./createdEvents";
+} from '../../utils/helper';
+import { PhotoCamera } from '@mui/icons-material';
+import ProfileSectionMiddle from './profileSectionMiddle';
+import DefaultProfile from '../../assets/images/default_profile_pic.png';
+import AvatarEditor from 'react-avatar-editor';
+import Bookmarks from './bookmarks';
+import dayjs from 'dayjs';
+import UserEvents from './createdEvents';
+import { GoogleLogin } from '@react-oauth/google';
+import { googleLogout } from '@react-oauth/google';
 
+googleLogout();
 function Profile() {
   const editorRef = React.useRef(null);
   const [modalView, setModalView] = React.useState(false);
@@ -108,7 +111,7 @@ function Profile() {
     setUpdateLoading(true);
     const img = editorRef.current?.getImageScaledToCanvas().toDataURL();
     let formData = new FormData();
-    formData.append("profileImage", dataURLtoFile(img, userData?.username));
+    formData.append('profileImage', dataURLtoFile(img, userData?.username));
     const { data } = await profilePhotoUpload(formData);
     setUserData(data?.data);
     setImageObj(null);
@@ -137,7 +140,7 @@ function Profile() {
     const { status } = unfollowUserData;
 
     if (status === 200) getUserAllDetails();
-    else toast.error("Unfollow request failed!");
+    else toast.error('Unfollow request failed!');
   };
 
   const sendFollowRequest = async (id) => {
@@ -145,7 +148,7 @@ function Profile() {
     const { status } = followUserData;
 
     if (status === 200) getUserAllDetails();
-    else toast.error("Follow request failed!");
+    else toast.error('Follow request failed!');
   };
 
   const validateData = async () => {
@@ -182,10 +185,10 @@ function Profile() {
     let mm = today.getMonth() + 1; // Months start at 0!
     let dd = today.getDate();
 
-    if (dd < 10) dd = "0" + dd;
-    if (mm < 10) mm = "0" + mm;
+    if (dd < 10) dd = '0' + dd;
+    if (mm < 10) mm = '0' + mm;
 
-    const formattedToday = mm + "/" + dd + "/" + yyyy;
+    const formattedToday = mm + '/' + dd + '/' + yyyy;
     const apiBody = {
       firstName,
       lastName,
@@ -219,15 +222,20 @@ function Profile() {
       profile_photo_url,
       _id,
     } = userData ?? {};
+
+    const responseGoogle = async (response) => {
+      console.log(response);
+    };
+
     return (
       <div>
         <div className="grid grid_spaces text-[#1d1f23] mb-4">
           <div className="user_profile_picture relative">
             <img
               src={
-                profile_photo_url !== ""
+                profile_photo_url !== ''
                   ? process.env.REACT_APP_BASE_URL +
-                    "/images/" +
+                    '/images/' +
                     profile_photo_url
                   : DefaultProfile
               }
@@ -372,11 +380,30 @@ function Profile() {
               <span>{email}</span>
               <div className="pl-4 w-[30px] h-[30px]">
                 <PhoneAndroidOutlinedIcon color="#1d1f23" />
-              </div>{" "}
+              </div>{' '}
               <span className="pl-2">{phoneNumberFormatter(phone)}</span>
             </div>
           </div>
         </div>
+
+        <GoogleLogin
+          text="Connect with Google for calendar sync"
+          onSuccess={responseGoogle}
+          onFailure={responseGoogle}
+          scope="email profile https://www.googleapis.com/auth/calendar.events"
+        />
+
+        {/* googleLogout */}
+
+        <IconButton
+          onClick={() => {
+            googleLogout();
+            window.location.reload();
+          }}
+        >
+          Logout from google
+        </IconButton>
+
         <ProfileSectionMiddle
           userId={_id}
           loggedInUserId={_id}
@@ -425,7 +452,7 @@ function Profile() {
                 }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!nameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -458,7 +485,7 @@ function Profile() {
                 }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!nameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -491,7 +518,7 @@ function Profile() {
                 }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!usernameValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -510,7 +537,7 @@ function Profile() {
                 type="email"
                 fullWidth
                 margin="dense"
-                value={updateUserData?.email ?? ""}
+                value={updateUserData?.email ?? ''}
                 name="email"
                 placeholder="johndoe@example.com"
                 helperText={
@@ -526,7 +553,7 @@ function Profile() {
                 error={errors?.email}
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (!emailValidation(value)) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -542,13 +569,13 @@ function Profile() {
                 fullWidth
                 required
                 margin="dense"
-                value={updateUserData?.gender ?? ""}
+                value={updateUserData?.gender ?? ''}
                 name="gender"
                 placeholder="select a gender"
                 error={errors?.gender}
                 onChange={(e) => {
                   const { name, value } = e.target;
-                  if (value !== "") {
+                  if (value !== '') {
                     setValues(name, value);
                     removeError(name);
                   } else setError(name);
@@ -583,7 +610,7 @@ function Profile() {
                 name="phone"
                 error={errors?.phone}
                 placeholder="1234567899"
-                value={updateUserData?.phone ?? ""}
+                value={updateUserData?.phone ?? ''}
                 helperText={
                   errors?.phone ? (
                     <span className="text-base flex items-center">
@@ -596,7 +623,7 @@ function Profile() {
                 }
                 onChange={(e) => {
                   let { name, value } = e.target;
-                  if (value === "") setError(name);
+                  if (value === '') setError(name);
                   if (value.length < 10 || value.length > 10) setError(name);
                   else removeError(name);
                   setValues(name, value);
@@ -631,18 +658,18 @@ function Profile() {
                       />
                     )}
                     onChange={(e) => {
-                      if (e === null) removeError("dob");
-                      setValues("dob", e);
+                      if (e === null) removeError('dob');
+                      setValues('dob', e);
                     }}
                     onError={(e, f) => {
-                      if (e === "invalidDate") setError("dob");
-                      if (e === null) removeError("dob");
+                      if (e === 'invalidDate') setError('dob');
+                      if (e === null) removeError('dob');
                     }}
                     maxDate={dayjs(
                       new Date(+new Date() - 410200000000 - 86400000)
                     )}
                     minDate={dayjs(new Date(+new Date() - 3156000000000))}
-                    modalViewTo={"day"}
+                    modalViewTo={'day'}
                   />
                 </LocalizationProvider>
               </div>

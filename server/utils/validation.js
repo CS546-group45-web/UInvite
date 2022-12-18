@@ -30,9 +30,6 @@ const checkNames = (input, name) => {
 
 const checkTitle = (input, name) => {
   input = checkInputString(input);
-  if (!/^[a-zA-Z0-9 ]+$/.test(input)) {
-    throw `${name} must only contain letters or numbers`;
-  }
   if (input.length < 4) throw `${name} should be of length 4 or greater`; //added extra validation
   return input;
 };
@@ -145,7 +142,7 @@ const checkTags = (input, name = 'tags') => {
   let tags = input.split(',');
   if (tags.length < 1) throw `${name} should have max 3 tags`;
   // should only contain letters and numbers
-  if (!tags.every((tag) => /^[a-zA-Z0-9]+$/.test(tag)))
+  if (!tags.every((tag) => /^[a-zA-Z0-9 ]+$/.test(tag)))
     throw `${name} should only contain letters and numbers`;
 
   return tags;

@@ -103,9 +103,7 @@ router
             return res.status(400).json({ error: 'User not verified' });
           }
           const payload = { id: found_user._id };
-          const token = jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: '2h',
-          });
+          const token = jwt.sign(payload, process.env.JWT_SECRET);
           return res.json({ token });
         } else {
           return res
