@@ -158,6 +158,22 @@ const removeInvite = async (userId, eventId) => {
   return await getUserById(userId);
 };
 
+// removeRsvpEvent
+const removeRsvpEvent = async (userId, eventId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $pull: { rsvped_events: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove RSVP';
+  }
+  return await getUserById(userId);
+};
+
 const getUserByEmail = async (email) => {
   email = validation.checkEmail(email);
   const user_collection = await users();
@@ -422,4 +438,5 @@ module.exports = {
   removeFromBookmarks,
   getUnbookmark,
   removeInvite,
+  removeRsvpEvent,
 };
