@@ -34,7 +34,6 @@ export const makeApiCall = async (endpoint, method, body, headers = null) => {
     }
     if (status === 401 || status === 502) setTimeout(logoutUser, 3000);
     toast.error("Something went wrong!");
-    // setTimeout(logoutUser, 4000);
   }
 };
 

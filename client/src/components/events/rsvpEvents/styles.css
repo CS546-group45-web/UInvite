@@ -1,0 +1,6 @@
+.empty_box_text {
+  position: absolute;
+  top: 55%;
+  left: 55%;
+  transform: translate(-35%, -50%);
+}

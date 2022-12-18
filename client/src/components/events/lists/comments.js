@@ -25,7 +25,7 @@ function Comments({
 
   return (
     <div className="mt-3">
-      <div className="font-bold text-2xl mb-2 section_divider">
+      <div className="font-bold text-3xl mb-2 section_divider">
         <CommentOutlinedIcon fontSize="large" /> Comments
       </div>
       {areCommentsAllowed ? (
