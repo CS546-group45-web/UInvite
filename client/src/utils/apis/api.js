@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-// const baseUrl = "http://localhost:4000/";
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = "http://localhost:4000";
+// const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const jwtToken = localStorage.getItem("token") ?? null;
 const errosStatusCodes = [500, 409, 404, 400];
