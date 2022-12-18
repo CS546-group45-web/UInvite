@@ -41,9 +41,6 @@ import AvatarEditor from 'react-avatar-editor';
 import Bookmarks from './bookmarks';
 import dayjs from 'dayjs';
 import UserEvents from './createdEvents';
-import { GoogleLogin } from '@react-oauth/google';
-import { googleLogout } from '@react-oauth/google';
-import { hasGrantedAllScopesGoogle } from '@react-oauth/google';
 
 function Profile() {
   const editorRef = React.useRef(null);
@@ -223,16 +220,6 @@ function Profile() {
       _id,
     } = userData ?? {};
 
-    const responseGoogle = async (response) => {
-      console.log(response);
-      const hasAccess = hasGrantedAllScopesGoogle(
-        response,
-        'https://www.googleapis.com/auth/calendar'
-      );
-      if (!hasAccess) return toast.error('Access denied!');
-      console.log('has access');
-    };
-
     return (
       <div>
         <div className="grid grid_spaces text-[#1d1f23] mb-4">
@@ -391,23 +378,6 @@ function Profile() {
             </div>
           </div>
         </div>
-
-        <GoogleLogin
-          text="Connect with Google for calendar sync"
-          onSuccess={responseGoogle}
-          onFailure={responseGoogle}
-          scope="openid email profile https://www.googleapis.com/auth/calendar.events"
-          useOneTap
-        />
-
-        <IconButton
-          onClick={() => {
-            googleLogout();
-            window.location.reload();
-          }}
-        >
-          Logout from google
-        </IconButton>
 
         <ProfileSectionMiddle
           userId={_id}
