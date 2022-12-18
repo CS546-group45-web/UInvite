@@ -1,6 +1,6 @@
 import React from "react";
 import Loading from "../../common/Loading";
-import EventCard from "../lists/eventCard";
+import EventCard from "../lists/eventCardHome";
 import { getUserDetails, getUserRsvps } from "../../../utils/apis/user";
 import { toast } from "react-toastify";
 import EmptyBox from "../../../assets/images/emptybox.png";
@@ -16,10 +16,9 @@ function RsvpedEvents() {
     getUserRsvps().then((res) => {
       const { data, status } = res;
       if (status !== 200) {
-        setLoading(false)
+        setLoading(false);
         return toast.error("Failed to fetch events");
-      }
-      else setEvents(data?.data);
+      } else setEvents(data?.data);
       getUserDetails().then((res) => {
         const { data, status } = res;
         if (status !== 200) return toast.error(data.error);
