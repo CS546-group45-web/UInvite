@@ -427,6 +427,124 @@ const getRsvp = async (eventId, userId) => {
   return false;
 };
 
+const updateRsvpDeleteEvent = async (eventId) => {
+  const user_collection = await users();
+  const rsvpedEvents = await user_collection
+    .find({
+      rsvped_events: eventId,
+    })
+    .toArray();
+
+  if (rsvpedEvents.length === 0) {
+    return;
+  } else {
+    for (rsvp of rsvpedEvents) {
+      const updated_info = await user_collection.updateOne(
+        { _id: ObjectId(rsvp._id) },
+        {
+          $pull: { rsvped_events: eventId },
+        }
+      );
+
+      if (updated_info.modifiedCount === 0) {
+        throw 'Could not remove rsvp from user';
+      }
+    }
+
+    return rsvpedEvents;
+  }
+};
+
+const updateBookmarkDeleteEvent = async (eventId) => {
+  const user_collection = await users();
+
+  const bookmarkEvent = await user_collection
+    .find({
+      bookmarks: eventId,
+    })
+    .toArray();
+
+  if (bookmarkEvent.length === 0) {
+    return;
+  } else {
+    for (bookmark of bookmarkEvent) {
+      const updated_info = await user_collection.updateOne(
+        { _id: ObjectId(bookmark._id) },
+        {
+          $pull: { bookmarks: eventId },
+        }
+      );
+
+      if (updated_info.modifiedCount === 0) {
+        throw 'Could not remove bookmark from user';
+      }
+    }
+    return bookmark;
+  }
+};
+
+const updateInviteDeleteEvent = async (eventId) => {
+  const user_collection = await users();
+
+  const inviteEvent = await user_collection
+    .find({
+      invited_events: eventId,
+    })
+    .toArray();
+
+  if (inviteEvent.length === 0) {
+    return;
+  } else {
+    for (invite of inviteEvent) {
+      const updated_info = await user_collection.updateOne(
+        { _id: ObjectId(invite._id) },
+        {
+          $pull: { invited_events: eventId },
+        }
+      );
+
+      if (updated_info.modifiedCount === 0) {
+        throw 'Could not remove invite from user';
+      }
+    }
+    return invite;
+  }
+};
+
+const updateUserDeleteEvent = async (eventId) => {
+  const user_collection = await users();
+
+  const userEvent = await user_collection.findOne({
+    eventsCreated: eventId,
+  });
+  if (!userEvent) throw 'User not found';
+
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userEvent._id) },
+    {
+      $pull: { eventsCreated: eventId },
+    }
+  );
+
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove user event';
+  }
+  return userEvent;
+};
+const getAllUsernames = async (username) => {
+  const user_collection = await users();
+  const usernames = await user_collection
+    .find({}, { projection: { username: 1 } })
+    .toArray();
+
+  for (let i = 0; i < usernames.length; i++) {
+    if (usernames[i].username == username) {
+      usernames.splice(i, 1);
+    }
+  }
+  return usernames;
+};
+
 module.exports = {
   createUser,
   getUserById,
@@ -453,4 +571,9 @@ module.exports = {
   removeInvite,
   removeRsvpEvent,
   getRsvp,
+  updateRsvpDeleteEvent,
+  updateBookmarkDeleteEvent,
+  updateInviteDeleteEvent,
+  updateUserDeleteEvent,
+  getAllUsernames,
 };

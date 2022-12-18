@@ -120,7 +120,9 @@ router
         for (let i = 0; i < invites.length; i++) {
           try {
             const invitee = await userData.getUserByUsername(invites[i]);
-            // if user is invited before, do nothing
+            if (invitee._id.toString() === req.user._id) {
+              return res.status(400).json({ error: 'User owns the event' });
+            }
             const invite = await userData.getInvite(eventId, invitee._id);
             if (invite) {
               return res.status(400).json({ error: 'User is already invited' });
