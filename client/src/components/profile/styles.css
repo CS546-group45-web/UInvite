@@ -89,3 +89,9 @@ div.grid_spaces {
   align-items: flex-end;
   margin: 0px 10px;
 }
+
+
+.events_grid_profile{
+  display: grid;
+  grid-template-columns: auto auto auto;
+}

@@ -4,7 +4,7 @@ import Login from "./components/login";
 import { Route, BrowserRouter, Routes, Navigate } from "react-router-dom";
 import SignUp from "./components/signup";
 import CreateEvent from "./components/events/createEvent";
-import EventsList from "./components/events/lists";
+import EventsList from "./components/events/lists/eventListing";
 import Profile from "./components/profile";
 import Calendar from "./components/Calendar";
 import Nav from "./components/navbar";
@@ -14,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import VerifyUser from "./components/verifyUser";
 import ResetPassword from "./components/resetPassword";
 import FollowerProfile from "./components/profile/followerProfile";
-import EventPage from "./components/events/lists/eventPage";
+import EventPage from "./components/events/lists/eventLandingPage";
 import RsvpedEvents from "./components/events/rsvpEvents";
 import InvitedEvents from "./components/events/invitedEvents";
 

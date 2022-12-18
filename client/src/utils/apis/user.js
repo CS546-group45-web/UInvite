@@ -21,6 +21,7 @@ export const getUserFollowers = async () =>
 
 export const getUserFollowing = async () =>
   await makeApiCall("/api/user/following", "get");
+
 export const getOtherUserFollowersById = async (id) =>
   await makeApiCall("/api/user/followers/" + id, "get");
 
@@ -33,8 +34,8 @@ export const getUserInvites = async () =>
 export const getUserRsvps = async () =>
   await makeApiCall("/api/user/rsvpEvents", "get");
 
-  export const getUserBookmarks = async () =>
+export const getUserBookmarks = async () =>
   await makeApiCall("/api/user/bookmarks", "get");
 
-  export const getUserCreatedEvents = async () =>
+export const getUserCreatedEvents = async () =>
   await makeApiCall("/api/user/createdEvents", "get");

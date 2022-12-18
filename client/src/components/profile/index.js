@@ -22,6 +22,7 @@ import {
   editUserDetails,
   followUser,
   getUserBookmarks,
+  getUserCreatedEvents,
   getUserDetails,
   getUserFollowers,
   getUserFollowing,
@@ -39,6 +40,7 @@ import DefaultProfile from "../../assets/images/default_profile_pic.png";
 import AvatarEditor from "react-avatar-editor";
 import Bookmarks from "./bookmarks";
 import dayjs from "dayjs";
+import UserEvents from "./createdEvents";
 
 function Profile() {
   const editorRef = React.useRef(null);
@@ -49,7 +51,8 @@ function Profile() {
   const [errors, setErrors] = React.useState(false);
   const [userData, setUserData] = React.useState(null);
   const [userFollower, setUserFollowers] = React.useState([]);
-  const [events, setEvents] = React.useState([]);
+  const [bookmarks, setBookmarks] = React.useState([]);
+  const [userCreatedEvents, setUserCreatedEvents] = React.useState([]);
   const [userFollowing, setUserFollowing] = React.useState([]);
   const [updateUserData, setUpdateUserData] = React.useState(null);
   const [pageLoading, setPageLoading] = React.useState(false);
@@ -69,7 +72,12 @@ function Profile() {
       getUserBookmarks().then((res) => {
         const { data, status } = res;
         if (status !== 200) return toast.error(data.error);
-        setEvents(data?.data);
+        setBookmarks(data?.data);
+      });
+      getUserCreatedEvents().then((res) => {
+        const { data, status } = res;
+        if (status !== 200) return toast.error(data.error);
+        setUserCreatedEvents(data?.data);
       });
       getUserFollowing().then((res) => {
         const { data, status } = res;
@@ -368,7 +376,6 @@ function Profile() {
               <span className="pl-2">{phoneNumberFormatter(phone)}</span>
             </div>
           </div>
-          <div>Some insights like #events, #follows, #followers</div>
         </div>
         <ProfileSectionMiddle
           userId={_id}
@@ -380,7 +387,9 @@ function Profile() {
           showFollowerFollowButtons={true}
         />
 
-        <Bookmarks events={events} />
+        <UserEvents events={userCreatedEvents} />
+
+        <Bookmarks events={bookmarks} />
       </div>
     );
   };

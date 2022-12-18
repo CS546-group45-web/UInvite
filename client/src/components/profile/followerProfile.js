@@ -14,7 +14,7 @@ import {
   unfollowUser,
 } from "../../utils/apis/user";
 import Loading from "../common/Loading";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import ProfileSectionMiddle from "./profileSectionMiddle";
 import { toast } from "react-toastify";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -23,6 +23,7 @@ import DefaultProfile from "../../assets/images/default_profile_pic.png";
 
 function FollowerProfile() {
   const params = useParams();
+  const navigate = useNavigate();
   const [userData, setUserData] = React.useState({});
   const [loggedInUserData, setLoggedInUserData] = React.useState({});
   const [userFollower, setUserFollowers] = React.useState(null);
@@ -33,14 +34,18 @@ function FollowerProfile() {
     (showLoader = false) => {
       showLoader && setPageLoading(true);
       getUserDetailsByUsername(params?.username).then((res) => {
-        if (res.status !== 200) return toast.error(res.data.error);
+        if (res.status !== 200) {
+          toast.error(
+            "Either the username is incorrect or the user does not exists"
+          );
+          return setTimeout(() => navigate(-1), 2000);
+        }
         setUserData(res?.data);
         getUserDetails().then((res) => {
           const { data, status } = res;
           if (status !== 200) return toast.error(data.error);
           setLoggedInUserData(data);
         });
-
         getOtherUserFollowersById(res?.data?._id).then((res) => {
           const { data, status } = res;
           if (status !== 200) return toast.error(data.error);
@@ -54,7 +59,7 @@ function FollowerProfile() {
         });
       });
     },
-    [params.username]
+    [params?.username, navigate]
   );
 
   React.useEffect(() => {

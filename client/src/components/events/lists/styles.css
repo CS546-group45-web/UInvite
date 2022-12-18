@@ -1,18 +1,24 @@
-.event_banner {
+.event_photo {
   width: 100%;
   border-radius: 4px;
   height: inherit;
   margin-top: 5px;
   object-fit: cover;
   aspect-ratio: 16/9;
-  outline: 1px solid;
+  outline: 2px solid #393e4663;
+}
+
+.event_photo__smallcard {
+  width: 150px;
+  border-radius: 999px;
+  margin-top: 5px;
+  object-fit: cover;
+  aspect-ratio: 1;
+  outline: 4px solid #393e4663;
+  max-width: 150px;
 }
 
 .tags_chip {
-  /* color: #393e67 !important;
-    border: 1px solid #393e67 !important;
-    /* font-weight: 900; */
-  /* font-size: 15px !important; */
   font-size: 15px !important;
   background-color: #393e46d1 !important;
   color: white !important;
@@ -107,7 +113,7 @@
   font-size: 16px;
 }
 
-.info_note{
+.info_note {
   padding: 4px 10px;
   border-radius: 5px;
   background-color: #1caeec69;
@@ -182,4 +188,32 @@
   border-radius: 10px;
   padding: 10px;
   justify-content: space-evenly;
+}
+
+.guest_list_modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  width: 600px;
+  max-height: 400px;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+div.MuiCard-root {
+  margin: 16px 16px 0 0;
+  border-radius: 6px;
+  outline: 1px solid #393e4659;
+  max-width: 300px;
+  aspect-ratio: 0.9/1;
+  /* float: left; */
+}
+
+.text_ellipsis__bookmark_card {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 260px;
+  overflow: hidden;
 }

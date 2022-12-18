@@ -1,10 +1,14 @@
 import React from "react";
 import Loading from "../../common/Loading";
-import EventCard from "../lists/eventCard";
 import { getUserDetails, getUserInvites } from "../../../utils/apis/user";
 import { toast } from "react-toastify";
 import EmptyBox from "../../../assets/images/emptybox.png";
 import "./styles.css";
+import EventCardSmall from "../lists/eventCardSmall";
+import {
+  acceptEventInvite,
+  cancelEventInvite,
+} from "../../../utils/apis/event";
 
 function InvitedEvents() {
   const [events, setEvents] = React.useState([]);
@@ -17,7 +21,7 @@ function InvitedEvents() {
       const { data, status } = res;
       if (status !== 200) {
         setLoading(false);
-        return toast.error("Failed to fetch events");
+        return toast.error("Failed to fetch invites");
       } else setEvents(data?.data);
       getUserDetails().then((res) => {
         const { data, status } = res;
@@ -27,6 +31,18 @@ function InvitedEvents() {
       });
     });
   }, []);
+
+  const acceptInvite = async (id) => {
+    const { status } = await acceptEventInvite(id);
+    if (status !== 200) return toast.error("Failed to accept");
+    toast.success("Invite accepted");
+  };
+  const cancelInvite = async (id) => {
+    const { status } = await cancelEventInvite(id);
+    if (status !== 200) return toast.error("Failed to decline");
+    toast.success("Invite declined");
+  };
+
   return (
     <div className="w-full">
       <div className="text-5xl font-semibold mt-4 mb-8">Invitation/s</div>
@@ -36,16 +52,20 @@ function InvitedEvents() {
         </div>
       ) : events?.length !== 0 ? (
         events?.map((event) => (
-          <EventCard
+          <EventCardSmall
             event={event}
             userId={loggedInUserData?._id}
             key={event?._id}
+            successBtnText="Accept"
+            cancelBtnText="Decline"
+            successAction={acceptInvite}
+            cancelAction={cancelInvite}
           />
         ))
       ) : (
         <div className="empty_box_text">
           <img src={EmptyBox} alt="no invites found" width={200} />
-          <span className="text-4xl font-light">No Events Found.</span>
+          <span className="text-4xl font-light">No Invites</span>
         </div>
       )}
     </div>
