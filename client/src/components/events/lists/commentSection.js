@@ -1,6 +1,6 @@
 import moment from "moment";
 import React from "react";
-import { Navigate, useNavigate } from "react-router";
+import {  useNavigate } from "react-router";
 import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 import { TextField } from "@mui/material";
 import { validateComment } from "../../../utils/helper";

@@ -59,7 +59,7 @@ function FollowerProfile() {
         });
       });
     },
-    [params.username]
+    [params?.username, navigate]
   );
 
   React.useEffect(() => {

@@ -3,7 +3,6 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
-  Chip,
 } from "@mui/material";
 import moment from "moment";
 import React from "react";
