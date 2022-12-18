@@ -668,4 +668,16 @@ router
     }
   });
 
+router.route('/tags').get(async (req, res) => {
+  try {
+    let data = null;
+    data = await eventData.getAllTags();
+    return res
+      .status(200)
+      .json({ message: 'Tags list fetched', data: { data } });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
 module.exports = router;
