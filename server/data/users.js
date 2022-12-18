@@ -447,7 +447,7 @@ const updateRsvpDeleteEvent = async (eventId) => {
       );
 
       if (updated_info.modifiedCount === 0) {
-        throw 'Could not remove rsvp';
+        throw 'Could not remove rsvp from user';
       }
     }
 
@@ -476,7 +476,7 @@ const updateBookmarkDeleteEvent = async (eventId) => {
       );
 
       if (updated_info.modifiedCount === 0) {
-        throw 'Could not remove rsvp';
+        throw 'Could not remove bookmark from user';
       }
     }
     return bookmark;
@@ -504,7 +504,7 @@ const updateInviteDeleteEvent = async (eventId) => {
       );
 
       if (updated_info.modifiedCount === 0) {
-        throw 'Could not remove rsvp';
+        throw 'Could not remove invite from user';
       }
     }
     return invite;
@@ -527,9 +527,22 @@ const updateUserDeleteEvent = async (eventId) => {
   );
 
   if (updated_info.modifiedCount === 0) {
-    throw 'Could not remove rsvp';
+    throw 'Could not remove user event';
   }
   return userEvent;
+};
+const getAllUsernames = async (username) => {
+  const user_collection = await users();
+  const usernames = await user_collection
+    .find({}, { projection: { username: 1 } })
+    .toArray();
+
+  for (let i = 0; i < usernames.length; i++) {
+    if (usernames[i].username == username) {
+      usernames.splice(i, 1);
+    }
+  }
+  return usernames;
 };
 
 module.exports = {
@@ -562,4 +575,5 @@ module.exports = {
   updateBookmarkDeleteEvent,
   updateInviteDeleteEvent,
   updateUserDeleteEvent,
+  getAllUsernames,
 };

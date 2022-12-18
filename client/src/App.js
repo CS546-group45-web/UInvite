@@ -17,6 +17,7 @@ import FollowerProfile from "./components/profile/followerProfile";
 import EventPage from "./components/events/lists/eventLandingPage";
 import RsvpedEvents from "./components/events/rsvpEvents";
 import InvitedEvents from "./components/events/invitedEvents";
+import PrivacyPolicyPage from "./components/common/privacyPolicyPage";
 
 function App() {
   const styles = () =>
@@ -44,6 +45,12 @@ function App() {
                   ) : (
                     <Navigate to="/login" replace />
                   )
+                }
+              />
+              <Route
+                path="/privacy-policy"
+                element={
+                  isAuthenticated() ? <Navigate to="/" replace /> : <PrivacyPolicyPage />
                 }
               />
               <Route
