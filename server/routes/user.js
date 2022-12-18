@@ -237,17 +237,19 @@ router
   });
 
 // get all usernames
-router.route('/usernames').get(async (req, res) => {
-  try {
-    const usernames = await userData.getAllUsernames();
-    return res.json({
-      message: 'Usernames fetched',
-      data: usernames,
-    });
-  } catch (e) {
-    return res.status(500).json({ error: e });
-  }
-});
+router
+  .route('/usernames')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const usernames = await userData.getAllUsernames(req.user.username);
+      return res.json({
+        message: 'Usernames fetched',
+        data: usernames,
+      });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
 
 router.route('/:username').get(async (req, res) => {
   try {

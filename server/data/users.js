@@ -427,12 +427,17 @@ const getRsvp = async (eventId, userId) => {
   return false;
 };
 
-const getAllUsernames = async () => {
-  // get all usernames from database and return them use projection
+const getAllUsernames = async (username) => {
   const user_collection = await users();
   const usernames = await user_collection
     .find({}, { projection: { username: 1 } })
     .toArray();
+
+  for (let i = 0; i < usernames.length; i++) {
+    if (usernames[i].username == username) {
+      usernames.splice(i, 1);
+    }
+  }
   return usernames;
 };
 
