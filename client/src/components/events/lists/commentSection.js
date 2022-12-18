@@ -1,8 +1,8 @@
 import moment from "moment";
 import React from "react";
-import {  useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
-import { TextField } from "@mui/material";
+import { Paper, TextField } from "@mui/material";
 import { validateComment } from "../../../utils/helper";
 import Loading from "../../common/Loading";
 
@@ -24,13 +24,13 @@ function Comments({
   };
 
   return (
-    <div className="mt-3">
-      <div className="font-bold text-3xl mb-2 section_divider">
-        <CommentOutlinedIcon fontSize="large" /> Comments
+    <Paper className="mt-3 px-2 py-1" elevation={3}>
+      <div className="font-bold text-2xl mb-2 section_divider">
+        <CommentOutlinedIcon /> Comments
       </div>
       {areCommentsAllowed ? (
         <div>
-          <div className="mb-4 flex items-start">
+          <div className="mb-4 px-4 flex items-start">
             <div className="w-11/12">
               <TextField
                 id="comment"
@@ -95,7 +95,7 @@ function Comments({
       ) : (
         <div>Comments are turned off for this post.</div>
       )}
-    </div>
+    </Paper>
   );
 }
 
