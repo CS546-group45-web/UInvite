@@ -23,13 +23,13 @@ import {
   validateTags,
   validateUrl,
   validateDateDiff,
-  // dataURLtoFile,
 } from "../../../utils/helper";
 import { typeOptions } from "../../../constants";
 import { getUserFollowers } from "../../../utils/apis/user";
 import { createEvent, editEvent } from "../../../utils/apis/event";
 import { useNavigate } from "react-router";
-// import AvatarEditor from "react-avatar-editor";
+import GoogleAutoCompleteAddress from "../../common/googleAddressComponent";
+// import GoogleMaps from "../../common/googleComponentAddressMUI";
 
 function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
   const navigate = useNavigate();
@@ -47,9 +47,6 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
   );
   const [errors, setErrors] = React.useState({});
   const [invitees, setInvitees] = React.useState([]);
-  // const [imageObj, setImageObj] = React.useState(null);
-  // const editorRef = React.useRef(null);
-  // const [zoom, setZoom] = React.useState(1);
   const [createLoading, setCreateLoading] = React.useState(false);
 
   const validateData = async (e) => {
@@ -75,12 +72,8 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
     if (!eventData?.type) errorObj.type = true;
     if (!eventData?.startDateTime) errorObj.startDateTime = true;
     if (!eventData?.endDateTime) errorObj.endDateTime = true;
-    // if (!eventData?.maxRSVPscount) errorObj.maxRSVPscount = true;
     if (!eventData?.tags) errorObj.tags = true;
-    if (eventData?.type === "in-person")
-      if (!eventData?.address) errorObj.name = true;
-    if (eventData?.type === "online")
-      if (!eventData?.onlineEventLink) errorObj.onlineEventLink = true;
+    if (!eventData?.address) errorObj.address = true;
 
     const { startDateTime, endDateTime } = eventData;
 
@@ -108,12 +101,15 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
       arePicturesAllowed,
       areCommentsAllowed,
       ageRestricted,
+      address,
+      city,
     } = eventData;
 
     const apiBody = {
       eventTitle,
       description,
       type,
+      city,
       startDateTime: new Date(startDateTime).toISOString(),
       endDateTime: new Date(endDateTime).toISOString(),
       tags: editMode ? tags?.join(",") : tags,
@@ -121,9 +117,11 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
       arePicturesAllowed,
       areCommentsAllowed,
       ageRestricted,
+      address,
     };
-    if (type === "in-person") apiBody.address = eventData?.address;
-    if (type === "online") apiBody.onlineEventLink = eventData?.onlineEventLink;
+    // if (type === "in-person") apiBody.address = eventData?.address;
+    // if (type === "online") apiBody.onlineEventLink = eventData?.onlineEventLink;
+    console.log({ apiBody });
 
     if (editMode) {
       const { data, status } = await editEvent(eventData?._id, apiBody);
@@ -146,13 +144,10 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
     setCreateLoading(false);
   };
 
-  const setValues = (name, value) => {
+  const setValues = (name, value) =>
     setEventData({ ...eventData, [name]: value });
-  };
 
-  const setError = (name) => {
-    setErrors({ ...errors, [name]: true });
-  };
+  const setError = (name) => setErrors({ ...errors, [name]: true });
 
   const removeError = (name) => {
     const errorsObj = errors;
@@ -160,11 +155,19 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
     setErrors(errorsObj);
   };
 
+  const setAddress = (place) => {
+    const { formatted_address, address_components } = place;
+    removeError("address");
+    setValues("address", formatted_address);
+    setValues("city", address_components[3]?.long_name);
+    // console.log({ eventData, errors });
+  };
+
   React.useEffect(() => {
     !editMode &&
       getUserFollowers().then((res) => {
         const { data, status } = res;
-        const list = data?.data?.map((item) => item.email);
+        const list = data?.data?.map((item) => item.username);
         if (status !== 200) return toast.error(data.error);
         setInvitees(list);
       });
@@ -196,7 +199,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                     errors?.eventTitle ? (
                       <span className="text-base flex items-center">
                         <CloseIcon fontSize="small" />
-                        Please enter a Event Title
+                        Please enter a title
                       </span>
                     ) : (
                       <span className="text-base flex items-center">
@@ -295,8 +298,12 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
             </div>
 
             <div className="flex ">
-              {(eventData?.type === "in-person" || !eventData.type) && (
+              {(eventData?.type === "in-person" || !eventData?.type) && (
                 <div className="mr-1 w-6/12">
+                  {/* <GoogleAutoCompleteAddress
+                    sendAddress={setAddress}
+                    error={errors?.address}
+                  /> */}
                   <TextField
                     id="address"
                     label="Address"
@@ -327,6 +334,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                       setValues(name, value);
                     }}
                   />
+                  {/* <GoogleMaps /> */}
                 </div>
               )}
               {eventData?.type === "online" && (
@@ -339,15 +347,15 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                     size="small"
                     type="text"
                     fullWidth
-                    placeholder="Zoom, Google meet, etc"
+                    placeholder="Zoom link, Google meet link, etc"
                     margin="dense"
-                    name="onlineEventLink"
+                    name="address"
                     error={errors?.onlineEventLink}
                     helperText={
                       errors?.onlineEventLink ? (
                         <span className="text-base flex items-center">
                           <CloseIcon fontSize="small" />
-                          Please enter a link
+                          Please enter a valid link
                         </span>
                       ) : (
                         false
@@ -437,7 +445,6 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                       setValues("endDateTime", e);
                     }}
                     onError={(e, f) => {
-                      console.log({ e, f });
                       if (e === "invalidDate") setError("endDateTime");
                       if (e === null) removeError("endDateTime");
                     }}
@@ -471,7 +478,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                     errors?.description ? (
                       <span className="text-base flex items-center">
                         <CloseIcon fontSize="small" />
-                        Please enter a Event description
+                        Please enter a description
                       </span>
                     ) : (
                       <span className="text-base flex items-center">
