@@ -81,6 +81,19 @@ app.get(
               googleAccessToken: accessToken,
               googleRefreshToken: refreshToken,
             });
+
+            // set user primary calendar view for the app
+            await calendar.acl.insert({
+              auth: oauth2Client,
+              calendarId,
+              resource: {
+                role: 'reader',
+                scope: {
+                  type: 'default',
+                },
+              },
+            });
+
             return res.status(200).json({ message: 'success' });
           } catch (e) {
             return res.status(500).json({ error: e });
