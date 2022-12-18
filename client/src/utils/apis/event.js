@@ -48,3 +48,9 @@ export const sendInviteToUser = async (id, username) =>
   await makeApiCall("/api/events/sendInvites/" + id, "post", {
     invites: username,
   });
+
+export const getAllTags = async () =>
+  await makeApiCall("/api/events/tags", "get");
+
+export const getSearchedResults = async (query) =>
+  await makeApiCall("/api/events/search?"+query, "get");

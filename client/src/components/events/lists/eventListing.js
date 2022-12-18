@@ -1,16 +1,22 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { getAllUpcomingEvents } from "../../../utils/apis/event";
+import {
+  getAllUpcomingEvents,
+  getSearchedResults,
+} from "../../../utils/apis/event";
 import Loading from "../../common/Loading";
 import EventCard from "./eventCardHome";
 // import SearchBar from "./searchBar";
 import "./styles.css";
 import { getUserDetails } from "../../../utils/apis/user";
+import SearchBar from "./searchBarComponent";
+import { Chip } from "@mui/material";
 
 function EventsList() {
   const [events, setEvents] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [loggedInUserData, setLoggedInUserData] = React.useState({});
+  const [queryData, setQueryData] = React.useState({});
 
   React.useEffect(() => {
     setLoading(true);
@@ -26,6 +32,17 @@ function EventsList() {
       });
     });
   }, []);
+
+  const searchEvents = async (query, queryParams) => {
+    setQueryData(queryParams);
+    console.log(queryParams);
+    setLoading(true);
+    getSearchedResults(query).then((res) => {
+      const { data } = res;
+      setEvents(data?.data);
+      setLoading(false);
+    });
+  };
 
   const eventsList = () => {
     return (
@@ -47,7 +64,27 @@ function EventsList() {
 
   return (
     <div className="min-h-full w-full">
-      {/* Search bar */}
+      <div>
+        <SearchBar searchEvents={searchEvents} />
+        {Object.keys(queryData).length > 0 ? (
+          <div>
+            {queryData?.searchInputTitle.trim() !== "" ? (
+              <Chip>Title: {queryData?.searchInputTitle}</Chip>
+            ) : null}
+            {queryData?.searchInputCity.trim() !== "" ? (
+              <Chip>City: {queryData?.searchInputCity}</Chip>
+            ) : null}
+            {queryData?.searchTags.length > 0 ? (
+              <Chip>
+                "Tags:{" "}
+                {queryData?.searchTags?.map((tag) => (
+                  <span>{tag}, </span>
+                ))}
+              </Chip>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
       {loading ? (
         <div className="flex justify-center">
           <Loading loading={loading} width={40} color="#393e46" thickness={5} />
