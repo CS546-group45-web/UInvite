@@ -30,9 +30,6 @@ const checkNames = (input, name) => {
 
 const checkTitle = (input, name) => {
   input = checkInputString(input);
-  if (!/^[a-zA-Z0-9 ]+$/.test(input)) {
-    throw `${name} must only contain letters or numbers`;
-  }
   if (input.length < 4) throw `${name} should be of length 4 or greater`; //added extra validation
   return input;
 };
