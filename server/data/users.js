@@ -427,6 +427,15 @@ const getRsvp = async (eventId, userId) => {
   return false;
 };
 
+const getAllUsernames = async () => {
+  // get all usernames from database and return them use projection
+  const user_collection = await users();
+  const usernames = await user_collection
+    .find({}, { projection: { username: 1 } })
+    .toArray();
+  return usernames;
+};
+
 module.exports = {
   createUser,
   getUserById,
@@ -453,4 +462,5 @@ module.exports = {
   removeInvite,
   removeRsvpEvent,
   getRsvp,
+  getAllUsernames,
 };

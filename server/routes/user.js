@@ -236,6 +236,19 @@ router
     }
   });
 
+// get all usernames
+router.route('/usernames').get(async (req, res) => {
+  try {
+    const usernames = await userData.getAllUsernames();
+    return res.json({
+      message: 'Usernames fetched',
+      data: usernames,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
 router.route('/:username').get(async (req, res) => {
   try {
     req.params.username = validation.checkUsername(req.params.username);
