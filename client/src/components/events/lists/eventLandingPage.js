@@ -7,14 +7,16 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BookmarkAddedOutlinedIcon from "@mui/icons-material/BookmarkAddedOutlined";
 import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
-import Comments from "./comments";
+import Comments from "./commentSection";
 import { getUserDetails } from "../../../utils/apis/user";
 import { toast } from "react-toastify";
 import {
   bookmarkEvent,
+  cancelRsvpEvent,
   deleteEventsDetailsById,
   eventPhotoUpload,
   getEventsDetailsById,
+  getRsvpedListToEvent,
   postComment,
   removeBookmarkedEvent,
   rsvpEvent,
@@ -25,6 +27,8 @@ import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
+import DefaultProfile from "../../../assets/images/default_profile_pic.png";
+
 import { PhotoCamera } from "@mui/icons-material";
 import Loading from "../../common/Loading";
 import {
@@ -32,15 +36,21 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
+  Divider,
   IconButton,
   Modal,
   Slider,
+  Tooltip,
 } from "@mui/material";
 import AvatarEditor from "react-avatar-editor";
-import { dataURLtoFile, isEventFinished } from "../../../utils/helper";
+import {
+  dataURLtoFile,
+  fullNameFormatter,
+  isEventFinished,
+} from "../../../utils/helper";
 
 import DefaultCoverImage from "../../../assets/images/default_cover_image.jpg";
-import RatingsAndReviews from "./ratingsAndReviews";
+import RatingsAndReviews from "./ratingAndReviewSection";
 
 function EventPage() {
   const params = useParams();
@@ -56,26 +66,41 @@ function EventPage() {
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [imageObj, setImageObj] = React.useState(null);
   const [eventIsDone, setEventIsDone] = React.useState(null);
+  const [guestListModal, setGuestListModal] = React.useState(false);
   const [zoom, setZoom] = React.useState(1);
+  const [guestList, setGuestList] = React.useState([]);
 
   const getEventsDetails = React.useCallback(
     (showLoader = false) => {
       showLoader && setPageLoading(true);
+      let userId = null;
       getEventsDetailsById(params?.id).then((res) => {
         const { data, status } = res;
         if (status !== 200) return toast.error(data.error);
         setEventData(data?.data);
+        userId = data?.data?.user_id;
         setEventIsDone(isEventFinished(data?.data?.endDateTime));
         getUserDetails().then((res) => {
           const { data, status } = res;
           if (status !== 200) return toast.error(data.error);
           setLoggedInUserData(data);
+          userId === data._id &&
+            getRsvpedListToEvent(data?.data?._id).then((res) => {
+              const { data, status } = res;
+              if (status !== 200) return toast.error(data.error);
+              setGuestList(data?.data);
+            });
           setPageLoading(false);
         });
       });
     },
     [params?.id]
   );
+
+  React.useEffect(() => {
+    setPageLoading(true);
+    getEventsDetails(true);
+  }, [getEventsDetails]);
 
   const saveData = async () => {
     await getEventsDetails();
@@ -90,11 +115,6 @@ function EventPage() {
     setCommentLoading(false);
   };
 
-  React.useEffect(() => {
-    setPageLoading(true);
-    getEventsDetails(true);
-  }, [getEventsDetails]);
-
   const handlemodalView = () => setModalView(true);
   const handleClose = () => setModalView(false);
 
@@ -103,9 +123,10 @@ function EventPage() {
   const handleDeleteDialogClickClose = () => setShowDeleteDialog(false);
 
   const deleteEvent = async () => {
-    const { data } = await deleteEventsDetailsById(eventData?._id);
-    if (data?.status !== 200) return toast.error("Failed to delete event");
-    navigate("/");
+    const { status } = await deleteEventsDetailsById(eventData?._id);
+    if (status !== 200) return toast.error("Failed to delete event");
+    toast.success("Event deleted");
+    return navigate("/");
   };
 
   const uploadImage = async () => {
@@ -131,8 +152,10 @@ function EventPage() {
   };
 
   const checkIfRsvped = () => {
-    const { rsvp } = loggedInUserData;
-    const checkRsvp = rsvp?.filter((eventId) => eventId === eventData?._id);
+    const { rsvps } = eventData;
+    const checkRsvp = rsvps?.filter(
+      (userId) => userId === loggedInUserData?._id
+    );
     return checkRsvp?.length > 0;
   };
 
@@ -154,6 +177,16 @@ function EventPage() {
     if (status !== 200) return toast.error("Failed to RSVP this event");
     setEventData(data?.data);
     toast.success("Event RSVPed");
+  };
+
+  const removeRSVPEvent = async () => {
+    const { status, data } = await cancelRsvpEvent(eventData?._id);
+    if (status !== 200)
+      return toast.error("Failed to cancel RSVP for this event");
+    console.log(data?.data);
+    setEventData(data?.data);
+    toast.success("Event removed from RSVPed events");
+    checkIfRsvped();
   };
 
   const viewMode = () => {
@@ -336,7 +369,10 @@ function EventPage() {
               )}
               {loggedInUserData?._id === eventData?.userId ? (
                 <div className="flex items-center">
-                  <button className="btn_default_guest_list mr-2">
+                  <button
+                    className="btn_default_guest_list mr-2"
+                    onClick={() => setGuestListModal(true)}
+                  >
                     <PeopleOutlineIcon /> Guest list
                   </button>
 
@@ -349,30 +385,39 @@ function EventPage() {
                 </div>
               ) : !eventIsDone ? (
                 <div className="flex items-center">
-                  <button
-                    className="btn_default"
-                    onClick={() =>
-                      checkIfBookmarked() ? removeBookmark() : addBookmark()
-                    }
-                  >
-                    {checkIfBookmarked() ? (
-                      <span>
+                  {checkIfBookmarked() ? (
+                    <Tooltip title={"Remove Bookmark"}>
+                      <button className="btn_default" onClick={removeBookmark}>
                         <BookmarkAddedOutlinedIcon /> Bookmarked
-                      </span>
-                    ) : (
-                      <span>
+                      </button>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title={"Add Bookmark"}>
+                      <button className="btn_default" onClick={addBookmark}>
                         <BookmarkAddOutlinedIcon /> Bookmark
-                      </span>
-                    )}
-                  </button>
+                      </button>
+                    </Tooltip>
+                  )}
 
-                  <button
-                    className="btn_default__cancel"
-                    // onClick={() =>checkIfRsvped() ? removeRSVPEvent() : sendRVSPEvent()}>
-                    onClick={sendRVSPEvent}
-                  >
-                    {checkIfRsvped() ? "RSVPed" : "RSVP"}
-                  </button>
+                  {checkIfRsvped() ? (
+                    <Tooltip title={"Click to cancel RSVP"}>
+                      <button
+                        className="btn_default__cancel"
+                        onClick={removeRSVPEvent}
+                      >
+                        RSVPed
+                      </button>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title={"Click to RSVP this event"}>
+                      <button
+                        className="btn_default__cancel"
+                        onClick={sendRVSPEvent}
+                      >
+                        RSVP
+                      </button>
+                    </Tooltip>
+                  )}
                 </div>
               ) : null}
             </div>
@@ -421,6 +466,71 @@ function EventPage() {
           </DialogActions>
         </Dialog>
 
+        {/* modal to show rsvp user list */}
+        <Modal
+          open={guestListModal}
+          onClose={() => setGuestListModal(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <div className="guest_list_modal">
+            <div className="flex items-center justify-between text-3xl text-center font-semibold text-logoBlue border-b-2">
+              <div>
+                <PeopleOutlineIcon fontSize="large" /> Guest List
+              </div>{" "}
+              <div
+                className="cursor-pointer"
+                onClick={() => setGuestListModal(false)}
+              >
+                x
+              </div>
+            </div>
+            {guestList.length > 0 ? (
+              guestList?.map((user) => {
+                const {
+                  _id,
+                  username,
+                  firstName,
+                  lastName,
+                  profile_photo_url,
+                } = user;
+                return (
+                  <div
+                    key={_id}
+                    className="cursor-pointer flex items-center"
+                    onClick={() => navigate("/profile/" + username)}
+                  >
+                    <img
+                      className="followers_list__image"
+                      src={
+                        profile_photo_url !== ""
+                          ? process.env.REACT_APP_BASE_URL +
+                            "/images/" +
+                            profile_photo_url
+                          : DefaultProfile
+                      }
+                      onError={(e) => {
+                        e.target.src = DefaultProfile;
+                      }}
+                      alt="your profile"
+                    />
+                    <div>
+                      <div className="text-lg font-bold">{username}</div>
+                      <div className="text-lg font-light">
+                        {fullNameFormatter(firstName, lastName)}
+                      </div>
+                    </div>
+                    <Divider />
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-xl text-center font-semibold text-logoBlue">
+                No guests yet, for this event.
+              </div>
+            )}
+          </div>
+        </Modal>
         {eventIsDone && <RatingsAndReviews />}
       </div>
     );
