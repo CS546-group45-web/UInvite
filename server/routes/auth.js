@@ -104,7 +104,7 @@ router
           }
           const payload = { id: found_user._id };
           const token = jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: '1h',
+            expiresIn: '2h',
           });
           return res.json({ token });
         } else {
