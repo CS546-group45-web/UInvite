@@ -121,12 +121,10 @@ export const validateComment = (value) => value.trim().length > 0;
 export const validateDateDiff = (startDate, endDate) => {
   startDate = new Date(startDate).getTime();
   endDate = new Date(endDate).getTime();
-  console.log(endDate, startDate);
   return endDate - startDate > 3600000;
 };
 
 export const isEventFinished = (endDate) => {
-  console.log({ endDate });
   const today = new Date().getTime();
   endDate = new Date(endDate).getTime();
   return today - endDate > 0;

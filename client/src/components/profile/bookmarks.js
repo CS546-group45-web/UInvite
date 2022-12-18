@@ -1,5 +1,5 @@
 import React from "react";
-import EventCard from "../events/lists/eventCard";
+import EventCard from "../events/lists/eventCardHome";
 
 function Bookmarks({ events }) {
   return (
