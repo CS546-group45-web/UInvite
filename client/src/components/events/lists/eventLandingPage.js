@@ -7,6 +7,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BookmarkAddedOutlinedIcon from "@mui/icons-material/BookmarkAddedOutlined";
 import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import Comments from "./commentSection";
 import {
   getUserDetails,
@@ -58,6 +59,7 @@ import {
 
 import DefaultCoverImage from "../../../assets/images/default_cover_image.jpg";
 import RatingsAndReviews from "./ratingAndReviewSection";
+import CopyToClipboard from "react-copy-to-clipboard";
 
 function EventPage() {
   const params = useParams();
@@ -455,16 +457,31 @@ function EventPage() {
                 </div>
               ) : null}
 
-              <button
-                className="w-[100%] btn_default mt-4"
-                onClick={() => {
-                  loadUsers();
-                  setInvitesModal(true);
-                }}
-              >
-                <GroupAddIcon />
-                &nbsp;&nbsp;Invite people
-              </button>
+              <div className="flex items-center">
+                <button
+                  className="w-[100%] btn_default mt-4 mr-2"
+                  onClick={() => {
+                    loadUsers();
+                    setInvitesModal(true);
+                  }}
+                >
+                  <GroupAddIcon />
+                  &nbsp;&nbsp;Invite
+                </button>
+                <CopyToClipboard
+                  text={
+                    process.env.REACT_APP_CLIENT_URL +
+                    "/event/" +
+                    eventData?._id
+                  }
+                  onCopy={() => toast.success("Invite link copied to clipboad")}
+                >
+                  <button className="w-[100%] btn_default mt-4">
+                    <ShareOutlinedIcon />
+                    &nbsp;Share
+                  </button>
+                </CopyToClipboard>
+              </div>
               <Modal
                 open={invitesModal}
                 onClose={() => setInvitesModal(false)}
