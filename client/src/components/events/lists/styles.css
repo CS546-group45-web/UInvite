@@ -19,6 +19,8 @@
 }
 
 .tags_chip {
+  margin-top: 4px;
+  margin-right: 2px;
   font-size: 15px !important;
   background-color: #393e46d1 !important;
   color: white !important;
@@ -216,4 +218,16 @@ div.MuiCard-root {
   text-overflow: ellipsis;
   width: 260px;
   overflow: hidden;
+}
+
+.invites_modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  width: 400px;
+  border-radius: 10px;
+  padding: 20px;
+  height: fit-content;
 }

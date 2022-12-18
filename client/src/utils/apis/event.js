@@ -44,3 +44,7 @@ export const cancelEventInvite = async (id) =>
 
 export const getRsvpedListToEvent = async (id) =>
   await makeApiCall("/api/events/rsvpList/" + id, "get");
+export const sendInviteToUser = async (id, username) =>
+  await makeApiCall("/api/events/sendInvites/" + id, "post", {
+    invites: username,
+  });

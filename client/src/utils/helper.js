@@ -98,7 +98,7 @@ export const dataURLtoFile = (dataurl, filename) => {
 };
 
 export const eventNameValidation = (name) => {
-  const regex = /^[a-zA-Z!-@+#$& ]{4,}$/;
+  const regex = /^[a-zA-Z!-@+#$&". ]{4,}$/;
   return regex.test(name);
 };
 

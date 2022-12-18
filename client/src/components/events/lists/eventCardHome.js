@@ -69,9 +69,9 @@ function EventCard({ event, userId }) {
               </div>
             </div>
 
-            <div className="flex mt-2">
+            <div className="block ">
               {tags.map((tag, i) => (
-                <span className="mr-1 text-logoBlue" key={i}>
+                <span className="text-logoBlue" key={i}>
                   <Chip
                     // label={"#" + tag}
                     label={tag}
