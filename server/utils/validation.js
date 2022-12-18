@@ -90,7 +90,6 @@ const checkGender = (input) => {
 };
 
 const checkObjectId = (input, name = 'object id') => {
-  //console.log("Inside checkObject");
   checkInputString(input, name);
   if (!ObjectId.isValid(input)) {
     throw `${name} must be a valid ObjectId`;
@@ -140,9 +139,9 @@ const checkArrayObjectId = (input, name = 'countRsvp') => {
 const checkTags = (input, name = 'tags') => {
   checkInputString(input, name);
   let tags = input.split(',');
-  if (tags.length < 1) throw `${name} should have max 3 tags`;
+  if (tags.length < 1) throw `${name} should have atleast 1 tags`;
   // should only contain letters and numbers
-  if (!tags.every((tag) => /^[a-zA-Z0-9]+$/.test(tag)))
+  if (!tags.every((tag) => /^[a-zA-Z0-9 ]+$/.test(tag)))
     throw `${name} should only contain letters and numbers`;
 
   return tags;
@@ -178,7 +177,6 @@ const checkBoolean = (input, name = 'boolean') => {
 };
 
 const checkRating = (input, name = 'rating') => {
-  input = checkInputString(input, name);
   if (!isNaN(Number(input))) {
     if (Number(input) < 1) throw 'Rating cannot be less than 0';
     if (Number(input) > 5) throw 'Rating cannot be greater than 5';

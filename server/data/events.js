@@ -1,8 +1,9 @@
 const { ObjectId } = require("mongodb");
 const mongoCollections = require("../config/mongoCollections");
 const events = mongoCollections.events;
-const validation = require("../utils/validation");
-const user = require("./users");
+const validation = require('../utils/validation');
+const user = require('./users');
+const calendarEvents = require('../calendar/calendarEvents');
 const createEvent = async (
   userId,
   eventTitle,
@@ -264,7 +265,47 @@ const rsvp = async (eventId, userId) => {
     await user.removeInvite(userId, eventId);
   }
 
-  return await getEventById(eventId);
+  const event = await getEventById(eventId);
+  // createCalendarEvent if user has calendar
+  const calendarEvent = {
+    summary: event.eventTitle,
+    location: event.address,
+    description: event.description,
+    start: {
+      dateTime: event.startDateTime,
+      timeZone: 'America/New_York',
+    },
+    end: {
+      dateTime: event.endDateTime,
+      timeZone: 'America/New_York',
+    },
+    reminders: {
+      useDefault: false,
+      overrides: [
+        { method: 'email', minutes: 24 * 60 },
+        { method: 'popup', minutes: 30 },
+      ],
+    },
+  };
+  // calendarEvents
+  try {
+    const calenderData = await calendarEvents.createCalendarEvent(
+      userData,
+      calendarEvent
+    );
+    // update event with calendar event id
+    const calendarUpdate = await event_collection.updateOne(
+      { _id: ObjectId(eventId) },
+      {
+        $set: { calendarEventId: calenderData.id },
+      }
+    );
+    if (calendarUpdate.modifiedCount === 0) {
+      throw 'Could not update event with calendar event id';
+    }
+  } catch (e) {
+    throw e;
+  }
 };
 
 // remove rsvp
@@ -330,7 +371,8 @@ const getEventsBySearch = async (
   eventTags,
   eventRating,
   eventStartDateTime,
-  eventEndDateTime
+  eventEndDateTime,
+  sortType
 ) => {
   if (!eventTitle && !eventLocation && !eventTags) {
     throw "Please enter at least one search parameter";
@@ -365,11 +407,15 @@ const getEventsBySearch = async (
   }
 
   if (eventTags) {
+    eventTags = validation.checkTags(eventTags);
     events_list = events_list.filter((event) => {
       // event.tags is an array of strings
-      for (let i = 0; i < event.tags.length; i++) {
-        if (event.tags[i].toLowerCase().includes(eventTags.toLowerCase())) {
-          return true;
+      // for each tag in the eventTags array, check if it is in the event.tags array
+      for (let i = 0; i < eventTags.length; i++) {
+        for (let j = 0; j < event.tags.length; j++) {
+          if (eventTags[i].toLowerCase() === event.tags[j].toLowerCase()) {
+            return true;
+          }
         }
       }
     });
@@ -379,6 +425,24 @@ const getEventsBySearch = async (
     events_list = events_list.filter((event) => {
       return event.overallRating >= eventRating;
     });
+  }
+
+  if (sortType) {
+    if (sortType === 'rating') {
+      return events_list.sort((a, b) => b.overallRating - a.overallRating);
+    }
+
+    if (sortType === 'startDateAsc') {
+      let dateList = await getAllUpcomingEvents();
+
+      return dateList.sort((a, b) => a.startDateTime - b.startDateTime);
+    }
+
+    if (sortType === 'startDateDesc') {
+      let dateList = await getAllUpcomingEvents();
+
+      return dateList.sort((a, b) => b.startDateTime - a.startDateTime);
+    }
   }
 
   if (eventStartDateTime) {
@@ -591,6 +655,23 @@ const getRatingIfExists = async (eventId, userId, rating) => {
   return data;
 };
 
+const getAllTags = async () => {
+  const eventCollection = await events();
+  const events_list = await eventCollection.find({}).toArray();
+  if (!events_list) {
+    throw new Error('Could not get all events.');
+  }
+  let tagList = [];
+  for (elem of events_list) {
+    for (tag of elem.tags) {
+      if (tagList.indexOf(tag.toLowerCase()) === -1) {
+        tagList.push(tag.toLowerCase());
+      }
+    }
+  }
+  return tagList;
+};
+
 module.exports = {
   createEvent,
   updateEventPhoto,
@@ -612,4 +693,5 @@ module.exports = {
   addEventPhoto,
   getBookmarks,
   removeRsvp,
+  getAllTags,
 };
