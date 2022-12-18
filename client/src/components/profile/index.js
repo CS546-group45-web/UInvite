@@ -43,8 +43,8 @@ import dayjs from 'dayjs';
 import UserEvents from './createdEvents';
 import { GoogleLogin } from '@react-oauth/google';
 import { googleLogout } from '@react-oauth/google';
+import { hasGrantedAllScopesGoogle } from '@react-oauth/google';
 
-googleLogout();
 function Profile() {
   const editorRef = React.useRef(null);
   const [modalView, setModalView] = React.useState(false);
@@ -225,6 +225,12 @@ function Profile() {
 
     const responseGoogle = async (response) => {
       console.log(response);
+      const hasAccess = hasGrantedAllScopesGoogle(
+        response,
+        'https://www.googleapis.com/auth/calendar'
+      );
+      if (!hasAccess) return toast.error('Access denied!');
+      console.log('has access');
     };
 
     return (
@@ -390,10 +396,9 @@ function Profile() {
           text="Connect with Google for calendar sync"
           onSuccess={responseGoogle}
           onFailure={responseGoogle}
-          scope="email profile https://www.googleapis.com/auth/calendar.events"
+          scope="openid email profile https://www.googleapis.com/auth/calendar.events"
+          useOneTap
         />
-
-        {/* googleLogout */}
 
         <IconButton
           onClick={() => {
