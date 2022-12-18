@@ -12,6 +12,8 @@ import {
 import { Box } from "@mui/system";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SortIcon from "@mui/icons-material/Sort";
+
+import CloseIcon from "@mui/icons-material/Close";
 import React from "react";
 import { getAllTags } from "../../../utils/apis/event";
 
@@ -62,60 +64,69 @@ function SearchBar({ searchEvents }) {
       query += "eventTitle=" + searchInputTitle;
     if (searchInputCity?.trim() !== "")
       query += "&eventLocation=" + searchInputCity;
-    // if (searchTags.length > 0) query += "&eventTags=" + searchTags.join(",");
+    if (searchTags.length > 0) query += "&eventTags=" + searchTags.join(",");
     searchEvents(query, { searchInputTitle, searchInputCity, searchTags });
   };
 
   return (
     <Paper elevation={3}>
       <div className="flex p-4 mb-3 justify-between">
-        <div className="w-8/12">
+        <div className="w-9/12">
           <button
             className="font-bold text-xl btn_default__filter"
             onClick={() => {
               type === "filter" ? setType("") : setType("filter");
             }}
           >
-            <FilterListIcon />
-            &nbsp;&nbsp;Filters
+            {type !== "filter" ? (
+              <span>
+                <FilterListIcon /> Filters
+              </span>
+            ) : (
+              <span>
+                <CloseIcon /> Close
+              </span>
+            )}
           </button>
           {type === "filter" && (
             <div className="mt-2">
-              <div>
-                <TextField
-                  id="title"
-                  label="Title"
-                  variant="outlined"
-                  size="small"
-                  type="text"
-                  fullWidth
-                  placeholder="Search by event title"
-                  margin="dense"
-                  name="title"
-                  value={searchInputTitle}
-                  onChange={(e) => {
-                    let { value } = e.target;
-                    setSearchTitle(value);
-                  }}
-                />
-              </div>
-              <div>
-                <TextField
-                  id="city"
-                  label="City"
-                  variant="outlined"
-                  size="small"
-                  type="text"
-                  fullWidth
-                  placeholder="Search by city"
-                  margin="dense"
-                  name="city"
-                  value={searchInputCity}
-                  onChange={(e) => {
-                    let { value } = e.target;
-                    setSearchInputCity(value);
-                  }}
-                />
+              <div className="flex mb-4">
+                <div className="w-6/12 mr-2">
+                  <TextField
+                    id="title"
+                    label="Title"
+                    variant="outlined"
+                    size="small"
+                    type="text"
+                    fullWidth
+                    placeholder="Search by event title"
+                    margin="dense"
+                    name="title"
+                    value={searchInputTitle}
+                    onChange={(e) => {
+                      let { value } = e.target;
+                      setSearchTitle(value);
+                    }}
+                  />
+                </div>
+                <div className="w-6/12 ml-2">
+                  <TextField
+                    id="city"
+                    label="City"
+                    variant="outlined"
+                    size="small"
+                    type="text"
+                    fullWidth
+                    placeholder="Search by city"
+                    margin="dense"
+                    name="city"
+                    value={searchInputCity}
+                    onChange={(e) => {
+                      let { value } = e.target;
+                      setSearchInputCity(value);
+                    }}
+                  />
+                </div>
               </div>
               <div>
                 <FormControl sx={{ width: "100%" }}>
@@ -178,9 +189,6 @@ function SearchBar({ searchEvents }) {
             anchorEl={anchorEl}
             open={showSortOptions}
             onClose={handleClose}
-            // MenuListProps={{
-            //   "aria-labelledby": "basic-button",
-            // }}
           >
             <MenuItem onClick={handleClose}>Start Date (descending)</MenuItem>
             <MenuItem onClick={handleClose}>Start Date (ascending)</MenuItem>

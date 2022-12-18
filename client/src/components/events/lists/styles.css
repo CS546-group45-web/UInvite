@@ -62,7 +62,7 @@
 .comment {
   border-top: 1px solid #393e4621;
   margin: 8px 5px;
-  padding: 8px 0px 0px 0px;
+  padding: 8px 4px 2px 4px;
   text-align: justify;
 }
 .commented_user_tag {
@@ -253,4 +253,31 @@ div.MuiCard-root {
   display: flex;
   border: 2px solid #393e46;
   align-items: center;
+}
+
+.imgrow {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+/* Create four equal columns that sits next to each other */
+.imgcolumn {
+  flex: 25%;
+  max-width: 25%;
+  padding: 4px;
+}
+
+.imgcolumn img {
+  margin-top: 8px;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.event_rating_number {
+  width: 40px;
+  height: 36px;
+  background-color: #393e46;
+  color: white;
+  border-radius: 999px;
 }

@@ -44,6 +44,7 @@ export const cancelEventInvite = async (id) =>
 
 export const getRsvpedListToEvent = async (id) =>
   await makeApiCall("/api/events/rsvpList/" + id, "get");
+
 export const sendInviteToUser = async (id, username) =>
   await makeApiCall("/api/events/sendInvites/" + id, "post", {
     invites: username,
@@ -53,4 +54,10 @@ export const getAllTags = async () =>
   await makeApiCall("/api/events/tags", "get");
 
 export const getSearchedResults = async (query) =>
-  await makeApiCall("/api/events/search?"+query, "get");
+  await makeApiCall("/api/events/search?" + query, "get");
+
+export const postRatings = async (id, rating) =>
+  await makeApiCall("/api/events/rating/" + id, "post", { rating });
+
+export const uploadEventImages = async (id, data) =>
+  await makeApiCall("/api/events/eventPhoto/" + id, "post", data);
