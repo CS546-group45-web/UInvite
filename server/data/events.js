@@ -289,7 +289,20 @@ const rsvp = async (eventId, userId) => {
   };
   // calendarEvents
   try {
-    await calendarEvents.createCalendarEvent(userData, calendarEvent);
+    const calenderData = await calendarEvents.createCalendarEvent(
+      userData,
+      calendarEvent
+    );
+    // update event with calendar event id
+    const calendarUpdate = await event_collection.updateOne(
+      { _id: ObjectId(eventId) },
+      {
+        $set: { calendarEventId: calenderData.id },
+      }
+    );
+    if (calendarUpdate.modifiedCount === 0) {
+      throw 'Could not update event with calendar event id';
+    }
   } catch (e) {
     throw e;
   }
