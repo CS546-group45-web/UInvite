@@ -37,11 +37,7 @@ import {
   Slider,
 } from "@mui/material";
 import AvatarEditor from "react-avatar-editor";
-import {
-  dataURLtoFile,
-  isEventFinished,
-  validateDateDiff,
-} from "../../../utils/helper";
+import { dataURLtoFile, isEventFinished } from "../../../utils/helper";
 
 import DefaultCoverImage from "../../../assets/images/default_cover_image.jpg";
 import RatingsAndReviews from "./ratingsAndReviews";
