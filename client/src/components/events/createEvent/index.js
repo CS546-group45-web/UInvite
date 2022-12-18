@@ -83,8 +83,15 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
       if (!eventData?.onlineEventLink) errorObj.onlineEventLink = true;
 
     const { startDateTime, endDateTime } = eventData;
-    if (!validateDateDiff(startDateTime?.$d, endDateTime?.$d)) {
-      return toast.error("Duration of the event should be more than 1 hour");
+
+    if (!editMode) {
+      if (!validateDateDiff(startDateTime?.$d, endDateTime?.$d)) {
+        return toast.error("Duration of the event should be more than 1 hour");
+      }
+    } else {
+      if (!validateDateDiff(startDateTime, endDateTime)) {
+        return toast.error("Duration of the event should be more than 1 hour");
+      }
     }
 
     if (Object.keys(errorObj).length !== 0) return setErrors(errorObj);

@@ -21,6 +21,7 @@ import { signup } from "../../utils/apis/auth";
 import Loading from "../common/Loading";
 import { useNavigate } from "react-router";
 import dayjs from "dayjs";
+import { Link } from "react-router-dom";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -578,7 +579,13 @@ function SignUp() {
                 errors.agreedTerms ? " text-[#d32f2f]" : ""
               }`}
             >
-              I have read and agreed to the terms and privacy policy.
+              I have read and agreed to the{" "}
+              <Link to="/privacy-policy">
+                <span className="underline text-logoBlue">
+                  terms and privacy policy
+                </span>
+              </Link>
+              .
             </div>
           </div>
 
