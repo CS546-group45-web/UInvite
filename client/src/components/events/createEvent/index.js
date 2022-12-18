@@ -1,12 +1,12 @@
-import React from "react";
-import Loading from "../../common/Loading";
-import CloseIcon from "@mui/icons-material/Close";
-import { toast } from "react-toastify";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import React from 'react';
+import Loading from '../../common/Loading';
+import CloseIcon from '@mui/icons-material/Close';
+import { toast } from 'react-toastify';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import {
   FormControl,
   InputLabel,
@@ -16,19 +16,19 @@ import {
   TextField,
   Checkbox,
   FormControlLabel,
-} from "@mui/material";
+} from '@mui/material';
 import {
   eventNameValidation,
   validateDescription,
   validateTags,
   validateUrl,
   validateDateDiff,
-} from "../../../utils/helper";
-import { typeOptions } from "../../../constants";
-import { getUserFollowers } from "../../../utils/apis/user";
-import { createEvent, editEvent } from "../../../utils/apis/event";
-import { useNavigate } from "react-router";
-import GoogleAutoCompleteAddress from "../../common/googleAddressComponent";
+} from '../../../utils/helper';
+import { typeOptions } from '../../../constants';
+import { getUserFollowers } from '../../../utils/apis/user';
+import { createEvent, editEvent } from '../../../utils/apis/event';
+import { useNavigate } from 'react-router';
+// import GoogleAutoCompleteAddress from "../../common/googleAddressComponent";
 // import GoogleMaps from "../../common/googleComponentAddressMUI";
 
 function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
@@ -40,7 +40,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
           arePicturesAllowed: true,
           areCommentsAllowed: true,
           ageRestricted: true,
-          type: "in-person",
+          type: 'in-person',
           startDateTime: dayjs(new Date(+new Date() + 87000000)), //setting start date to be same time as of now + 1 day
           endDateTime: dayjs(new Date(+new Date() + 3660000 + 87000000)), //setting end date to be same time as of now + 1 day + 1 hour
         }
@@ -79,11 +79,11 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
 
     if (!editMode) {
       if (!validateDateDiff(startDateTime?.$d, endDateTime?.$d)) {
-        return toast.error("Duration of the event should be more than 1 hour");
+        return toast.error('Duration of the event should be more than 1 hour');
       }
     } else {
       if (!validateDateDiff(startDateTime, endDateTime)) {
-        return toast.error("Duration of the event should be more than 1 hour");
+        return toast.error('Duration of the event should be more than 1 hour');
       }
     }
 
@@ -112,8 +112,8 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
       city,
       startDateTime: new Date(startDateTime).toISOString(),
       endDateTime: new Date(endDateTime).toISOString(),
-      tags: editMode ? tags?.join(",") : tags,
-      invites: editMode ? "" : invites?.join(","),
+      tags: editMode ? tags?.join(',') : tags,
+      invites: editMode ? '' : invites?.join(','),
       arePicturesAllowed,
       areCommentsAllowed,
       ageRestricted,
@@ -127,17 +127,17 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
       const { data, status } = await editEvent(eventData?._id, apiBody);
       if (status !== 200) toast.error(data.error);
       else {
-        toast.success("Event updated!");
+        toast.success('Event updated!');
         saveData();
-        setTimeout(() => navigate("/event/" + data?.data?._id), 2000);
+        setTimeout(() => navigate('/event/' + data?.data?._id), 2000);
       }
     } else {
       const data = await createEvent(apiBody);
       if (data.status !== 200) return setCreateLoading(false);
       else {
-        toast.success("Event created. Redirecting to event page...");
+        toast.success('Event created. Redirecting to event page...');
         setTimeout(() => {
-          navigate("/event/" + data?.data?.data?.eventId);
+          navigate('/event/' + data?.data?.data?.eventId);
         }, 4000);
       }
     }
@@ -155,13 +155,13 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
     setErrors(errorsObj);
   };
 
-  const setAddress = (place) => {
-    const { formatted_address, address_components } = place;
-    removeError("address");
-    setValues("address", formatted_address);
-    setValues("city", address_components[3]?.long_name);
-    // console.log({ eventData, errors });
-  };
+  // const setAddress = (place) => {
+  //   const { formatted_address, address_components } = place;
+  //   removeError('address');
+  //   setValues('address', formatted_address);
+  //   setValues('city', address_components[3]?.long_name);
+  //   // console.log({ eventData, errors });
+  // };
 
   React.useEffect(() => {
     !editMode &&
@@ -176,7 +176,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
   return (
     <div>
       <div className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-        {editMode ? "Edit Event" : "Create Event"}
+        {editMode ? 'Edit Event' : 'Create Event'}
       </div>
       <div className="flex ">
         <div className="w-full">
@@ -212,7 +212,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                   value={eventData?.eventTitle}
                   onChange={(e) => {
                     let { name, value } = e.target;
-                    if (value === "") setError(name);
+                    if (value === '') setError(name);
                     if (!eventNameValidation(value)) setError(name);
                     else removeError(name);
                     setValues(name, value);
@@ -228,13 +228,13 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                   fullWidth
                   required
                   margin="dense"
-                  value={eventData?.type ?? ""}
+                  value={eventData?.type ?? ''}
                   name="type"
                   placeholder="In-person/Online"
                   error={errors?.type}
                   onChange={(e) => {
                     const { name, value } = e.target;
-                    if (value !== "") {
+                    if (value !== '') {
                       setValues(name, value);
                       removeError(name);
                     } else setError(name);
@@ -298,7 +298,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
             </div>
 
             <div className="flex ">
-              {(eventData?.type === "in-person" || !eventData?.type) && (
+              {(eventData?.type === 'in-person' || !eventData?.type) && (
                 <div className="mr-1 w-6/12">
                   {/* <GoogleAutoCompleteAddress
                     sendAddress={setAddress}
@@ -329,7 +329,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                     value={eventData?.address}
                     onChange={(e) => {
                       let { name, value } = e.target;
-                      if (value === "") setError(name);
+                      if (value === '') setError(name);
                       else removeError(name);
                       setValues(name, value);
                     }}
@@ -337,7 +337,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                   {/* <GoogleMaps /> */}
                 </div>
               )}
-              {eventData?.type === "online" && (
+              {eventData?.type === 'online' && (
                 <div className="w-6/12">
                   <TextField
                     id="address"
@@ -400,17 +400,17 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                       />
                     )}
                     onChange={(e) => {
-                      if (e === null) removeError("startDateTime");
-                      setValues("startDateTime", e);
+                      if (e === null) removeError('startDateTime');
+                      setValues('startDateTime', e);
                     }}
                     onError={(e, f) => {
-                      if (e === "invalidDate") setError("startDateTime");
-                      if (e === null) removeError("startDateTime");
+                      if (e === 'invalidDate') setError('startDateTime');
+                      if (e === null) removeError('startDateTime');
                     }}
                     minDateTime={dayjs(
                       new Date(+new Date() + 3600000).toISOString()
                     )}
-                    openTo={"day"}
+                    openTo={'day'}
                   />
                 </LocalizationProvider>
               </div>
@@ -441,17 +441,17 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                       />
                     )}
                     onChange={(e) => {
-                      if (e === null) removeError("endDateTime");
-                      setValues("endDateTime", e);
+                      if (e === null) removeError('endDateTime');
+                      setValues('endDateTime', e);
                     }}
                     onError={(e, f) => {
-                      if (e === "invalidDate") setError("endDateTime");
-                      if (e === null) removeError("endDateTime");
+                      if (e === 'invalidDate') setError('endDateTime');
+                      if (e === null) removeError('endDateTime');
                     }}
                     // minDateTime={dayjs(
                     //   new Date(+new Date() + 86400000 + 3600000).toISOString()
                     // )}
-                    openTo={"day"}
+                    openTo={'day'}
                   />
                 </LocalizationProvider>
               </div>
@@ -534,7 +534,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                 </div>
                 {!editMode && (
                   <div>
-                    <FormControl sx={{ width: "100%" }}>
+                    <FormControl sx={{ width: '100%' }}>
                       <InputLabel id="multiple-invitees">
                         Invite people
                       </InputLabel>
@@ -545,7 +545,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                         value={eventData?.invites ?? []}
                         onChange={(e) => {
                           const { value } = e.target;
-                          setValues("invites", value);
+                          setValues('invites', value);
                         }}
                         input={
                           <OutlinedInput
@@ -572,7 +572,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                   <Checkbox
                     checked={eventData?.arePicturesAllowed}
                     onChange={(e) =>
-                      setValues("arePicturesAllowed", e.target.checked)
+                      setValues('arePicturesAllowed', e.target.checked)
                     }
                   />
                 }
@@ -583,7 +583,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                   <Checkbox
                     checked={eventData?.areCommentsAllowed}
                     onChange={(e) =>
-                      setValues("areCommentsAllowed", e.target.checked)
+                      setValues('areCommentsAllowed', e.target.checked)
                     }
                   />
                 }
@@ -594,7 +594,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                   <Checkbox
                     checked={eventData?.ageRestricted}
                     onChange={(e) =>
-                      setValues("ageRestricted", e.target.checked)
+                      setValues('ageRestricted', e.target.checked)
                     }
                   />
                 }
@@ -611,7 +611,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
               type="submit"
             >
               <Loading loading={createLoading} width={18} />
-              {editMode ? "Update" : "Create"}
+              {editMode ? 'Update' : 'Create'}
             </button>
 
             {editMode && (
