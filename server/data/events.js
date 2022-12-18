@@ -258,6 +258,23 @@ const rsvp = async (eventId, userId) => {
   return await getEventById(eventId);
 };
 
+// remove rsvp
+const removeRsvp = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const event_collection = await events();
+  const updated_info = await event_collection.updateOne(
+    { _id: ObjectId(eventId) },
+    {
+      $pull: { rsvps: userId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove rsvp';
+  }
+  await user.removeRsvpEvent(userId, eventId);
+  return await getEventById(eventId);
+};
+
 // getRsvpEvents
 const getRsvpEvents = async (userId) => {
   const userData = await user.getUserById(userId);
@@ -593,4 +610,5 @@ module.exports = {
   getRsvpList,
   addEventPhoto,
   getBookmarks,
+  removeRsvp,
 };

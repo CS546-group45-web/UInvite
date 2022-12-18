@@ -319,6 +319,28 @@ router
     }
   });
 
+router
+  .route('/removeRsvp/:eventId')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      const unrsvp = await eventData.removeRsvp(eventId, userId);
+      res
+        .status(200)
+        .json({ message: 'RSVP removed successfully', data: unrsvp });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
 // bookmark event to user
 router
   .route('/bookmark/:eventId')
@@ -393,7 +415,11 @@ router
       }
 
       const unbookmark = await userData.removeFromBookmarks(eventId, userId);
-      res.status(200).json({ message: 'Unbookmark added successfully' });
+      // get bookmarked events
+      const bookmarks = await eventData.getBookmarks(userId);
+      res
+        .status(200)
+        .json({ message: 'Unbookmark added successfully', data: bookmarks });
     } catch (e) {
       return res.status(500).json({ error: e });
     }

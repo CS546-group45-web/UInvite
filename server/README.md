@@ -765,6 +765,46 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Remove RSVP Event
+
+`POST /api/events/removeRsvp/639c2ebdb8806952c83c8ad9`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "RSVP removed successfully",
+  "data": {
+    "_id": "639c2ebdb8806952c83c8ad9",
+    "userId": "63997c767721a9d370c35712",
+    "eventTitle": "DanceMani2",
+    "description": "Hellooooooooo",
+    "startDateTime": "2022-11-06T19:58:23.464Z",
+    "endDateTime": "2022-11-06T19:58:23.464Z",
+    "address": "69 Hutton ST",
+    "dateCreated": "2022-12-16T08:52:17.994Z",
+    "arePicturesAllowed": true,
+    "areCommentsAllowed": true,
+    "ageRestricted": true,
+    "type": "in-person",
+    "rsvps": [],
+    "waitlist": [],
+    "tags": ["party", "helloo"],
+    "like_count": 0,
+    "comments": [],
+    "reviews": [],
+    "overallRating": 0,
+    "event_photo_url": "1671181757648_manisai.jpg",
+    "username": "manisai",
+    "firstName": "Mani Sai Prasad",
+    "lastName": "Masupalli",
+    "profile_photo_url": "1671106259009_manisai.png"
+  }
+}
+```
+
 #### Accept Invite
 
 `GET /api/events/accept/639c2ebdb8806952c83c8ad9`
