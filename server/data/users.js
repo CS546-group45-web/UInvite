@@ -42,6 +42,7 @@ const createUser = async (
     eventsCreated: [],
     followers: [],
     following: [],
+    bookmarks: [],
   };
 
   const insertInfo = await user_collection.insertOne(newuUser);
@@ -141,6 +142,38 @@ const declineInvite = async (eventId, userId) => {
   return await getUserById(userId);
 };
 
+// removeInvite
+const removeInvite = async (userId, eventId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $pull: { invited_events: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove invite';
+  }
+  return await getUserById(userId);
+};
+
+// removeRsvpEvent
+const removeRsvpEvent = async (userId, eventId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $pull: { rsvped_events: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove RSVP';
+  }
+  return await getUserById(userId);
+};
+
 const getUserByEmail = async (email) => {
   email = validation.checkEmail(email);
   const user_collection = await users();
@@ -148,6 +181,62 @@ const getUserByEmail = async (email) => {
   if (!user) throw 'User not found';
   user._id = user._id.toString();
   return user;
+};
+
+const addToBookmarks = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $addToSet: { bookmarks: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not add bookmark';
+  }
+  return await getUserById(userId);
+};
+
+const getBookmark = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  if (user.bookmarks && user?.bookmarks.includes(eventId)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// removeFromBookmarks
+const removeFromBookmarks = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const updated_info = await user_collection.updateOne(
+    { _id: ObjectId(userId) },
+    {
+      $pull: { bookmarks: eventId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove bookmark';
+  }
+  return await getUserById(userId);
+};
+
+// getUnbookmark
+const getUnbookmark = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const user_collection = await users();
+  const user = await user_collection.findOne({ _id: ObjectId(userId) });
+  if (!user) throw 'User not found';
+  if (user.bookmarks && user?.bookmarks.includes(eventId)) {
+    return false;
+  } else {
+    return true;
+  }
 };
 
 const updateUser = async (
@@ -344,4 +433,10 @@ module.exports = {
   acceptInvite,
   getInvite,
   declineInvite,
+  addToBookmarks,
+  getBookmark,
+  removeFromBookmarks,
+  getUnbookmark,
+  removeInvite,
+  removeRsvpEvent,
 };

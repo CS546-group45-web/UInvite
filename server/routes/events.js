@@ -63,7 +63,8 @@ router
         areCommentsAllowed,
         ageRestricted
       );
-      if (invites.length > 0) {
+      // send invites, invites is a array of emails
+      if (invites && invites.length > 0) {
         for (let i = 0; i < invites.length; i++) {
           try {
             const invitee = await userData.getUserByEmail(invites[i]);
@@ -321,6 +322,112 @@ router
     }
   });
 
+router
+  .route('/removeRsvp/:eventId')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      const unrsvp = await eventData.removeRsvp(eventId, userId);
+      res
+        .status(200)
+        .json({ message: 'RSVP removed successfully', data: unrsvp });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// bookmark event to user
+router
+  .route('/bookmark/:eventId')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      // check if event exists
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event does not exist' });
+      }
+      // check if user owns the event then return error
+      if (event.userId == userId) {
+        return res
+          .status(403)
+          .json({ error: 'You cannot bookmark your own event' });
+      }
+      // check if user has already bookmarked the event
+      const bookmarked = await userData.getBookmark(eventId, userId);
+      if (bookmarked) {
+        return res
+          .status(403)
+          .json({ error: 'You have already bookmarked this event' });
+      }
+
+      const bookmark = await userData.addToBookmarks(eventId, userId);
+      res.status(200).json({ message: 'Bookmark added successfully' });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
+// unbookmark event from user
+router
+  .route('/unbookmark/:eventId')
+  .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let eventId = req.params.eventId;
+    let userId = req.user._id;
+
+    try {
+      eventId = validation.checkObjectId(eventId);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+
+    try {
+      // check if event exists
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event does not exist' });
+      }
+      // check if user owns the event then return error
+      if (event.userId == userId) {
+        return res
+          .status(403)
+          .json({ error: 'You cannot unbookmark your own event' });
+      }
+      // check if user has already unbookmarked the event
+      const unbookmarked = await userData.getUnbookmark(eventId, userId);
+      if (unbookmarked) {
+        return res
+          .status(403)
+          .json({ error: 'You have already unbookmarked this event' });
+      }
+
+      const unbookmark = await userData.removeFromBookmarks(eventId, userId);
+      // get bookmarked events
+      const bookmarks = await eventData.getBookmarks(userId);
+      res
+        .status(200)
+        .json({ message: 'Unbookmark added successfully', data: bookmarks });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  });
+
 //events  Search and filter based on Date, Location, Rating, Age-restricted events and tags
 // example query
 // http://localhost:4000/api/events/search?eventTitle=party&eventDate=2020-12-12&eventLocation=Toronto&eventTags=party&eventRating=4&eventStartDateTime=2020-12-12&eventEndDateTime=2020-12-12
@@ -377,6 +484,43 @@ router
       return res.status(500).json({ error: e });
     }
   });
+
+// any user can upload event photos
+router
+  .route('/eventPhoto/:eventId')
+  .post(
+    passport.authenticate('jwt', { session: false }),
+    upload.single('eventPhoto'),
+    async (req, res) => {
+      let eventId = req.params.eventId;
+      let userId = req.user._id;
+
+      try {
+        eventId = validation.checkObjectId(eventId);
+      } catch (e) {
+        return res.status(400).json({ error: e });
+      }
+
+      try {
+        const event = await eventData.getEventById(eventId);
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+
+      try {
+        const eventPhoto = await eventData.addEventPhoto(
+          eventId,
+          userId,
+          req.file.filename
+        );
+        res
+          .status(200)
+          .json({ message: 'Event photo added', data: eventPhoto });
+      } catch (e) {
+        return res.status(500).json({ error: e });
+      }
+    }
+  );
 
 router.route('/title/:eventTitle').get(async (req, res) => {
   let eventTitle = req.params.eventTitle;

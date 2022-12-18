@@ -21,6 +21,7 @@ import "./styles.css";
 import {
   editUserDetails,
   followUser,
+  getUserBookmarks,
   getUserDetails,
   getUserFollowers,
   getUserFollowing,
@@ -36,6 +37,8 @@ import { PhotoCamera } from "@mui/icons-material";
 import ProfileSectionMiddle from "./profileSectionMiddle";
 import DefaultProfile from "../../assets/images/default_profile_pic.png";
 import AvatarEditor from "react-avatar-editor";
+import Bookmarks from "./bookmarks";
+import dayjs from "dayjs";
 
 function Profile() {
   const editorRef = React.useRef(null);
@@ -46,6 +49,7 @@ function Profile() {
   const [errors, setErrors] = React.useState(false);
   const [userData, setUserData] = React.useState(null);
   const [userFollower, setUserFollowers] = React.useState([]);
+  const [events, setEvents] = React.useState([]);
   const [userFollowing, setUserFollowing] = React.useState([]);
   const [updateUserData, setUpdateUserData] = React.useState(null);
   const [pageLoading, setPageLoading] = React.useState(false);
@@ -61,6 +65,11 @@ function Profile() {
         const { data, status } = res;
         if (status !== 200) return toast.error(data.error);
         setUserFollowers(data?.data);
+      });
+      getUserBookmarks().then((res) => {
+        const { data, status } = res;
+        if (status !== 200) return toast.error(data.error);
+        setEvents(data?.data);
       });
       getUserFollowing().then((res) => {
         const { data, status } = res;
@@ -115,10 +124,6 @@ function Profile() {
     setErrors(errorObj);
   };
 
-  const populateDate = (currentYear, diff) => {
-    let validYear = currentYear - diff;
-    return new Date(validYear.toString()).toISOString();
-  };
   const sendUnFollowRequest = async (id) => {
     const unfollowUserData = await unfollowUser(id);
     const { status } = unfollowUserData;
@@ -374,6 +379,8 @@ function Profile() {
           sendfollowRequest={sendFollowRequest}
           showFollowerFollowButtons={true}
         />
+
+        <Bookmarks events={events} />
       </div>
     );
   };
@@ -594,7 +601,7 @@ function Profile() {
                     label="Date of birth"
                     disableFuture
                     inputFormat="MM/DD/YYYY"
-                    value={updateUserData?.dob ?? null}
+                    value={dayjs(updateUserData?.dob) ?? null}
                     renderInput={(params) => (
                       <TextField
                         size="small"
@@ -622,8 +629,10 @@ function Profile() {
                       if (e === "invalidDate") setError("dob");
                       if (e === null) removeError("dob");
                     }}
-                    maxDate={populateDate(new Date().getFullYear(), 13)}
-                    minDate={populateDate(new Date().getFullYear(), 100)}
+                    maxDate={dayjs(
+                      new Date(+new Date() - 410200000000 - 86400000)
+                    )}
+                    minDate={dayjs(new Date(+new Date() - 3156000000000))}
                     modalViewTo={"day"}
                   />
                 </LocalizationProvider>

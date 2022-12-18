@@ -6,13 +6,14 @@ import { fullNameFormatter } from "../../../utils/helper";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
+import DefaultCoverImage from "../../../assets/images/default_cover_image.jpg";
+
 function EventCard({ event, userId }) {
   const navigate = useNavigate();
   const {
     _id,
     eventTitle,
     tags,
-    event_banner_url,
     address,
     startDateTime,
     endDateTime,
@@ -21,24 +22,29 @@ function EventCard({ event, userId }) {
     username,
     firstName,
     lastName,
+    event_photo_url,
   } = event;
   return (
     <div
-      className="mb-4 px-4 py-2 border-[1px] border-[#393e4657] rounded-md text-[#393e46]"
+      className="mb-8 px-4 py-2 border-[4px] border-[#393e4657] rounded-md text-[#393e46] shadow-lg shadow-logoBlue"
       key={event?._id}
     >
       <div className="flex">
-        <div>
+        <div
+          className="w-5/12 cursor-pointer"
+          onClick={() => navigate("/event/" + _id)}
+        >
           <img
             className="event_banner"
             src={
-              event_banner_url ??
-              "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F336872189%2F412671342061%2F1%2Foriginal.20220817-060523?w=940&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=47201003009aab40a827c78813e5f381"
+              event_photo_url
+                ? process.env.REACT_APP_BASE_URL + "/images/" + event_photo_url
+                : DefaultCoverImage
             }
             alt="event-poster"
           />
         </div>
-        <div className="flex flex-col justify-between py-2 pl-4">
+        <div className="flex flex-col justify-between py-2 pl-4 w-7/12">
           <div>
             <div className="flex">
               <div

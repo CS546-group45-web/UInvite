@@ -87,8 +87,6 @@ function SignUp() {
     if (mm < 10) mm = "0" + mm;
 
     const formattedToday = mm + "/" + dd + "/" + yyyy;
-
-    // console.log(dob.$d);
     const apiBody = {
       firstName,
       lastName,

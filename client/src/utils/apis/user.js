@@ -26,3 +26,15 @@ export const getOtherUserFollowersById = async (id) =>
 
 export const getOtherUserFollowing = async (id) =>
   await makeApiCall("/api/user/following/" + id, "get");
+
+export const getUserInvites = async () =>
+  await makeApiCall("/api/user/invites", "get");
+
+export const getUserRsvps = async () =>
+  await makeApiCall("/api/user/rsvpEvents", "get");
+
+  export const getUserBookmarks = async () =>
+  await makeApiCall("/api/user/bookmarks", "get");
+
+  export const getUserCreatedEvents = async () =>
+  await makeApiCall("/api/user/createdEvents", "get");

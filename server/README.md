@@ -521,6 +521,32 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Get User bookmarked events
+
+`GET /api/user/bookmarks`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "Bookmarks fetched",
+  "data": [
+    {
+      "_id": "639d6792aa2ae7661cd90695",
+      "eventTitle": "HOLIDAY HANGOVER",
+      "dateCreated": "2022-12-17T06:54:10.652Z",
+      "rsvps": [],
+      "tags": ["fun"],
+      "address": "Jersey City",
+      "startDateTime": "2022-12-18T07:03:47.946Z",
+      "endDateTime": "2022-12-18T08:04:47.946Z"
+    }
+  ]
+}
+```
+
 ### Events
 
 #### Create Event
@@ -739,6 +765,46 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 }
 ```
 
+#### Remove RSVP Event
+
+`POST /api/events/removeRsvp/639c2ebdb8806952c83c8ad9`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "RSVP removed successfully",
+  "data": {
+    "_id": "639c2ebdb8806952c83c8ad9",
+    "userId": "63997c767721a9d370c35712",
+    "eventTitle": "DanceMani2",
+    "description": "Hellooooooooo",
+    "startDateTime": "2022-11-06T19:58:23.464Z",
+    "endDateTime": "2022-11-06T19:58:23.464Z",
+    "address": "69 Hutton ST",
+    "dateCreated": "2022-12-16T08:52:17.994Z",
+    "arePicturesAllowed": true,
+    "areCommentsAllowed": true,
+    "ageRestricted": true,
+    "type": "in-person",
+    "rsvps": [],
+    "waitlist": [],
+    "tags": ["party", "helloo"],
+    "like_count": 0,
+    "comments": [],
+    "reviews": [],
+    "overallRating": 0,
+    "event_photo_url": "1671181757648_manisai.jpg",
+    "username": "manisai",
+    "firstName": "Mani Sai Prasad",
+    "lastName": "Masupalli",
+    "profile_photo_url": "1671106259009_manisai.png"
+  }
+}
+```
+
 #### Accept Invite
 
 `GET /api/events/accept/639c2ebdb8806952c83c8ad9`
@@ -764,6 +830,20 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
 ```json
 {
   "message": "Invite declined"
+}
+```
+
+#### Bookmark Event
+
+`GET /api/events/bookmark/639d686ca8b7d67d29cb921d`
+
+authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzBkZmJiMmE2MTg1ZGY2ZTEyMTZhMiIsImlhdCI6MTY2ODM0MTc4Nn0.kD-ehG5mXRMoZwXCRku781COn62SRB9te0BpkFzAV4U`
+
+#### Response
+
+```json
+{
+  "message": "Bookmark added successfully"
 }
 ```
 

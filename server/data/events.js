@@ -257,6 +257,29 @@ const rsvp = async (eventId, userId) => {
     throw 'Could not rsvp to event';
   }
   await user.addrsvpEvent(userId, eventId);
+  // check if user is invited
+  let userData = await user.getUserById(userId);
+  if (userData.invited_events && userData.invited_events.includes(eventId)) {
+    await user.removeInvite(userId, eventId);
+  }
+
+  return await getEventById(eventId);
+};
+
+// remove rsvp
+const removeRsvp = async (eventId, userId) => {
+  eventId = validation.checkObjectId(eventId);
+  const event_collection = await events();
+  const updated_info = await event_collection.updateOne(
+    { _id: ObjectId(eventId) },
+    {
+      $pull: { rsvps: userId },
+    }
+  );
+  if (updated_info.modifiedCount === 0) {
+    throw 'Could not remove rsvp';
+  }
+  await user.removeRsvpEvent(userId, eventId);
   return await getEventById(eventId);
 };
 
@@ -267,9 +290,7 @@ const getRsvpEvents = async (userId) => {
   const eventsRsvp = [];
   for (let i = 0; i < userData?.rsvped_events.length; i++) {
     try {
-      let eventData = await getEventMinById(
-        userData?.rsvped_events[i].toString()
-      );
+      let eventData = await getEventById(userData?.rsvped_events[i].toString());
       eventsRsvp.push(eventData);
     } catch (e) {
       throw e;
@@ -396,6 +417,35 @@ const getEventsBySearch = async (
     });
   }
   return events_list;
+};
+
+const addEventPhoto = async (eventId, userId, photo) => {
+  eventId = validation.checkObjectId(eventId);
+  const eventCollection = await events();
+  const event = await getEventById(eventId);
+  if (!event) throw 'Event not found';
+  // update to event_photos array
+  const updatedEvent = await eventCollection.updateOne(
+    { _id: ObjectId(eventId) },
+    { $push: { event_photos: photo } }
+  );
+  if (updatedEvent.modifiedCount === 0) {
+    throw 'Could not add photo to event.';
+  }
+  return await getEventById(eventId);
+};
+
+const getBookmarks = async (userId) => {
+  userId = validation.checkObjectId(userId);
+  const userData = await user.getUserById(userId);
+  if (!userData) throw 'User not found';
+  const bookmarks = userData.bookmarks;
+  const events = [];
+  for (let i = 0; i < bookmarks.length; i++) {
+    const event = await getEventMinById(bookmarks[i]);
+    events.push(event);
+  }
+  return events;
 };
 
 const getEventsByTitle = async (title) => {
@@ -566,4 +616,7 @@ module.exports = {
   getRatingIfExists,
   getEventsBySearch,
   getRsvpList,
+  addEventPhoto,
+  getBookmarks,
+  removeRsvp,
 };
