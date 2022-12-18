@@ -21,12 +21,19 @@ const createEvent = async (
   description = validation.checkInputString(description, 'description');
   startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
   endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
-  address = validation.checkInputString(address, 'address');
-  // maxRsvpsCount = validation.checkRsvpCount(maxRsvpsCount, "maxRsvpsCount");
   type = validation.checkEventType(type, 'type');
 
+  if (type.toLowerCase().includes('person')) {
+    address = validation.checkInputString(address, 'address');
+  }
+
+  if (type.toLowerCase().includes('online')) {
+    onlineEventLink = validation.checkEventURl(address, 'onlineEventLink');
+  }
+
   const event_collection = await events();
-  const newEvent = {
+
+  let newEvent = {
     userId: userId,
     eventTitle: eventTitle,
     description: description,
@@ -46,6 +53,7 @@ const createEvent = async (
     ratings: [],
     overallRating: 0,
   };
+
   const insertInfo = await event_collection.insertOne(newEvent);
   if (insertInfo.insertedCount === 0) throw 'Could not add event';
   const newId = insertInfo.insertedId.toString();

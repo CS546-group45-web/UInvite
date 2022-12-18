@@ -13,30 +13,35 @@ const upload = require('../utils/uploadImage');
 router
   .route('/')
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let type = req.body.type;
+    let userId = req.user._id;
     let {
       eventTitle,
       description,
       startDateTime,
       endDateTime,
       address,
-      type,
       tags,
       invites,
       arePicturesAllowed,
       areCommentsAllowed,
       ageRestricted,
     } = req.body;
-    let userId = req.user._id;
     try {
       userId = validation.checkObjectId(userId);
       eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
       description = validation.checkInputString(description, 'description');
       startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
       endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
-      address = validation.checkInputString(address, 'address');
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
       invites = validation.checkInvites(invites, 'invites');
+      if (type.toLowerCase().includes('person')) {
+        address = validation.checkInputString(address, 'address');
+      }
+      if (type.toLowerCase().includes('online')) {
+        address = validation.checkEventURl(address, 'onlineEventLink');
+      }
     } catch (e) {
       if (typeof e === 'string') return res.status(400).json({ error: e });
       else
@@ -58,7 +63,6 @@ router
         areCommentsAllowed,
         ageRestricted
       );
-      // send invites, invites is a array of emails
       if (invites.length > 0) {
         for (let i = 0; i < invites.length; i++) {
           try {
