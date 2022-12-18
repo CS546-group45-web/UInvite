@@ -73,23 +73,15 @@ function EventPage() {
   const getEventsDetails = React.useCallback(
     (showLoader = false) => {
       showLoader && setPageLoading(true);
-      let userId = null;
       getEventsDetailsById(params?.id).then((res) => {
         const { data, status } = res;
         if (status !== 200) return toast.error(data.error);
         setEventData(data?.data);
-        userId = data?.data?.user_id;
         setEventIsDone(isEventFinished(data?.data?.endDateTime));
         getUserDetails().then((res) => {
           const { data, status } = res;
           if (status !== 200) return toast.error(data.error);
           setLoggedInUserData(data);
-          userId === data._id &&
-            getRsvpedListToEvent(data?.data?._id).then((res) => {
-              const { data, status } = res;
-              if (status !== 200) return toast.error(data.error);
-              setGuestList(data?.data);
-            });
           setPageLoading(false);
         });
       });
@@ -105,6 +97,15 @@ function EventPage() {
   const saveData = async () => {
     await getEventsDetails();
     setMode(false);
+  };
+
+  const fetchGuestList = async () => {
+    getRsvpedListToEvent(eventData?._id).then((res) => {
+      const { data, status } = res;
+      if (status !== 200) return toast.error(data.error);
+      setGuestList(data?.data);
+      setGuestListModal(true);
+    });
   };
 
   const postCommentByUser = async (comment) => {
@@ -371,7 +372,7 @@ function EventPage() {
                 <div className="flex items-center">
                   <button
                     className="btn_default_guest_list mr-2"
-                    onClick={() => setGuestListModal(true)}
+                    onClick={() => fetchGuestList()}
                   >
                     <PeopleOutlineIcon /> Guest list
                   </button>
