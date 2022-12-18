@@ -39,3 +39,6 @@ export const getUserBookmarks = async () =>
 
 export const getUserCreatedEvents = async () =>
   await makeApiCall("/api/user/createdEvents", "get");
+
+export const searchUsersByUsername = async () =>
+  await makeApiCall("/api/user/usernames", "get");

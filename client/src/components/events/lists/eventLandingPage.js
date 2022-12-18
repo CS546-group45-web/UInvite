@@ -7,8 +7,12 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import BookmarkAddedOutlinedIcon from "@mui/icons-material/BookmarkAddedOutlined";
 import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import Comments from "./commentSection";
-import { getUserDetails } from "../../../utils/apis/user";
+import {
+  getUserDetails,
+  searchUsersByUsername,
+} from "../../../utils/apis/user";
 import { toast } from "react-toastify";
 import {
   acceptRsvpEvent,
@@ -20,6 +24,7 @@ import {
   getRsvpedListToEvent,
   postComment,
   removeBookmarkedEvent,
+  sendInviteToUser,
 } from "../../../utils/apis/event";
 import CreateEvent from "../createEvent";
 
@@ -28,11 +33,13 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 import DefaultProfile from "../../../assets/images/default_profile_pic.png";
-
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { PhotoCamera } from "@mui/icons-material";
 import Loading from "../../common/Loading";
 import {
+  Autocomplete,
   Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogTitle,
@@ -40,6 +47,7 @@ import {
   IconButton,
   Modal,
   Slider,
+  TextField,
   Tooltip,
 } from "@mui/material";
 import AvatarEditor from "react-avatar-editor";
@@ -51,6 +59,7 @@ import {
 
 import DefaultCoverImage from "../../../assets/images/default_cover_image.jpg";
 import RatingsAndReviews from "./ratingAndReviewSection";
+import CopyToClipboard from "react-copy-to-clipboard";
 
 function EventPage() {
   const params = useParams();
@@ -67,8 +76,14 @@ function EventPage() {
   const [imageObj, setImageObj] = React.useState(null);
   const [eventIsDone, setEventIsDone] = React.useState(null);
   const [guestListModal, setGuestListModal] = React.useState(false);
+  const [invitesModal, setInvitesModal] = React.useState(false);
   const [zoom, setZoom] = React.useState(1);
   const [guestList, setGuestList] = React.useState([]);
+  const [allUsers, setAllUsers] = React.useState([]);
+  const [selectedUsers, setSelectedUsers] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+
+  const [open, setOpen] = React.useState(false);
 
   const getEventsDetails = React.useCallback(
     (showLoader = false) => {
@@ -188,6 +203,26 @@ function EventPage() {
     setEventData(data?.data);
     toast.success("RSVPed status updated");
     checkIfRsvped();
+  };
+
+  const loadUsers = () => {
+    setLoading(true);
+    searchUsersByUsername().then((res) => {
+      const { data } = res;
+      setAllUsers(data?.data);
+      setLoading(false);
+    });
+  };
+
+  const inviteUser = async (user) => {
+    setLoading(true);
+    const { username } = selectedUsers;
+    sendInviteToUser(eventData?._id, username).then((res) => {
+      const { status } = res;
+      if (status !== 200) toast.error("User already invited");
+      else toast.success("Invitation sent");
+      setLoading(false);
+    });
   };
 
   const viewMode = () => {
@@ -421,6 +456,97 @@ function EventPage() {
                   )}
                 </div>
               ) : null}
+
+              <div className="flex items-center">
+                <button
+                  className="w-[100%] btn_default mt-4 mr-2"
+                  onClick={() => {
+                    loadUsers();
+                    setInvitesModal(true);
+                  }}
+                >
+                  <GroupAddIcon />
+                  &nbsp;&nbsp;Invite
+                </button>
+                <CopyToClipboard
+                  text={
+                    process.env.REACT_APP_CLIENT_URL +
+                    "/event/" +
+                    eventData?._id
+                  }
+                  onCopy={() => toast.success("Invite link copied to clipboad")}
+                >
+                  <button className="w-[100%] btn_default mt-4">
+                    <ShareOutlinedIcon />
+                    &nbsp;Share
+                  </button>
+                </CopyToClipboard>
+              </div>
+              <Modal
+                open={invitesModal}
+                onClose={() => setInvitesModal(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                disableEscapeKeyDown={true}
+              >
+                <div className="invites_modal">
+                  <div lastName="text-2xl text-logoBlue font-semibold">
+                    Invite people
+                  </div>
+                  <div className="mt-4">
+                    <Autocomplete
+                      id="asynchronous-demo"
+                      sx={{ width: 350 }}
+                      open={open}
+                      onOpen={() => {
+                        setOpen(true);
+                      }}
+                      onClose={() => {
+                        setOpen(false);
+                      }}
+                      disabled={loading}
+                      isOptionEqualToValue={(option, value) =>
+                        option.username === value.username
+                      }
+                      getOptionLabel={(option) => option.username}
+                      options={allUsers}
+                      loading={loading}
+                      onChange={(e, val) => {
+                        setSelectedUsers(val);
+                      }}
+                      // disableCloseOnSelect={true}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Username"
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <React.Fragment>
+                                {loading ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </React.Fragment>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="mt-2 flex justify-evenly">
+                    <button className="btn_default" onClick={inviteUser}>
+                      Send Invitation
+                    </button>
+                    <button
+                      className="btn_default__cancel"
+                      onClick={() => setInvitesModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </Modal>
             </div>
           </div>
         </div>

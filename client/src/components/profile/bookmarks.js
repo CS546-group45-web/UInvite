@@ -9,11 +9,15 @@ function Bookmarks({ events }) {
         <BookmarkAddedOutlinedIcon /> Your Bookmarks
       </div>
       <div className="events_grid_profile">
-        {events?.length !== 0
-          ? events?.map((event) => (
-              <EventCardBookmark event={event} key={event?._id} />
-            ))
-          : null}
+        {events?.length !== 0 ? (
+          events?.map((event) => (
+            <EventCardBookmark event={event} key={event?._id} />
+          ))
+        ) : (
+          <div className="text-lg font-semibold text-[#393e46]">
+            No bookmarks
+          </div>
+        )}
       </div>
     </div>
   );
