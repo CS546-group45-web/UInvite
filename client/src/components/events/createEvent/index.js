@@ -83,12 +83,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
       if (!eventData?.onlineEventLink) errorObj.onlineEventLink = true;
 
     const { startDateTime, endDateTime } = eventData;
-    if (
-      !validateDateDiff(
-        startDateTime?.$d ?? startDateTime,
-        endDateTime?.$d ?? endDateTime
-      )
-    ) {
+    if (!validateDateDiff(startDateTime?.$d, endDateTime?.$d)) {
       return toast.error("Duration of the event should be more than 1 hour");
     }
 
@@ -171,7 +166,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
   return (
     <div>
       <div className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-        {editMode ? "Edit event" : "Create an Event!"}
+        {editMode ? "Edit Event" : "Create Event"}
       </div>
       <div className="flex ">
         <div className="w-full">
@@ -367,7 +362,9 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                     label="Start date"
                     disablePast
                     ampm={true}
-                    value={eventData?.startDateTime ?? null}
+                    // value={dayjs(eventData?.startDateTime) ?? null}
+
+                    value={new Date(eventData?.startDateTime)}
                     renderInput={(params) => (
                       <TextField
                         size="small"
@@ -396,7 +393,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                       if (e === null) removeError("startDateTime");
                     }}
                     minDateTime={dayjs(
-                      new Date(+new Date() + 86400000).toISOString()
+                      new Date(+new Date() + 3600000).toISOString()
                     )}
                     openTo={"day"}
                   />
@@ -407,7 +404,8 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                   <DateTimePicker
                     label="End date"
                     disablePast
-                    value={eventData?.endDateTime ?? null}
+                    // value={dayjs(eventData?.endDateTime) ?? null}
+                    value={new Date(eventData?.endDateTime)}
                     renderInput={(params) => (
                       <TextField
                         size="small"
@@ -432,12 +430,13 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                       setValues("endDateTime", e);
                     }}
                     onError={(e, f) => {
+                      console.log({ e, f });
                       if (e === "invalidDate") setError("endDateTime");
                       if (e === null) removeError("endDateTime");
                     }}
-                    minDateTime={dayjs(
-                      new Date(+new Date() + 86400000 + 3600000).toISOString()
-                    )}
+                    // minDateTime={dayjs(
+                    //   new Date(+new Date() + 86400000 + 3600000).toISOString()
+                    // )}
                     openTo={"day"}
                   />
                 </LocalizationProvider>
@@ -465,7 +464,7 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                     errors?.description ? (
                       <span className="text-base flex items-center">
                         <CloseIcon fontSize="small" />
-                        Please enter a Event Title
+                        Please enter a Event description
                       </span>
                     ) : (
                       <span className="text-base flex items-center">
@@ -553,55 +552,6 @@ function CreateEvent({ editMode = false, event = null, setMode, saveData }) {
                 )}
               </div>
             </div>
-            {/* <IconButton
-              color="primary"
-              aria-label="upload picture"
-              component="label"
-              disableRipple={true}
-            >
-              <input
-                hidden
-                accept=".png, .jpg, .jpeg"
-                type="file"
-                onChange={(e) => {
-                  e.preventDefault();
-                  setImageObj(e.target.files[0]);
-                }}
-              />
-              <PhotoCamera />
-              upload image
-            </IconButton> */}
-
-            {/* {imageObj && (
-              <div>
-                {" "}
-                <AvatarEditor
-                  ref={editorRef}
-                  image={URL.createObjectURL(imageObj)}
-                  width={500}
-                  height={250}
-                  border={1}
-                  color={[57, 62, 70]} // RGBA
-                  scale={zoom}
-                  rotate={0}
-                  borderRadius={1}
-                />
-                <div className="flex align-middle mt-2">
-                  <span className="text-xl mr-2">Zoom</span>
-                  <Slider
-                    min={0}
-                    max={2}
-                    step={0.1}
-                    size="small"
-                    defaultValue={1}
-                    onChange={(e) => setZoom(e.target.value)}
-                    aria-label="Small"
-                    valueLabelDisplay="auto"
-                    track={false}
-                  />
-                </div>
-              </div>
-            )} */}
             <div className="flex">
               <FormControlLabel
                 control={
