@@ -505,6 +505,7 @@ router.route('/search').get(async (req, res) => {
   let eventRating = req.query.eventRating;
   let eventStartDateTime = req.query.eventStartDateTime;
   let eventEndDateTime = req.query.eventEndDateTime;
+  let sortType = req.query.sortType;
 
   try {
     const event = await eventData.getEventsBySearch(
@@ -513,7 +514,8 @@ router.route('/search').get(async (req, res) => {
       eventTags,
       eventRating,
       eventStartDateTime,
-      eventEndDateTime
+      eventEndDateTime,
+      sortType
     );
     return res.json({ message: 'events fetched', data: event });
   } catch (e) {
