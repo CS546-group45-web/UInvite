@@ -330,7 +330,8 @@ const getEventsBySearch = async (
   eventTags,
   eventRating,
   eventStartDateTime,
-  eventEndDateTime
+  eventEndDateTime,
+  sortType
 ) => {
   if (!eventTitle && !eventDate && !eventLocation && !eventTags) {
     throw 'Please enter at least one search parameter';
@@ -379,6 +380,24 @@ const getEventsBySearch = async (
     events_list = events_list.filter((event) => {
       return event.overallRating >= eventRating;
     });
+  }
+
+  if (sortType) {
+    if (sortType === 'rating') {
+      return events_list.sort((a, b) => b.overallRating - a.overallRating);
+    }
+
+    if (sortType === 'startDateAsc') {
+      let dateList = await getAllUpcomingEvents();
+
+      return dateList.sort((a, b) => a.startDateTime - b.startDateTime);
+    }
+
+    if (sortType === 'startDateDesc') {
+      let dateList = await getAllUpcomingEvents();
+
+      return dateList.sort((a, b) => b.startDateTime - a.startDateTime);
+    }
   }
 
   if (eventStartDateTime) {
@@ -600,7 +619,7 @@ const getAllTags = async () => {
   let tagList = [];
   for (elem of events_list) {
     for (tag of elem.tags) {
-      if (tagList.indexOf(tag) === -1) {
+      if (tagList.indexOf(tag.toLowerCase()) === -1) {
         tagList.push(tag.toLowerCase());
       }
     }
