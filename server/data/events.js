@@ -632,6 +632,23 @@ const getRatingIfExists = async (eventId, userId, rating) => {
   return data;
 };
 
+const getAllTags = async () => {
+  const eventCollection = await events();
+  const events_list = await eventCollection.find({}).toArray();
+  if (!events_list) {
+    throw new Error('Could not get all events.');
+  }
+  let tagList = [];
+  for (elem of events_list) {
+    for (tag of elem.tags) {
+      if (tagList.indexOf(tag) === -1) {
+        tagList.push(tag.toLowerCase());
+      }
+    }
+  }
+  return tagList;
+};
+
 module.exports = {
   createEvent,
   updateEventPhoto,
@@ -653,4 +670,5 @@ module.exports = {
   addEventPhoto,
   getBookmarks,
   removeRsvp,
+  getAllTags,
 };

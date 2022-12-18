@@ -6,9 +6,11 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 function GoogleAutoCompleteAddress({ sendAddress, error }) {
+  const [addressAndCity, setAddressAndCity] = React.useState(null);
   const { ref } = usePlacesWidget({
     apiKey: GOOGLE_API_KEY,
     onPlaceSelected: (place) => {
+      console.log({ place });
       sendAddress(place);
     },
     options: {
