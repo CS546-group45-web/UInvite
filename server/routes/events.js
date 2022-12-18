@@ -13,31 +13,35 @@ const upload = require('../utils/uploadImage');
 router
   .route('/')
   .post(passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let type = req.body.type;
+    let userId = req.user._id;
     let {
       eventTitle,
       description,
       startDateTime,
       endDateTime,
       address,
-      type,
       tags,
       invites,
       arePicturesAllowed,
       areCommentsAllowed,
       ageRestricted,
     } = req.body;
-    let userId = req.user._id;
     try {
       userId = validation.checkObjectId(userId);
       eventTitle = validation.checkTitle(eventTitle, 'eventTitle');
       description = validation.checkInputString(description, 'description');
       startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
       endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
-      address = validation.checkInputString(address, 'address');
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
-      if (invites && invites.length > 0) {
-        invites = validation.checkInvites(invites, 'invites');
+      invites = validation.checkInvites(invites, 'invites');
+      if (type.toLowerCase() === 'in-person') {
+        address = validation.checkInputString(address, 'address');
+      }
+
+      if (type.toLowerCase() === 'online') {
+        address = validation.checkEventURl(address, 'onlineEventLink');
       }
     } catch (e) {
       if (typeof e === 'string') return res.status(400).json({ error: e });
@@ -320,6 +324,7 @@ router
     } catch (e) {
       return res.status(400).json({ error: e });
     }
+
     try {
       const event = await eventData.getEventById(eventId);
       return res.json({
@@ -327,7 +332,7 @@ router
         data: event,
       });
     } catch (e) {
-      return res.status(500).json({ error: e });
+      return res.status(404).json({ error: e });
     }
   })
   .delete(async (req, res) => {
@@ -339,6 +344,10 @@ router
     }
 
     try {
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
       const deletedEventId = await eventData.removeEvent(eventId);
       return res.status(200).json({ message: deletedEventId });
     } catch (e) {
