@@ -163,7 +163,11 @@ router
         return res.status(404).json({ error: 'Invite not found' });
       }
       await userData.acceptInvite(eventId, userId);
-      return res.status(200).json({ message: 'Invite accepted' });
+      // get all invites
+      const invites = await eventData.getInvites(userId);
+      return res
+        .status(200)
+        .json({ message: 'Invite accepted', data: invites });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
@@ -193,7 +197,12 @@ router
         return res.status(404).json({ error: 'Invite not found' });
       }
       await userData.declineInvite(eventId, userId);
-      return res.status(200).json({ message: 'Invite declined' });
+      // get all invites
+      const invites = await eventData.getInvites(userId);
+
+      return res
+        .status(200)
+        .json({ message: 'Invite declined', data: invites });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
