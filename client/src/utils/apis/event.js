@@ -30,11 +30,17 @@ export const bookmarkEvent = async (id) =>
 export const removeBookmarkedEvent = async (id) =>
   await makeApiCall("/api/events/unbookmark/" + id, "get");
 
-export const rsvpEvent = async (id) =>
+export const acceptRsvpEvent = async (id) =>
   await makeApiCall("/api/events/rsvp/" + id, "get");
 
 export const cancelRsvpEvent = async (id) =>
-await makeApiCall("/api/events/removeRsvp/" + id, "get");
+  await makeApiCall("/api/events/removeRsvp/" + id, "get");
 
-  export const getRsvpedListToEvent = async (id) =>
-await makeApiCall("/api/events/rsvpList/" + id, "get");
+export const acceptEventInvite = async (id) =>
+  await makeApiCall("/api/events/accept/" + id, "get");
+
+export const cancelEventInvite = async (id) =>
+  await makeApiCall("/api/events/decline/" + id, "get");
+
+export const getRsvpedListToEvent = async (id) =>
+  await makeApiCall("/api/events/rsvpList/" + id, "get");
