@@ -37,9 +37,14 @@ import {
   Slider,
 } from "@mui/material";
 import AvatarEditor from "react-avatar-editor";
-import { dataURLtoFile } from "../../../utils/helper";
+import {
+  dataURLtoFile,
+  isEventFinished,
+  validateDateDiff,
+} from "../../../utils/helper";
 
 import DefaultCoverImage from "../../../assets/images/default_cover_image.jpg";
+import RatingsAndReviews from "./ratingsAndReviews";
 
 function EventPage() {
   const params = useParams();
@@ -54,6 +59,7 @@ function EventPage() {
   const [updateLoading, setUpdateLoading] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [imageObj, setImageObj] = React.useState(null);
+  const [eventIsDone, setEventIsDone] = React.useState(null);
   const [zoom, setZoom] = React.useState(1);
 
   const getEventsDetails = React.useCallback(
@@ -63,6 +69,7 @@ function EventPage() {
         const { data, status } = res;
         if (status !== 200) return toast.error(data.error);
         setEventData(data?.data);
+        setEventIsDone(isEventFinished(data?.data?.endDateTime));
         getUserDetails().then((res) => {
           const { data, status } = res;
           if (status !== 200) return toast.error(data.error);
@@ -124,7 +131,7 @@ function EventPage() {
     const checkBookmarks = bookmarks?.filter(
       (eventId) => eventId === eventData?._id
     );
-    return checkBookmarks.length > 0;
+    return checkBookmarks?.length > 0;
   };
 
   const checkIfRsvped = () => {
@@ -159,16 +166,6 @@ function EventPage() {
         <div className="w-[100%] flex items-baseline justify-between mt-5">
           <div className="text-6xl font-bold flex event_title max-w-[70rem] text-logoBlue underline">
             {eventData?.eventTitle}
-            {/* {loggedInUserData?._id === eventData?.userId && (
-              <div
-                onClick={() => {
-                  setMode(true);
-                }}
-                className="btn_edit_profile"
-              >
-                Edit event
-              </div>
-            )} */}
           </div>
 
           <div className="text-2xl text-[#393e46]">
@@ -188,7 +185,7 @@ function EventPage() {
               alt="event-poster"
               className="rounded-md mb-2 cover_image"
             />
-            {loggedInUserData?._id === eventData?.userId && (
+            {loggedInUserData?._id === eventData?.userId && !eventIsDone && (
               <div
                 className="w-fit uplaod_image_btn scale-90"
                 onClick={handlemodalView}
@@ -285,6 +282,16 @@ function EventPage() {
             </Modal>
           </div>
           <div className="text-xl w-4/12 pl-1">
+            {loggedInUserData?._id === eventData?.userId && !eventIsDone && (
+              <button
+                onClick={() => {
+                  setMode(true);
+                }}
+                className="btn_default_modify_event mt-2 mb-4"
+              >
+                Modify Event
+              </button>
+            )}
             <div className="font-bold text-3xl section_divider">
               {" "}
               <NotesOutlinedIcon /> Location & Time
@@ -321,49 +328,57 @@ function EventPage() {
                 </div>
               )}
 
-              <div>
-                {loggedInUserData?._id === eventData?.userId ? (
-                  <div className="flex items-center">
-                    <button className="btn_default__cancel">
-                      <PeopleOutlineIcon /> Guest list
-                    </button>
-
-                    <button
-                      className="btn_default__delete"
-                      onClick={handleDeleteDialogClickOpen}
-                    >
-                      <DeleteOutlineIcon /> Delete event
-                    </button>
+              {eventIsDone && (
+                <div>
+                  <div className="info_note">
+                    <ErrorOutlineOutlinedIcon sx={{ color: "#1caeec" }} />
+                    <span className="ml-2 underline">
+                      NOTE: This event has already passed.
+                    </span>
                   </div>
-                ) : (
-                  <div className="flex items-center">
-                    <button
-                      className="btn_default"
-                      onClick={() =>
-                        checkIfBookmarked() ? removeBookmark() : addBookmark()
-                      }
-                    >
-                      {checkIfBookmarked() ? (
-                        <span>
-                          <BookmarkAddedOutlinedIcon /> Bookmarked
-                        </span>
-                      ) : (
-                        <span>
-                          <BookmarkAddOutlinedIcon /> Bookmark
-                        </span>
-                      )}
-                    </button>
+                </div>
+              )}
+              {loggedInUserData?._id === eventData?.userId ? (
+                <div className="flex items-center">
+                  <button className="btn_default_guest_list mr-2">
+                    <PeopleOutlineIcon /> Guest list
+                  </button>
 
-                    <button
-                      className="btn_default__cancel"
-                      // onClick={() =>checkIfRsvped() ? removeRSVPEvent() : sendRVSPEvent()}>
-                      onClick={sendRVSPEvent}
-                    >
-                      {checkIfRsvped() ? "RSVPed" : "RSVP"}
-                    </button>
-                  </div>
-                )}
-              </div>
+                  <button
+                    className="btn_default__delete"
+                    onClick={handleDeleteDialogClickOpen}
+                  >
+                    <DeleteOutlineIcon /> Delete event
+                  </button>
+                </div>
+              ) : !eventIsDone ? (
+                <div className="flex items-center">
+                  <button
+                    className="btn_default"
+                    onClick={() =>
+                      checkIfBookmarked() ? removeBookmark() : addBookmark()
+                    }
+                  >
+                    {checkIfBookmarked() ? (
+                      <span>
+                        <BookmarkAddedOutlinedIcon /> Bookmarked
+                      </span>
+                    ) : (
+                      <span>
+                        <BookmarkAddOutlinedIcon /> Bookmark
+                      </span>
+                    )}
+                  </button>
+
+                  <button
+                    className="btn_default__cancel"
+                    // onClick={() =>checkIfRsvped() ? removeRSVPEvent() : sendRVSPEvent()}>
+                    onClick={sendRVSPEvent}
+                  >
+                    {checkIfRsvped() ? "RSVPed" : "RSVP"}
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -409,6 +424,8 @@ function EventPage() {
             </button>
           </DialogActions>
         </Dialog>
+
+        {eventIsDone && <RatingsAndReviews />}
       </div>
     );
   };
