@@ -1,8 +1,8 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { getAllEventsForHomePage } from "../../../utils/apis/event";
+import { getAllUpcomingEvents } from "../../../utils/apis/event";
 import Loading from "../../common/Loading";
-import EventCard from "./eventCard";
+import EventCard from "./eventCardHome";
 // import SearchBar from "./searchBar";
 import "./styles.css";
 import { getUserDetails } from "../../../utils/apis/user";
@@ -14,7 +14,7 @@ function EventsList() {
 
   React.useEffect(() => {
     setLoading(true);
-    getAllEventsForHomePage().then((res) => {
+    getAllUpcomingEvents().then((res) => {
       const { data, status } = res;
       if (status !== 200) toast.error("Failed to fetch events");
       else setEvents(data?.data);

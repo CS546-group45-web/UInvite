@@ -1,12 +1,12 @@
 import React from "react";
 import EventCardBookmark from "../events/lists/eventCardBookmark";
-import BookmarkAddedOutlinedIcon from "@mui/icons-material/BookmarkAddedOutlined";
+import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 
-function Bookmarks({ events }) {
+function UserEvents({ events }) {
   return (
     <div className="m-4">
       <div className="text-2xl font-bold border-b-2 text-[#393e46]">
-        <BookmarkAddedOutlinedIcon /> Your Bookmarks
+        <EventOutlinedIcon /> Events owned by you
       </div>
       <div className="events_grid_profile">
         {events?.length !== 0
@@ -19,4 +19,4 @@ function Bookmarks({ events }) {
   );
 }
 
-export default Bookmarks;
+export default UserEvents;

@@ -26,7 +26,7 @@ function EventCard({ event, userId }) {
   } = event;
   return (
     <div
-      className="mb-8 px-4 py-2 border-[4px] border-[#393e4657] rounded-md text-[#393e46] shadow-lg shadow-logoBlue"
+      className="mb-8 px-4 py-2 border-[1px] border-[#393e4657] rounded-md text-[#393e46] shadow-sm shadow-logoBlue"
       key={event?._id}
     >
       <div className="flex">
@@ -35,7 +35,7 @@ function EventCard({ event, userId }) {
           onClick={() => navigate("/event/" + _id)}
         >
           <img
-            className="event_banner"
+            className="event_photo"
             src={
               event_photo_url
                 ? process.env.REACT_APP_BASE_URL + "/images/" + event_photo_url
@@ -48,7 +48,7 @@ function EventCard({ event, userId }) {
           <div>
             <div className="flex">
               <div
-                className="text-2xl font-bold cursor-pointer"
+                className="text-2xl font-bold cursor-pointer text_ellipsis"
                 onClick={() => navigate("/event/" + _id)}
               >
                 {eventTitle}

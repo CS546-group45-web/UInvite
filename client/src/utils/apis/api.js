@@ -28,7 +28,7 @@ export const makeApiCall = async (endpoint, method, body, headers = null) => {
     const { response } = err;
     const { status, data } = response;
     if (errosStatusCodes.includes(status)) {
-      toast.error(data?.error);
+      // toast.error(data?.error);
       const err = { status, data };
       return err;
     }

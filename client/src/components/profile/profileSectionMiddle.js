@@ -17,7 +17,7 @@ function ProfileSectionMiddle({
     <div className="text-[#393e46] flex mx-4">
       <div className="w-6/12 mr-2">
         <div className="text-2xl font-bold border-b-2">Followers</div>
-        <div className="ml-2 mt-2">
+        <div className="ml-2 mt-2 max-h-[400px] overflow-y-auto scroller">
           {followers?.length > 0 ? (
             followers?.map((item, i) => {
               const {
@@ -98,7 +98,7 @@ function ProfileSectionMiddle({
       </div>
       <div className="w-6/12 ml-2">
         <div className="text-2xl font-bold border-b-2">Following</div>
-        <div className="ml-2 mt-2">
+        <div className="ml-2 mt-2 max-h-[400px] overflow-y-auto scroller">
           {following?.length > 0 ? (
             following?.map((item, i) => {
               const {
