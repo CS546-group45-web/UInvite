@@ -90,7 +90,6 @@ const checkGender = (input) => {
 };
 
 const checkObjectId = (input, name = 'object id') => {
-  //console.log("Inside checkObject");
   checkInputString(input, name);
   if (!ObjectId.isValid(input)) {
     throw `${name} must be a valid ObjectId`;
@@ -142,7 +141,7 @@ const checkTags = (input, name = 'tags') => {
   let tags = input.split(',');
   if (tags.length < 1) throw `${name} should have max 3 tags`;
   // should only contain letters and numbers
-  if (!tags.every((tag) => /^[a-zA-Z0-9]+$/.test(tag)))
+  if (!tags.every((tag) => /^[a-zA-Z0-9 ]+$/.test(tag)))
     throw `${name} should only contain letters and numbers`;
 
   return tags;

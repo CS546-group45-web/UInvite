@@ -57,7 +57,6 @@ router.route('/signup').post(async (req, res) => {
         const message = `Hello, ${user.firstName} ${user.lastName} you have successfully been registered to use UInvite. A new account has been created for you. Please click the link below to verify your email address.`;
         const buttonText = 'Verify Email';
         const headline = 'Verify your email address';
-        console.log(url);
         sendEmail(
           user.email,
           'Welcome to Uinvite!',
@@ -103,9 +102,7 @@ router
             return res.status(400).json({ error: 'User not verified' });
           }
           const payload = { id: found_user._id };
-          const token = jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: '2h',
-          });
+          const token = jwt.sign(payload, process.env.JWT_SECRET);
           return res.json({ token });
         } else {
           return res
