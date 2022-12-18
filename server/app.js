@@ -14,7 +14,7 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.SERVER_URL + '/handleGoogleRedirect' // server redirect url handler
 );
 
-const events = require('./calendar/events');
+const events = require('./calendar/calendarEvents');
 
 const data = require('./data');
 const userData = data.users;
@@ -40,7 +40,6 @@ app.post('/createAuthLink', cors(), (req, res) => {
 
 app.get('/handleGoogleRedirect', cors(), (req, res) => {
   const code = req.query.code;
-  console.log(code);
   if (code) {
     oauth2Client.getToken(code, (err, token) => {
       if (err) {
@@ -48,11 +47,8 @@ app.get('/handleGoogleRedirect', cors(), (req, res) => {
         return;
       }
       oauth2Client.setCredentials(token);
-      console.log(token);
       const accessToken = token.access_token;
       const refreshToken = token.refresh_token;
-      console.log('accessToken', accessToken);
-      console.log('refreshToken', refreshToken);
       res.redirect(
         process.env.BASE_URL + '/googleAuth/' + accessToken + '/' + refreshToken
       );
@@ -79,7 +75,6 @@ app.get(
       for (let i = 0; i < data.items.length; i++) {
         if (data.items[i].primary) {
           const calendarId = data.items[i].id;
-          console.log(calendarId);
           try {
             await userData.storeCalendarDetails(req.user._id, {
               googleCalendarId: calendarId,
@@ -106,25 +101,11 @@ app.get(
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     const user = req.user;
-    const { googleCalendarDetails } = user;
-    oauth2Client.setCredentials({
-      access_token: googleCalendarDetails.googleAccessToken,
-      refresh_token: googleCalendarDetails.googleRefreshToken,
-    });
-    const calendar = google.calendar({ version: 'v3', oauth2Client });
     try {
-      const { data } = await calendar.events.list({
-        auth: oauth2Client,
-        calendarId: 'primary',
-        timeMin: new Date().toISOString(),
-        timeMax: new Date(new Date().setDate(new Date().getDate() + 30)),
-        singleEvents: true,
-        orderBy: 'startTime',
-      });
-
+      const data = await events.getCalendarUpcomingEvents(user._id);
       return res.status(200).json({ message: 'success', data });
     } catch (e) {
-      console.log(e);
+      return res.status(500).json({ error: e });
     }
   }
 );

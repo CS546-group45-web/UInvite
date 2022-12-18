@@ -90,7 +90,6 @@ const checkGender = (input) => {
 };
 
 const checkObjectId = (input, name = 'object id') => {
-  //console.log("Inside checkObject");
   checkInputString(input, name);
   if (!ObjectId.isValid(input)) {
     throw `${name} must be a valid ObjectId`;
