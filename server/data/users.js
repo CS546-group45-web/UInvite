@@ -195,7 +195,9 @@ const addToBookmarks = async (eventId, userId) => {
   if (updated_info.modifiedCount === 0) {
     throw 'Could not add bookmark';
   }
-  return await getUserById(userId);
+  const event_collection = await events();
+  const event = await event_collection.findOne({ _id: ObjectId(eventId) });
+  return event;
 };
 
 const getBookmark = async (eventId, userId) => {
@@ -223,7 +225,9 @@ const removeFromBookmarks = async (eventId, userId) => {
   if (updated_info.modifiedCount === 0) {
     throw 'Could not remove bookmark';
   }
-  return await getUserById(userId);
+  const event_collection = await events();
+  const event = await event_collection.findOne({ _id: ObjectId(eventId) });
+  return event;
 };
 
 // getUnbookmark

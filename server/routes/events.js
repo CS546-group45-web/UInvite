@@ -375,7 +375,9 @@ router
       }
 
       const bookmark = await userData.addToBookmarks(eventId, userId);
-      res.status(200).json({ message: 'Bookmark added successfully' });
+      res
+        .status(200)
+        .json({ message: 'Bookmark added successfully', data: bookmark });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
@@ -415,11 +417,9 @@ router
       }
 
       const unbookmark = await userData.removeFromBookmarks(eventId, userId);
-      // get bookmarked events
-      const bookmarks = await eventData.getBookmarks(userId);
       res
         .status(200)
-        .json({ message: 'Unbookmark added successfully', data: bookmarks });
+        .json({ message: 'Unbookmark added successfully', data: unbookmark });
     } catch (e) {
       return res.status(500).json({ error: e });
     }
