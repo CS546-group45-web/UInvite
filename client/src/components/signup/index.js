@@ -580,7 +580,7 @@ function SignUp() {
               }`}
             >
               I have read and agreed to the{" "}
-              <Link to="/privacy-policy">
+              <Link to="/privacy-policy" target="_blank">
                 <span className="underline text-logoBlue">
                   terms and privacy policy
                 </span>
