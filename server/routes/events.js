@@ -266,6 +266,7 @@ router
     } catch (e) {
       return res.status(400).json({ error: e });
     }
+
     try {
       const event = await eventData.getEventById(eventId);
       return res.json({
@@ -273,7 +274,7 @@ router
         data: event,
       });
     } catch (e) {
-      return res.status(500).json({ error: e });
+      return res.status(404).json({ error: e });
     }
   })
   .delete(async (req, res) => {
@@ -285,6 +286,10 @@ router
     }
 
     try {
+      const event = await eventData.getEventById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
       const deletedEventId = await eventData.removeEvent(eventId);
       return res.status(200).json({ message: deletedEventId });
     } catch (e) {

@@ -855,8 +855,6 @@ Filters:
 
 `eventTitle ` - Title of the event
 
-`dateCreated` - Date when the event was created
-
 `eventLocation` - Location of the event
 
 `eventTags` - Tags of the event
@@ -1141,6 +1139,142 @@ authorization-header: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzN
       "profile_photo_url": "1671075660532_tarundadlani.png"
     }
   ]
+}
+```
+
+#### Add Rating or update rating if exists
+
+`POST api/events/comment/:eventId`
+
+#### Response
+
+```json
+{
+  "message": "Comment added successfully",
+  "data": {
+    "_id": "639d7b8ddfe8e7e96610c5ec",
+    "userId": "639d7a82dfe8e7e96610c5e8",
+    "eventTitle": "One AfroCarib Friday Afrobeats Dancehall Reggae More",
+    "description": "Lituation Friday ( #1 Afro-Caribean Friday in NYC )\nFriday, December 16\n10PM - 4AM\nGYPSY ROSE\n125 West 26th Street Between 6th & 7th Ave, 125 W 26th St, New York, NY 10001\n\nDOOR TICKETS : DOOR PAYMENT WILL BE AVAILABLE STARTING $20\n( EARLY ARRIVAL SUGGESTED )\n\nOne of a kind AfroCaribbean New Year's Eve party : Deuces\n\n#Afrobeat - #Dancehall, #Reggae & SOCA, HIPHOP, R&B & MORE\n\nBottle Service , contact us on @Blacc_Fire Via Instagram or Info@blaccfire.com to RSVP\n\nFAQ\nAGE REQUIREMENT FOR THIS EVENT----- ( 21+ W/VALID STATE ID )\nBottle package available ? ( Yes, Text \"NYE\" to (646) 776-3094 )\nCan I Pay at the door ? ( Yes, you can pay at the door )\nDoes This Club have Hookah ? ( YES, All Flavor )\nFOLLOW @BLACC_FIRE FOR MORE UPCOMING EVENTS\n\nFor More info contact us via Instagram @Blacc_Fire or Text (646) 776-3094 )",
+    "startDateTime": "2022-12-23T08:29:40.000Z",
+    "endDateTime": "2022-12-24T23:30:40.000Z",
+    "address": "GYPSY ROSE 125 W 26TH STREET New York, NY 10001",
+    "dateCreated": "2022-12-17T08:19:25.368Z",
+    "arePicturesAllowed": true,
+    "areCommentsAllowed": true,
+    "ageRestricted": true,
+    "type": "in-person",
+    "rsvps": ["639d7af6dfe8e7e96610c5ea", "639d7cc6aa38de685163cd5e"],
+    "waitlist": [],
+    "tags": ["NJ", "birch", "breakfast", "brunch", "lunch"],
+    "like_count": 0,
+    "comments": [
+      {
+        "_id": "639e6c4a1e9eae73e5ca427c",
+        "user_id": "639d7af6dfe8e7e96610c5ea",
+        "dateCreated": "2022-12-18T01:26:34.364Z",
+        "name": "Suman Mohanty",
+        "username": "summsum",
+        "profile_photo_url": "1671267137542_sumsum.png",
+        "comment": "Great!"
+      },
+      {
+        "_id": "639e6c441e9eae73e5ca427b",
+        "user_id": "639d7af6dfe8e7e96610c5ea",
+        "dateCreated": "2022-12-18T01:26:28.185Z",
+        "name": "Suman Mohanty",
+        "username": "summsum",
+        "profile_photo_url": "1671267137542_sumsum.png",
+        "comment": "Great!"
+      },
+      {
+        "_id": "639d7d12aa38de685163cd60",
+        "user_id": "639d7cc6aa38de685163cd5e",
+        "dateCreated": "2022-12-17T08:25:54.027Z",
+        "name": "Mani Sai Prasad Masupalli",
+        "username": "manisaiprasad",
+        "profile_photo_url": "",
+        "comment": "Hello I will theree.   👀"
+      }
+    ],
+    "ratings": [],
+    "overallRating": 0,
+    "event_photo_url": "1671267238466_tdadlani.png",
+    "username": "tdadlani",
+    "firstName": "Tarun",
+    "lastName": "Dadlani",
+    "profile_photo_url": ""
+  }
+}
+```
+
+#### Add or Update Rating
+
+`POST api/events/rating/:eventId`
+
+#### Response
+
+```json
+{
+  "message": "Rating added successfully",
+  "data": {
+    "data": {
+      "_id": "639d7b8ddfe8e7e96610c5ec",
+      "userId": "639d7a82dfe8e7e96610c5e8",
+      "eventTitle": "One AfroCarib Friday Afrobeats Dancehall Reggae More",
+      "description": "Lituation Friday ( #1 Afro-Caribean Friday in NYC )\nFriday, December 16\n10PM - 4AM\nGYPSY ROSE\n125 West 26th Street Between 6th & 7th Ave, 125 W 26th St, New York, NY 10001\n\nDOOR TICKETS : DOOR PAYMENT WILL BE AVAILABLE STARTING $20\n( EARLY ARRIVAL SUGGESTED )\n\nOne of a kind AfroCaribbean New Year's Eve party : Deuces\n\n#Afrobeat - #Dancehall, #Reggae & SOCA, HIPHOP, R&B & MORE\n\nBottle Service , contact us on @Blacc_Fire Via Instagram or Info@blaccfire.com to RSVP\n\nFAQ\nAGE REQUIREMENT FOR THIS EVENT----- ( 21+ W/VALID STATE ID )\nBottle package available ? ( Yes, Text \"NYE\" to (646) 776-3094 )\nCan I Pay at the door ? ( Yes, you can pay at the door )\nDoes This Club have Hookah ? ( YES, All Flavor )\nFOLLOW @BLACC_FIRE FOR MORE UPCOMING EVENTS\n\nFor More info contact us via Instagram @Blacc_Fire or Text (646) 776-3094 )",
+      "startDateTime": "2022-12-23T08:29:40.000Z",
+      "endDateTime": "2022-12-24T23:30:40.000Z",
+      "address": "GYPSY ROSE 125 W 26TH STREET New York, NY 10001",
+      "dateCreated": "2022-12-17T08:19:25.368Z",
+      "arePicturesAllowed": true,
+      "areCommentsAllowed": true,
+      "ageRestricted": true,
+      "type": "in-person",
+      "rsvps": ["639d7af6dfe8e7e96610c5ea", "639d7cc6aa38de685163cd5e"],
+      "waitlist": [],
+      "tags": ["NJ", "birch", "breakfast", "brunch", "lunch"],
+      "like_count": 0,
+      "comments": [
+        {
+          "_id": "639e6c4a1e9eae73e5ca427c",
+          "user_id": "639d7af6dfe8e7e96610c5ea",
+          "dateCreated": "2022-12-18T01:26:34.364Z",
+          "name": "Suman Mohanty",
+          "username": "summsum",
+          "profile_photo_url": "1671267137542_sumsum.png",
+          "comment": "Great!"
+        },
+        {
+          "_id": "639e6c441e9eae73e5ca427b",
+          "user_id": "639d7af6dfe8e7e96610c5ea",
+          "dateCreated": "2022-12-18T01:26:28.185Z",
+          "name": "Suman Mohanty",
+          "username": "summsum",
+          "profile_photo_url": "1671267137542_sumsum.png",
+          "comment": "Great!"
+        },
+        {
+          "_id": "639d7d12aa38de685163cd60",
+          "user_id": "639d7cc6aa38de685163cd5e",
+          "dateCreated": "2022-12-17T08:25:54.027Z",
+          "name": "Mani Sai Prasad Masupalli",
+          "username": "manisaiprasad",
+          "profile_photo_url": "",
+          "comment": "Hello I will theree.   👀"
+        }
+      ],
+      "ratings": [
+        {
+          "_id": "639e6e0b1e9eae73e5ca427d",
+          "user_id": "639d7af6dfe8e7e96610c5ea",
+          "rating": "4"
+        }
+      ],
+      "overallRating": 4,
+      "event_photo_url": "1671267238466_tdadlani.png"
+    }
+  }
 }
 ```
 
