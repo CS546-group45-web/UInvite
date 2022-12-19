@@ -113,17 +113,19 @@ function SearchBar({ searchEvents, getAllData }) {
                 <FilterListIcon /> Filters
               </span>
             </button>
-            <button
-              className="font-semibold text-xl btn_default__filter"
-              onClick={() => {
-                getAllData();
-                setShowFilter(false);
-              }}
-            >
-              <span>
-                <CloseIcon /> Close
-              </span>
-            </button>
+            {showFilter && (
+              <button
+                className="font-semibold text-xl btn_default__filter"
+                onClick={() => {
+                  getAllData();
+                  setShowFilter(false);
+                }}
+              >
+                <span>
+                  <CloseIcon /> Close
+                </span>
+              </button>
+            )}
           </div>
           {showFilter && (
             <div className="mt-2">
