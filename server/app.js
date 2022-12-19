@@ -50,8 +50,11 @@ app.get('/handleGoogleRedirect', cors(), (req, res) => {
       oauth2Client.setCredentials(token);
       const accessToken = token.access_token;
       const refreshToken = token.refresh_token;
-      res.redirect(
+      console.log(
         process.env.BASE_URL + '/googleAuth/' + accessToken + '/' + refreshToken
+      );
+      res.redirect(
+        `${process.env.BASE_URL}?accessToken=${accessToken}&refreshToken=${refreshToken}`
       );
     });
   }
