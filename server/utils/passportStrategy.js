@@ -10,15 +10,18 @@ const opts = {
 };
 
 const strategy = new JWTStrategy(opts, (payload, done) => {
-  console.log('payload received', payload);
-  users.getUserById(payload.id).then((user) => {
-    console.log(user);
-    if (user) {
-      done(null, user);
-    } else {
-      done(null, false);
-    }
-  });
+  users
+    .getUserById(payload.id)
+    .then((user) => {
+      if (user) {
+        done(null, user);
+      } else {
+        done(null, false);
+      }
+    })
+    .catch((err) => {
+      done(err, false);
+    });
 });
 
 module.exports = strategy;

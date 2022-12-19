@@ -1,0 +1,11 @@
+.btn_default__cancel {
+  width: auto;
+  height: 43px;
+  padding: 5px 18px;
+  border-radius: 6px;
+  color: #393e46;
+  font-size: 18px;
+  font-weight: 500;
+  border: 2px solid #393e46;
+  margin-left: 10px;
+}

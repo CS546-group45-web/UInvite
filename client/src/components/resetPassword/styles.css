@@ -1,0 +1,7 @@
+.show_pass_btn__reset {
+  position: absolute;
+  right: 10px;
+  top: 14px;
+  cursor: pointer;
+  color: #393e46cf;
+}

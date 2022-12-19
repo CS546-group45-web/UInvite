@@ -1,38 +1,87 @@
-.App {
-  text-align: center;
+html {
+  /* TODO: decide font for the app */
+  /* font-family: monospace; */
+  /* font-size: 20px; */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  overflow: hidden;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.scroller::-webkit-scrollbar {
+  width: 5px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.scroller::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px #393e46;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background-color: #353a42;
+  border-radius: 4px;
+}
+
+.btn_default {
+  width: auto;
+  padding: 7px 20px;
   color: white;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 4px;
+  background-color: #393e46;
+  cursor: pointer;
 }
 
-.App-link {
-  color: #61dafb;
+.btn_default__delete {
+  width: auto;
+  padding: 7px 10px;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 4px;
+  background-color: #d32f2f;
+  cursor: pointer;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btn_default__cancel {
+  width: auto;
+  height: 43px;
+  padding: 5px 18px;
+  border-radius: 4px;
+  color: #393e46;
+  font-size: 18px;
+  font-weight: 500;
+  border: 2px solid #393e46;
+  margin-left: 10px;
+}
+
+.btn_edit_event {
+  border: 2px solid #393e46;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 16px;
+  line-height: 18px;
+  margin-left: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 30px;
+}
+
+.btn_edit_profile {
+  border: 2px solid #393e46;
+  border-radius: 6px;
+  padding: 4px;
+  font-size: 16px;
+  line-height: 18px;
+  margin-left: 14px;
+  margin-bottom: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.text_ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 400px;
+  overflow: hidden;
 }

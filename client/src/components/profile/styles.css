@@ -1,0 +1,97 @@
+.user_profile_picture img {
+  width: 200px;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+  border-radius: 100px;
+}
+
+.btn_default__follow {
+  width: auto;
+  height: 38px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  background-color: #393e46;
+}
+
+div.grid_spaces {
+  grid-template-columns: max-content auto min-content;
+}
+
+.profile_page_loader {
+  display: flex;
+  margin: auto;
+}
+
+/* .btn_default__cancel {
+  width: auto;
+  height: 43px;
+  padding: 5px 18px;
+  border-radius: 4px;
+  color: #393e46;
+  font-size: 18px;
+  font-weight: 500;
+  border: 2px solid #393e46;
+} */
+
+.btn_edit_profile {
+  border: 2px solid #393e46;
+  border-radius: 6px;
+  padding: 4px;
+  font-size: 16px;
+  line-height: 12px;
+  margin-left: 10px;
+  margin-bottom: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.profile_upload_modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  background-color: white;
+  width: 450px;
+  height: 500px;
+  border-radius: 10px;
+  padding: 10px;
+  justify-content: space-evenly;
+}
+
+.followers_list__image {
+  width: 50px;
+  aspect-ratio: 1/1;
+  border-radius: 50px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+.btn_default_following {
+  width: auto;
+  height: 38px;
+  padding: 4px 10px 4px 6px;
+  border-radius: 12px;
+  color: #393e46;
+  font-size: 18px;
+  font-weight: 500;
+  border: 2px solid #393e46;
+}
+
+.btn_default_following__extra {
+  display: flex;
+  align-items: flex-end;
+  margin: 0px 10px;
+}
+
+
+.events_grid_profile{
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
