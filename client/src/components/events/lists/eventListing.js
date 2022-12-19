@@ -9,7 +9,6 @@ import EventCard from "./eventCardHome";
 import "./styles.css";
 import { getUserDetails } from "../../../utils/apis/user";
 import SearchBar from "./searchBarComponent";
-import { createAuthLink } from "../../../utils/apis/auth";
 import { Chip } from "@mui/material";
 
 function EventsList() {
