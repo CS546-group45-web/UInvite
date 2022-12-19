@@ -9,7 +9,6 @@ import EventCard from "./eventCardHome";
 import "./styles.css";
 import { getUserDetails } from "../../../utils/apis/user";
 import SearchBar from "./searchBarComponent";
-import { createAuthLink } from "../../../utils/apis/auth";
 import { Chip } from "@mui/material";
 
 function EventsList() {
@@ -20,18 +19,6 @@ function EventsList() {
 
   React.useEffect(() => {
     setLoading(true);
-    getUserDetails().then((res) => {
-      const { data } = res;
-      if (!data?.googleConnected || data?.googleConnected === false)
-        createAuthLink().then((res) => {
-          const {
-            data: { url },
-          } = res;
-
-          window.location.href = url;
-        });
-      else window.location.href = "/";
-    });
     getAllEventsForHomePage().then((res) => {
       const { data, status } = res;
       if (status !== 200) toast.error("Failed to fetch events");
