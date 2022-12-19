@@ -453,13 +453,17 @@ const getEventsBySearch = async (
     if (sortType === 'startDateAsc') {
       let dateList = await getAllUpcomingEvents();
 
-      return dateList.sort((a, b) => a.startDateTime - b.startDateTime);
+      return dateList.sort(
+        (a, b) => new Date(a.startDateTime) - new Date(b.startDateTime)
+      );
     }
 
     if (sortType === 'startDateDesc') {
       let dateList = await getAllUpcomingEvents();
 
-      return dateList.sort((a, b) => b.startDateTime - a.startDateTime);
+      return dateList.sort(
+        (a, b) => new Date(b.startDateTime) - new Date(a.startDateTime)
+      );
     }
   }
 
