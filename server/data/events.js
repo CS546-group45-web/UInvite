@@ -270,47 +270,51 @@ const rsvp = async (eventId, userId) => {
   if (userData.invited_events && userData.invited_events.includes(eventId)) {
     await user.removeInvite(userId, eventId);
   }
-
-  const event = await getEventById(eventId);
-  // createCalendarEvent if user has calendar
-  const calendarEvent = {
-    summary: event.eventTitle,
-    location: event.address,
-    description: event.description,
-    start: {
-      dateTime: event.startDateTime,
-      timeZone: 'America/New_York',
-    },
-    end: {
-      dateTime: event.endDateTime,
-      timeZone: 'America/New_York',
-    },
-    reminders: {
-      useDefault: false,
-      overrides: [
-        { method: 'email', minutes: 24 * 60 },
-        { method: 'popup', minutes: 30 },
-      ],
-    },
-  };
-  // calendarEvents
-  try {
-    const calenderData = await calendarEvents.createCalendarEvent(
-      userData,
-      calendarEvent
-    );
-    // update event with calendar event id
-    const calendarUpdate = await event_collection.updateOne(
-      { _id: ObjectId(eventId) },
-      {
-        $set: { calendarEventId: calenderData.id },
+  if (userData.googleConnected) {
+    // if user has google connected
+    const event = await getEventById(eventId);
+    // createCalendarEvent if user has calendar
+    const calendarEvent = {
+      summary: event.eventTitle,
+      location: event.address,
+      description: event.description,
+      start: {
+        dateTime: event.startDateTime,
+        timeZone: 'America/New_York',
+      },
+      end: {
+        dateTime: event.endDateTime,
+        timeZone: 'America/New_York',
+      },
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: 'email', minutes: 24 * 60 },
+          { method: 'popup', minutes: 30 },
+        ],
+      },
+    };
+    // calendarEvents
+    try {
+      const calenderData = await calendarEvents.createCalendarEvent(
+        userData,
+        calendarEvent
+      );
+      // update event with calendar event id
+      const calendarUpdate = await event_collection.updateOne(
+        { _id: ObjectId(eventId) },
+        {
+          $set: { calendarEventId: calenderData.id },
+        }
+      );
+      if (calendarUpdate.modifiedCount === 0) {
+        throw 'Could not update event with calendar event id';
       }
-    );
-    if (calendarUpdate.modifiedCount === 0) {
-      throw 'Could not update event with calendar event id';
+    } catch (e) {
+      throw e;
     }
-  } catch (e) {
-    throw e;
+  } else {
+    return await getEventById(eventId);
   }
 };
 
