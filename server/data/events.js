@@ -86,8 +86,14 @@ const updateEvent = async (
   description = validation.checkInputString(description, 'description');
   startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
   endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
-  address = validation.checkInputString(address, 'address');
   type = validation.checkEventType(type, 'type');
+  if (type.toLowerCase() === 'in-person') {
+    address = validation.checkInputString(address, 'address');
+  }
+
+  if (type.toLowerCase() === 'online') {
+    address = validation.checkEventURl(address, 'onlineEventLink');
+  }
 
   const updatedEvent = {
     userId: userId,
@@ -374,9 +380,6 @@ const getEventsBySearch = async (
   eventEndDateTime,
   sortType
 ) => {
-  if (!eventTitle && !eventDate && !eventLocation && !eventTags) {
-    throw 'Please enter at least one search parameter';
-  }
   const eventCollection = await events();
   let events_list = await eventCollection.find({}).toArray();
   if (!events_list) {

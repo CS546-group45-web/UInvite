@@ -241,9 +241,15 @@ router
       description = validation.checkInputString(description, 'description');
       startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
       endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
-      address = validation.checkInputString(address, 'address');
       type = validation.checkEventType(type, 'type');
       tags = validation.checkTags(tags, 'tags');
+      if (type.toLowerCase() === 'in-person') {
+        address = validation.checkInputString(address, 'address');
+      }
+
+      if (type.toLowerCase() === 'online') {
+        address = validation.checkEventURl(address, 'onlineEventLink');
+      }
     } catch (e) {
       if (typeof e === 'string') return res.status(400).json({ error: e });
       else
@@ -506,6 +512,14 @@ router.route('/search').get(async (req, res) => {
   let eventStartDateTime = req.query.eventStartDateTime;
   let eventEndDateTime = req.query.eventEndDateTime;
   let sortType = req.query.sortType;
+
+  try {
+    if (Object.keys(req.query).length===0) {
+      throw 'Please enter at least one search parameter';
+    }
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
 
   try {
     const event = await eventData.getEventsBySearch(
