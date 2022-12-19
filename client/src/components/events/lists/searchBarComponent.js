@@ -1,5 +1,6 @@
 import {
   Chip,
+  Divider,
   FormControl,
   InputLabel,
   Menu,
@@ -17,7 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import React from "react";
 import { getAllTags } from "../../../utils/apis/event";
 
-function SearchBar({ searchEvents }) {
+function SearchBar({ searchEvents, getAllData }) {
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -33,6 +34,7 @@ function SearchBar({ searchEvents }) {
   const [searchInputCity, setSearchInputCity] = React.useState("");
   const [searchTags, setSearchTags] = React.useState([]);
   const [allTags, setAllTags] = React.useState([]);
+  const [showFilter, setShowFilter] = React.useState("");
   const [type, setType] = React.useState("");
   const showSortOptions = Boolean(anchorEl);
 
@@ -40,8 +42,10 @@ function SearchBar({ searchEvents }) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = (item) => {
+    setType(item);
     setAnchorEl(null);
+    applySort(item);
   };
 
   const handleChange = (event) => {
@@ -58,37 +62,72 @@ function SearchBar({ searchEvents }) {
     });
   }, []);
 
+  const applySort = (item) => {
+    setSearchTags([]);
+    setSearchInputCity("");
+    setSearchTitle("");
+    let query = "";
+    if (item?.trim() !== "") query += "sortType=" + item;
+    searchEvents(query, {
+      searchInputTitle,
+      searchInputCity,
+      searchTags,
+      type,
+    });
+  };
+
   const applyFilters = () => {
+    setType("");
     let query = "";
     if (searchInputTitle?.trim() !== "")
       query += "eventTitle=" + searchInputTitle;
     if (searchInputCity?.trim() !== "")
       query += "&eventLocation=" + searchInputCity;
     if (searchTags.length > 0) query += "&eventTags=" + searchTags.join(",");
-    searchEvents(query, { searchInputTitle, searchInputCity, searchTags });
+    searchEvents(query, {
+      searchInputTitle,
+      searchInputCity,
+      searchTags,
+      type,
+    });
   };
+
+  const sortOptions = [
+    { startDateDesc: "Start Date (descending)" },
+    { startDateAsc: "Start Date (ascending)" },
+    { rating: "Rating (high-low)" },
+  ];
 
   return (
     <Paper elevation={3}>
       <div className="flex p-4 mb-3 justify-between">
         <div className="w-9/12">
-          <button
-            className="font-bold text-xl btn_default__filter"
-            onClick={() => {
-              type === "filter" ? setType("") : setType("filter");
-            }}
-          >
-            {type !== "filter" ? (
+          <div className="flex">
+            <button
+              className="font-semibold text-xl btn_default__filter mr-3"
+              onClick={() => {
+                setShowFilter(true);
+              }}
+            >
               <span>
                 <FilterListIcon /> Filters
               </span>
-            ) : (
-              <span>
-                <CloseIcon /> Close
-              </span>
+            </button>
+            {showFilter && (
+              <button
+                className="font-semibold text-xl btn_default__filter"
+                onClick={() => {
+                  getAllData();
+                  setShowFilter(false);
+                }}
+              >
+                <span>
+                  <CloseIcon /> Close
+                </span>
+              </button>
             )}
-          </button>
-          {type === "filter" && (
+          </div>
+          {showFilter && (
             <div className="mt-2">
               <div className="flex mb-4">
                 <div className="w-6/12 mr-2">
@@ -142,7 +181,7 @@ function SearchBar({ searchEvents }) {
                         id="invites"
                         label="Search by Tags"
                         fullWidth
-                        size="small"
+                        // size="small"
                       />
                     }
                     renderValue={(selected) => (
@@ -167,8 +206,29 @@ function SearchBar({ searchEvents }) {
                 className="font-semibold text-lg mt-2 btn_default__filter"
                 onClick={applyFilters}
               >
-                Apply
+                Apply filter
               </button>
+              <Divider />
+              <div>
+                {(searchInputCity?.length > 0 ||
+                  searchInputTitle?.length > 0) && (
+                  <span>Search Inputs: &nbsp;&nbsp;&nbsp;</span>
+                )}
+                {searchInputTitle?.length > 0 && (
+                  <Chip
+                    variant="outlined"
+                    className={"tags_chip"}
+                    label={"Title: " + searchInputTitle}
+                  />
+                )}
+                {searchInputCity?.length > 0 && (
+                  <Chip
+                    variant="outlined"
+                    className={"tags_chip"}
+                    label={"City: " + searchInputCity}
+                  />
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -184,15 +244,23 @@ function SearchBar({ searchEvents }) {
             <SortIcon />
             &nbsp;&nbsp;Sort by
           </button>
+          {type && (
+            <Chip variant="outlined" className={"tags_chip"} label={type} />
+          )}
           <Menu
             id="basic-menu"
             anchorEl={anchorEl}
             open={showSortOptions}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>Start Date (descending)</MenuItem>
-            <MenuItem onClick={handleClose}>Start Date (ascending)</MenuItem>
-            <MenuItem onClick={handleClose}>Rating (high-low)</MenuItem>
+            {sortOptions.map((item, value) => (
+              <MenuItem
+                onClick={() => handleClose(Object.keys(item)[0])}
+                key={value}
+              >
+                {Object.values(item)[0]}
+              </MenuItem>
+            ))}
           </Menu>
         </div>
       </div>

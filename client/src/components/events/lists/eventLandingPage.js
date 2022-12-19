@@ -63,6 +63,7 @@ import DefaultCoverImage from "../../../assets/images/default_cover_image.jpg";
 import RatingsAndReviews from "./ratingAndReviewSection";
 import CopyToClipboard from "react-copy-to-clipboard";
 import EventPictures from "./eventPictures";
+import Linkify from "linkify-react";
 
 function EventPage() {
   const params = useParams();
@@ -384,7 +385,7 @@ function EventPage() {
             )}
             <div className="font-bold text-3xl section_divider">
               {" "}
-              <NotesOutlinedIcon /> Location & Time
+              <NotesOutlinedIcon /> When and where
             </div>
 
             <div className="pl-2 ">
@@ -482,31 +483,35 @@ function EventPage() {
                 </div>
               ) : null}
 
-              <div className="flex items-center">
-                <button
-                  className="w-[100%] btn_default mt-4 mr-2"
-                  onClick={() => {
-                    loadUsers();
-                    setInvitesModal(true);
-                  }}
-                >
-                  <GroupAddIcon />
-                  &nbsp;&nbsp;Invite
-                </button>
-                <CopyToClipboard
-                  text={
-                    process.env.REACT_APP_CLIENT_URL +
-                    "/event/" +
-                    eventData?._id
-                  }
-                  onCopy={() => toast.success("Invite link copied to clipboad")}
-                >
-                  <button className="w-[100%] btn_default mt-4">
-                    <ShareOutlinedIcon />
-                    &nbsp;Share
+              {!eventIsDone && (
+                <div className="flex items-center">
+                  <button
+                    className="w-[100%] btn_default mt-4 mr-2"
+                    onClick={() => {
+                      loadUsers();
+                      setInvitesModal(true);
+                    }}
+                  >
+                    <GroupAddIcon />
+                    &nbsp;&nbsp;Invite
                   </button>
-                </CopyToClipboard>
-              </div>
+                  <CopyToClipboard
+                    text={
+                      process.env.REACT_APP_CLIENT_URL +
+                      "/event/" +
+                      eventData?._id
+                    }
+                    onCopy={() =>
+                      toast.success("Invite link copied to clipboad")
+                    }
+                  >
+                    <button className="w-[100%] btn_default mt-4">
+                      <ShareOutlinedIcon />
+                      &nbsp;Share
+                    </button>
+                  </CopyToClipboard>
+                </div>
+              )}
               <Modal
                 open={invitesModal}
                 onClose={() => setInvitesModal(false)}
@@ -515,7 +520,7 @@ function EventPage() {
                 disableEscapeKeyDown={true}
               >
                 <div className="invites_modal">
-                  <div lastName="text-2xl text-logoBlue font-semibold">
+                  <div className="text-2xl text-logoBlue font-semibold">
                     Invite people
                   </div>
                   <div className="mt-4">
@@ -575,8 +580,51 @@ function EventPage() {
             </div>
           </div>
         </div>
+        <div className="my-4">
+          <div className="usercard_eventcard">
+            <div className="flex items-center">
+              Organized by&nbsp;&nbsp;{" "}
+              <span>
+                <img
+                  style={{
+                    width: "30px",
+                    aspectRatio: "1/1",
+                    borderRadius: "999px",
+                    marginRight: "8px",
+                  }}
+                  alt={eventData?.username + " profile"}
+                  src={
+                    eventData?.profile_photo_url !== ""
+                      ? process.env.REACT_APP_BASE_URL +
+                        "/images/" +
+                        eventData?.profile_photo_url
+                      : DefaultProfile
+                  }
+                />
+              </span>
+              <span
+                className="text-lg font-bold cursor-pointer"
+                onClick={() =>
+                  navigate(
+                    loggedInUserData?._id === eventData?.user_id
+                      ? "/profile"
+                      : "/profile/" + eventData?.username
+                  )
+                }
+              >
+                {eventData?.username}&nbsp;
+              </span>
+              <span className="text-lg font-light">
+                {fullNameFormatter(eventData?.firstName, eventData?.lastName)}
+              </span>
+            </div>
+          </div>
+        </div>
         <div className="text-xl">
-          <p className="event_desc">{eventData?.description}</p>
+          <div className="font-semibold text-2xl my-2">About this event</div>
+          <p className="event_desc">
+            <Linkify>{eventData?.description}</Linkify>
+          </p>
         </div>
 
         <div className="flex mt-2">
