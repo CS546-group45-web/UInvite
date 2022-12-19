@@ -86,8 +86,14 @@ const updateEvent = async (
   description = validation.checkInputString(description, 'description');
   startDateTime = validation.checkEventDate(startDateTime, 'startDateTime');
   endDateTime = validation.checkEventDate(endDateTime, 'endDateTime');
-  address = validation.checkInputString(address, 'address');
   type = validation.checkEventType(type, 'type');
+  if (type.toLowerCase() === 'in-person') {
+    address = validation.checkInputString(address, 'address');
+  }
+
+  if (type.toLowerCase() === 'online') {
+    address = validation.checkEventURl(address, 'onlineEventLink');
+  }
 
   const updatedEvent = {
     userId: userId,
@@ -264,47 +270,52 @@ const rsvp = async (eventId, userId) => {
   if (userData.invited_events && userData.invited_events.includes(eventId)) {
     await user.removeInvite(userId, eventId);
   }
-
-  const event = await getEventById(eventId);
-  // createCalendarEvent if user has calendar
-  const calendarEvent = {
-    summary: event.eventTitle,
-    location: event.address,
-    description: event.description,
-    start: {
-      dateTime: event.startDateTime,
-      timeZone: 'America/New_York',
-    },
-    end: {
-      dateTime: event.endDateTime,
-      timeZone: 'America/New_York',
-    },
-    reminders: {
-      useDefault: false,
-      overrides: [
-        { method: 'email', minutes: 24 * 60 },
-        { method: 'popup', minutes: 30 },
-      ],
-    },
-  };
-  // calendarEvents
-  try {
-    const calenderData = await calendarEvents.createCalendarEvent(
-      userData,
-      calendarEvent
-    );
-    // update event with calendar event id
-    const calendarUpdate = await event_collection.updateOne(
-      { _id: ObjectId(eventId) },
-      {
-        $set: { calendarEventId: calenderData.id },
+  if (userData.googleConnected) {
+    // if user has google connected
+    const event = await getEventById(eventId);
+    // createCalendarEvent if user has calendar
+    const calendarEvent = {
+      summary: event.eventTitle,
+      location: event.address,
+      description: event.description,
+      start: {
+        dateTime: event.startDateTime,
+        timeZone: 'America/New_York',
+      },
+      end: {
+        dateTime: event.endDateTime,
+        timeZone: 'America/New_York',
+      },
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: 'email', minutes: 24 * 60 },
+          { method: 'popup', minutes: 30 },
+        ],
+      },
+    };
+    // calendarEvents
+    try {
+      const calenderData = await calendarEvents.createCalendarEvent(
+        userData,
+        calendarEvent
+      );
+      // update event with calendar event id
+      const calendarUpdate = await event_collection.updateOne(
+        { _id: ObjectId(eventId) },
+        {
+          $set: { calendarEventId: calenderData.id },
+        }
+      );
+      if (calendarUpdate.modifiedCount === 0) {
+        throw 'Could not update event with calendar event id';
       }
-    );
-    if (calendarUpdate.modifiedCount === 0) {
-      throw 'Could not update event with calendar event id';
+      return await getEventById(eventId);
+    } catch (e) {
+      throw e;
     }
-  } catch (e) {
-    throw e;
+  } else {
+    return await getEventById(eventId);
   }
 };
 
@@ -333,7 +344,7 @@ const removeRsvp = async (eventId, userId) => {
           eventData.calendarEventId
         );
       } catch (e) {
-        throw e;
+        return await eventData;
       }
     }
   }
@@ -389,9 +400,6 @@ const getEventsBySearch = async (
   eventEndDateTime,
   sortType
 ) => {
-  if (!eventTitle && !eventLocation && !eventTags) {
-    throw 'Please enter at least one search parameter';
-  }
   const eventCollection = await events();
   let events_list = await eventCollection.find({}).toArray();
   if (!events_list) {
@@ -450,13 +458,17 @@ const getEventsBySearch = async (
     if (sortType === 'startDateAsc') {
       let dateList = await getAllUpcomingEvents();
 
-      return dateList.sort((a, b) => a.startDateTime - b.startDateTime);
+      return dateList.sort(
+        (a, b) => new Date(a.startDateTime) - new Date(b.startDateTime)
+      );
     }
 
     if (sortType === 'startDateDesc') {
       let dateList = await getAllUpcomingEvents();
 
-      return dateList.sort((a, b) => b.startDateTime - a.startDateTime);
+      return dateList.sort(
+        (a, b) => new Date(b.startDateTime) - new Date(a.startDateTime)
+      );
     }
   }
 

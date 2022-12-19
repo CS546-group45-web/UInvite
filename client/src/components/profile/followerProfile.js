@@ -1,10 +1,10 @@
-import React from "react";
-import "./styles.css";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import React from 'react';
+import './styles.css';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 // import PhoneAndroidOutlinedIcon from "@mui/icons-material/PhoneAndroidOutlined";
-import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
-import "./styles.css";
-import { capitalizeFirstLetter, fullNameFormatter } from "../../utils/helper";
+import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
+import './styles.css';
+import { capitalizeFirstLetter, fullNameFormatter } from '../../utils/helper';
 import {
   followUser,
   getOtherUserFollowersById,
@@ -12,14 +12,16 @@ import {
   getUserDetails,
   getUserDetailsByUsername,
   unfollowUser,
-} from "../../utils/apis/user";
-import Loading from "../common/Loading";
-import { useNavigate, useParams } from "react-router";
-import ProfileSectionMiddle from "./profileSectionMiddle";
-import { toast } from "react-toastify";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+} from '../../utils/apis/user';
+import Loading from '../common/Loading';
+import { useNavigate, useParams } from 'react-router';
+import ProfileSectionMiddle from './profileSectionMiddle';
+import { toast } from 'react-toastify';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
-import DefaultProfile from "../../assets/images/default_profile_pic.png";
+import DefaultProfile from '../../assets/images/default_profile_pic.png';
+
+import CalendarHelper from '../Calendar/CalendarHelper';
 
 function FollowerProfile() {
   const params = useParams();
@@ -36,7 +38,7 @@ function FollowerProfile() {
       getUserDetailsByUsername(params?.username).then((res) => {
         if (res.status !== 200) {
           toast.error(
-            "Either the username is incorrect or the user does not exists"
+            'Either the username is incorrect or the user does not exists'
           );
           return setTimeout(() => navigate(-1), 2000);
         }
@@ -77,7 +79,7 @@ function FollowerProfile() {
     const { status } = unfollowUserData;
 
     if (status === 200) getUserAllDetails();
-    else toast.error("Unfollow request failed!");
+    else toast.error('Unfollow request failed!');
   };
 
   const sendFollowRequest = async (id) => {
@@ -85,7 +87,7 @@ function FollowerProfile() {
     const { status } = followUserData;
 
     if (status === 200) getUserAllDetails();
-    else toast.error("Follow request failed!");
+    else toast.error('Follow request failed!');
   };
 
   return (
@@ -107,7 +109,7 @@ function FollowerProfile() {
                 src={
                   userData?.profile_photo_url
                     ? process.env.REACT_APP_BASE_URL +
-                      "/images/" +
+                      '/images/' +
                       userData?.profile_photo_url
                     : DefaultProfile
                 }
@@ -164,8 +166,8 @@ function FollowerProfile() {
                   }
                 >
                   {userData?.followers?.includes(loggedInUserData?._id)
-                    ? "Unfollow"
-                    : "Follow"}
+                    ? 'Unfollow'
+                    : 'Follow'}
                 </button>
               </div>
             </div>
@@ -179,6 +181,18 @@ function FollowerProfile() {
             sendUnfollowRequest={sendUnFollowRequest}
             sendfollowRequest={sendFollowRequest}
           />
+
+          {userData?.googleConnected ? (
+            <CalendarHelper
+              googleCalendarId={
+                userData?.googleCalendarDetails.googleCalendarId
+              }
+            />
+          ) : (
+            <div className="text-center text-2xl font-bold">
+              User has not connected with google calendar yet
+            </div>
+          )}
         </div>
       )}
     </div>

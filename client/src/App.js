@@ -1,33 +1,56 @@
-import "./App.css";
-import React from "react";
-import Login from "./components/login";
-import { Route, BrowserRouter, Routes, Navigate } from "react-router-dom";
-import SignUp from "./components/signup";
-import CreateEvent from "./components/events/createEvent";
-import EventsList from "./components/events/lists/eventListing";
-import Profile from "./components/profile";
-import Calendar from "./components/Calendar";
-import Nav from "./components/navbar";
-import ForgotPassword from "./components/forgotPassword";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import VerifyUser from "./components/verifyUser";
-import ResetPassword from "./components/resetPassword";
-import FollowerProfile from "./components/profile/followerProfile";
-import EventPage from "./components/events/lists/eventLandingPage";
-import RsvpedEvents from "./components/events/rsvpEvents";
-import InvitedEvents from "./components/events/invitedEvents";
-import PrivacyPolicyPage from "./components/common/privacyPolicyPage";
-import GoogleCalendarToken from "./components/common/googleCalendarToken";
+import './App.css';
+import React, { useEffect } from 'react';
+import Login from './components/login';
+import { Route, BrowserRouter, Routes, Navigate } from 'react-router-dom';
+import SignUp from './components/signup';
+import CreateEvent from './components/events/createEvent';
+import EventsList from './components/events/lists/eventListing';
+import Profile from './components/profile';
+import Calendar from './components/Calendar';
+import Nav from './components/navbar';
+import ForgotPassword from './components/forgotPassword';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import VerifyUser from './components/verifyUser';
+import ResetPassword from './components/resetPassword';
+import FollowerProfile from './components/profile/followerProfile';
+import EventPage from './components/events/lists/eventLandingPage';
+import RsvpedEvents from './components/events/rsvpEvents';
+import InvitedEvents from './components/events/invitedEvents';
+import PrivacyPolicyPage from './components/common/privacyPolicyPage';
+import { storeGoogletoken } from './utils/apis/auth';
 
+// handleTokenFromQueryParams
 function App() {
+  useEffect(() => {
+    handleTokenFromQueryParams();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleTokenFromQueryParams = () => {
+    const query = new URLSearchParams(window.location.search);
+    const accessToken = query.get('accessToken');
+    const refreshToken = query.get('refreshToken');
+    if (accessToken && refreshToken) {
+      storeTokenData(accessToken, refreshToken);
+      storeGoogletoken(accessToken, refreshToken)
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+    }
+  };
+
+  const storeTokenData = async (token, refreshToken) => {
+    sessionStorage.setItem('accessToken', token);
+    sessionStorage.setItem('refreshToken', refreshToken);
+  };
+
   const styles = () =>
     isAuthenticated()
-      ? "col-span-10 my-4 px-4 overflow-y-auto scroller"
-      : "col-span-12 px-5 py-5 h-[100%] overflow-y-auto";
+      ? 'col-span-10 my-4 px-4 overflow-y-auto scroller'
+      : 'col-span-12 px-5 py-5 h-[100%] overflow-y-auto';
 
   const isAuthenticated = () => {
-    return JSON.parse(localStorage.getItem("auth") === "true");
+    return JSON.parse(localStorage.getItem('auth') === 'true');
   };
 
   return (
@@ -89,18 +112,6 @@ function App() {
                 element={
                   isAuthenticated() ? (
                     <Profile />
-                  ) : (
-                    <Navigate to="/login" replace />
-                  )
-                }
-              />
-
-              <Route
-                path="/googleAuth/:accessToken/:refreshToken"
-                exact
-                element={
-                  isAuthenticated() ? (
-                    <GoogleCalendarToken />
                   ) : (
                     <Navigate to="/login" replace />
                   )
