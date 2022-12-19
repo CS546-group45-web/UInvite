@@ -55,7 +55,6 @@ function Calendar() {
           const {
             data: { url },
           } = res;
-          debugger;
           window.location.href = url;
         });
       else window.location.href = "/";
