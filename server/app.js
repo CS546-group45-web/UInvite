@@ -38,7 +38,7 @@ app.post('/createAuthLink', cors(), (req, res) => {
   res.send({ url });
 });
 
-app.get('/api/handleGoogleRedirect', cors(), (req, res) => {
+app.get('/handleGoogleRedirect', cors(), (req, res) => {
   const code = req.query.code;
   if (code) {
     oauth2Client.getToken(code, (err, token) => {
