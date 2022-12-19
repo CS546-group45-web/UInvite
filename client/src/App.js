@@ -24,7 +24,9 @@ import { storeGoogletoken } from './utils/apis/auth';
 function App() {
   useEffect(() => {
     handleTokenFromQueryParams();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const handleTokenFromQueryParams = () => {
     const query = new URLSearchParams(window.location.search);
     const accessToken = query.get('accessToken');
