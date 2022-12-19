@@ -57,7 +57,6 @@ function Calendar() {
           } = res;
           window.location.href = url;
         });
-      else window.location.href = "/";
     });
   };
 
