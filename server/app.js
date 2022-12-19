@@ -44,6 +44,7 @@ app.get('/handleGoogleRedirect', cors(), (req, res) => {
     oauth2Client.getToken(code, (err, token) => {
       if (err) {
         console.error('Error retrieving access token', err);
+        res.status(500).send('Error retrieving access token', err);
         return;
       }
       oauth2Client.setCredentials(token);
@@ -57,7 +58,7 @@ app.get('/handleGoogleRedirect', cors(), (req, res) => {
 });
 
 app.get(
-  '/storeGoogleTokens',
+  '/api/storeGoogleTokens',
   cors(),
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
@@ -109,7 +110,7 @@ app.get(
 );
 
 app.get(
-  '/getGoogleEvents',
+  '/api/getGoogleEvents',
   cors(),
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {

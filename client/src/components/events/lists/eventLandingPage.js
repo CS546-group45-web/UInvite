@@ -23,8 +23,10 @@ import {
   getEventsDetailsById,
   getRsvpedListToEvent,
   postComment,
+  postRatings,
   removeBookmarkedEvent,
   sendInviteToUser,
+  uploadEventImages,
 } from "../../../utils/apis/event";
 import CreateEvent from "../createEvent";
 
@@ -60,6 +62,7 @@ import {
 import DefaultCoverImage from "../../../assets/images/default_cover_image.jpg";
 import RatingsAndReviews from "./ratingAndReviewSection";
 import CopyToClipboard from "react-copy-to-clipboard";
+import EventPictures from "./eventPictures";
 
 function EventPage() {
   const params = useParams();
@@ -82,6 +85,8 @@ function EventPage() {
   const [allUsers, setAllUsers] = React.useState([]);
   const [selectedUsers, setSelectedUsers] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+
+  const [uploadImageModal, setUploadImageModal] = React.useState(false);
 
   const [open, setOpen] = React.useState(false);
 
@@ -158,6 +163,19 @@ function EventPage() {
     handleClose();
   };
 
+  const uploadEventPictures = async (ref) => {
+    setUpdateLoading(true);
+    const img = ref.current?.getImageScaledToCanvas().toDataURL();
+    let formData = new FormData();
+    formData.append("eventPhoto", dataURLtoFile(img, eventData?.eventTitle));
+    const { data } = await uploadEventImages(eventData?._id, formData);
+    setEventData(data?.data);
+    setImageObj(null);
+    setZoom(1);
+    setUpdateLoading(false);
+    setUploadImageModal(false);
+  };
+
   const checkIfBookmarked = () => {
     const { bookmarks } = loggedInUserData;
 
@@ -223,6 +241,13 @@ function EventPage() {
       else toast.success("Invitation sent");
       setLoading(false);
     });
+  };
+
+  const updateRating = async (rating) => {
+    const { data, status } = await postRatings(eventData?._id, rating);
+    if (status !== 200) return toast.error("Fail to post rating");
+    setEventData(data?.data?.data);
+    toast.success("Rating posted. Thanks");
   };
 
   const viewMode = () => {
@@ -570,6 +595,24 @@ function EventPage() {
           commentLoading={commentLoading}
         />
 
+        {eventIsDone && (
+          <RatingsAndReviews
+            eventRating={eventData?.overallRating}
+            updateRating={updateRating}
+          />
+        )}
+        {eventIsDone && (
+          <EventPictures
+            uploadEventPictures={uploadEventPictures}
+            loading={updateLoading}
+            uploadImageModal={uploadImageModal}
+            setUploadImageModal={setUploadImageModal}
+            eventImages={eventData?.event_photos}
+            imageObj={imageObj}
+            setImageObj={setImageObj}
+          />
+        )}
+
         {/* alert dialog to delete event */}
         <Dialog
           open={showDeleteDialog}
@@ -658,7 +701,6 @@ function EventPage() {
             )}
           </div>
         </Modal>
-        {eventIsDone && <RatingsAndReviews />}
       </div>
     );
   };

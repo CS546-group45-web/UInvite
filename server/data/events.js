@@ -328,7 +328,22 @@ const removeRsvp = async (eventId, userId) => {
     throw 'Could not remove rsvp';
   }
   await user.removeRsvpEvent(userId, eventId);
-  return await getEventById(eventId);
+  // remove calendar event if user has googleConnected
+  let userData = await user.getUserById(userId);
+  if (userData.googleConnected) {
+    const eventData = await getEventById(eventId);
+    if (eventData.calendarEventId) {
+      try {
+        await calendarEvents.deleteCalendarEvent(
+          userData,
+          eventData.calendarEventId
+        );
+      } catch (e) {
+        throw e;
+      }
+    }
+  }
+  return await eventData;
 };
 
 // getRsvpEvents
@@ -410,11 +425,15 @@ const getEventsBySearch = async (
   }
 
   if (eventTags) {
+    eventTags = validation.checkTags(eventTags);
     events_list = events_list.filter((event) => {
       // event.tags is an array of strings
-      for (let i = 0; i < event.tags.length; i++) {
-        if (event.tags[i].toLowerCase().includes(eventTags.toLowerCase())) {
-          return true;
+      // for each tag in the eventTags array, check if it is in the event.tags array
+      for (let i = 0; i < eventTags.length; i++) {
+        for (let j = 0; j < event.tags.length; j++) {
+          if (eventTags[i].toLowerCase() === event.tags[j].toLowerCase()) {
+            return true;
+          }
         }
       }
     });

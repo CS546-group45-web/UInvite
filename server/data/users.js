@@ -43,6 +43,7 @@ const createUser = async (
     followers: [],
     following: [],
     bookmarks: [],
+    googleConnected: false,
   };
 
   const insertInfo = await user_collection.insertOne(newuUser);
@@ -549,7 +550,12 @@ const storeCalendarDetails = async (userId, googleCalendarDetails) => {
   const user_collection = await users();
   const updatedInfo = await user_collection.updateOne(
     { _id: ObjectId(userId) },
-    { $set: { googleCalendarDetails: googleCalendarDetails } }
+    {
+      $set: {
+        googleCalendarDetails: googleCalendarDetails,
+        googleConnected: true,
+      },
+    }
   );
   if (updatedInfo.modifiedCount === 0) {
     throw 'could not store calendar details';
