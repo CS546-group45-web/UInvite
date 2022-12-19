@@ -18,6 +18,7 @@ import EventPage from "./components/events/lists/eventLandingPage";
 import RsvpedEvents from "./components/events/rsvpEvents";
 import InvitedEvents from "./components/events/invitedEvents";
 import PrivacyPolicyPage from "./components/common/privacyPolicyPage";
+import GoogleCalendarToken from "./components/common/googleCalendarToken";
 
 function App() {
   const styles = () =>
@@ -50,7 +51,11 @@ function App() {
               <Route
                 path="/privacy-policy"
                 element={
-                  isAuthenticated() ? <Navigate to="/" replace /> : <PrivacyPolicyPage />
+                  isAuthenticated() ? (
+                    <Navigate to="/" replace />
+                  ) : (
+                    <PrivacyPolicyPage />
+                  )
                 }
               />
               <Route
@@ -84,6 +89,18 @@ function App() {
                 element={
                   isAuthenticated() ? (
                     <Profile />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+
+              <Route
+                path="/googleAuth/:accessToken/:refreshToken"
+                exact
+                element={
+                  isAuthenticated() ? (
+                    <GoogleCalendarToken />
                   ) : (
                     <Navigate to="/login" replace />
                   )

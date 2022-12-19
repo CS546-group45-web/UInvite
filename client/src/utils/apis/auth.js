@@ -19,4 +19,11 @@ export const resetPassword = async (token, data) => {
   return await makeApiCall(url, "post", data);
 };
 
+export const createAuthLink = async () =>
+  await makeApiCall("/createAuthLink", "post");
 
+export const storeGoogletoken = async (accessToken, refreshToken) =>
+  await makeApiCall(
+    `/api/storeGoogleTokens?accessToken=${accessToken}&refreshToken=${refreshToken}`,
+    "get"
+  );
