@@ -2,17 +2,15 @@ import React from "react";
 import { toast } from "react-toastify";
 import {
   getAllEventsForHomePage,
-  getAllUpcomingEvents,
   getSearchedResults,
 } from "../../../utils/apis/event";
 import Loading from "../../common/Loading";
 import EventCard from "./eventCardHome";
-// import SearchBar from "./searchBar";
 import "./styles.css";
 import { getUserDetails } from "../../../utils/apis/user";
 import SearchBar from "./searchBarComponent";
-import { Chip } from "@mui/material";
 import { createAuthLink } from "../../../utils/apis/auth";
+import { Chip } from "@mui/material";
 
 function EventsList() {
   const [events, setEvents] = React.useState([]);
@@ -80,7 +78,7 @@ function EventsList() {
     <div className="min-h-full w-full">
       <div>
         <SearchBar searchEvents={searchEvents} />
-        {/* {Object.keys(queryData).length > 0 ? (
+        {Object.keys(queryData).length > 0 ? (
           <div>
             {queryData?.searchInputTitle.trim() !== "" ? (
               <Chip>Title: {queryData?.searchInputTitle}</Chip>
@@ -97,7 +95,7 @@ function EventsList() {
               </Chip>
             ) : null}
           </div>
-        ) : null} */}
+        ) : null}
       </div>
       {loading ? (
         <div className="flex justify-center">

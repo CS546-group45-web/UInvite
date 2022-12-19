@@ -5,12 +5,11 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import CloseIcon from "@mui/icons-material/Close";
 import SVGComponent from "../common/Logo";
-import { createAuthLink, login } from "../../utils/apis/auth";
+import { login } from "../../utils/apis/auth";
 import { toast } from "react-toastify";
 import Loading from "../common/Loading";
 import "./styles.css";
 import { useNavigate } from "react-router";
-import { getUserDetails } from "../../utils/apis/user";
 
 function Login() {
   const navigate = useNavigate();
