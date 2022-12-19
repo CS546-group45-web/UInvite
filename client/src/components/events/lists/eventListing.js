@@ -9,15 +9,15 @@ import EventCard from "./eventCardHome";
 import "./styles.css";
 import { getUserDetails } from "../../../utils/apis/user";
 import SearchBar from "./searchBarComponent";
-import { Chip } from "@mui/material";
+// import { Chip } from "@mui/material";
 
 function EventsList() {
   const [events, setEvents] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [loggedInUserData, setLoggedInUserData] = React.useState({});
-  const [queryData, setQueryData] = React.useState({});
+  // const [queryData, setQueryData] = React.useState({});
 
-  React.useEffect(() => {
+  const getAllData = () => {
     setLoading(true);
     getAllEventsForHomePage().then((res) => {
       const { data, status } = res;
@@ -30,11 +30,13 @@ function EventsList() {
         setLoading(false);
       });
     });
+  }
+
+  React.useEffect(() => {
+    getAllData()
   }, []);
 
   const searchEvents = async (query, queryParams) => {
-    setQueryData(queryParams);
-    console.log(queryParams);
     setLoading(true);
     getSearchedResults(query).then((res) => {
       const { data } = res;
@@ -55,7 +57,7 @@ function EventsList() {
             />
           ))
         ) : (
-          <div>No Events Found.</div>
+          <div className="font-bold text-2xl mb-2 ">No Events Found.</div>
         )}
       </div>
     );
@@ -63,27 +65,23 @@ function EventsList() {
 
   return (
     <div className="min-h-full w-full">
-      <div>
-        <SearchBar searchEvents={searchEvents} />
-        {Object.keys(queryData).length > 0 ? (
-          <div>
-            {queryData?.searchInputTitle.trim() !== "" ? (
-              <Chip>Title: {queryData?.searchInputTitle}</Chip>
-            ) : null}
-            {queryData?.searchInputCity.trim() !== "" ? (
-              <Chip>City: {queryData?.searchInputCity}</Chip>
-            ) : null}
-            {queryData?.searchTags.length > 0 ? (
-              <Chip>
-                "Tags:{" "}
-                {queryData?.searchTags?.map((tag) => (
-                  <span>{tag}, </span>
-                ))}
-              </Chip>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
+      <SearchBar searchEvents={searchEvents} getAllData={getAllData} />
+
+      {/* {queryData?.searchInputTitle?.trim() !== "" && (
+        <Chip>Title: {queryData?.searchInputTitle}</Chip>
+      )}
+      {queryData?.searchInputCity?.trim() !== "" && (
+        <Chip>City: {queryData?.searchInputCity}</Chip>
+      )}
+      {queryData?.searchTags?.length > 0 && (
+        <Chip>
+          Tags:
+          {queryData?.searchTags?.map((tag) => (
+            <span>{tag}, </span>
+          ))}
+        </Chip>
+      )} */}
+
       {loading ? (
         <div className="flex justify-center">
           <Loading loading={loading} width={40} color="#393e46" thickness={5} />

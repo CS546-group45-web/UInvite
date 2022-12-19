@@ -25,6 +25,7 @@
     "dayjs": "^1.11.6",
     "dotenv": "^10.0.0",
     "fullcalendar": "^6.0.0",
+    "linkify-react": "^4.0.2",
     "moment": "^2.29.4",
     "momentjs": "^2.0.0",
     "postcss": "^8.4.18",

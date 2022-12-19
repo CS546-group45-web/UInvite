@@ -41,7 +41,6 @@ function RsvpedEvents() {
 
   return (
     <div className="w-full">
-      <div className="text-5xl font-semibold mt-4 mb-8">My RSVPed Events</div>
       {loading ? (
         <div className="h-full w-full flex items-center justify-center">
           <Loading loading={loading} width={40} color="#393e46" thickness={5} />
