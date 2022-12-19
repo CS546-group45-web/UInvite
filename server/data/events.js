@@ -304,6 +304,7 @@ const rsvp = async (eventId, userId) => {
       if (calendarUpdate.modifiedCount === 0) {
         throw 'Could not update event with calendar event id';
       }
+      return await getEventById(eventId);
     } catch (e) {
       throw e;
     }
@@ -337,7 +338,7 @@ const removeRsvp = async (eventId, userId) => {
           eventData.calendarEventId
         );
       } catch (e) {
-        throw e;
+        return await eventData;
       }
     }
   }
