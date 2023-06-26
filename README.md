@@ -2,7 +2,13 @@
 This is a web project for CS 546 Web programming Fall2022
 
 # Description
-This web app will provide a new approach to event rsvp. There are many apps that let users send rsvp invitations and nothing more that could make invitations and events more enticing. This application will act as a social media platform for people to post events and others to rsvp, obviously events could be set to only being visible to a certain group. This would not only make spreading news about events simpler and would also allow guests to comment on any concerns they have about the events. This application will hold the aspect of family and friends event planning at heart but social media features are a massive plus. This targets small event registrations but this could also spread to massive events planned by big companies as well. 
+U Invite, our full-stack web application, bridges the gap between event planning and social media, creating an experience reminiscent of Instagram, yet focused on event RSVPs.
+
+This unique platform enables users to post their events on a shared or private feed, controlling visibility to match the event's intended audience. This not only streamlines the process of spreading news about events but also allows potential attendees to engage through comments and discussions, mirroring the interactive nature of popular social media platforms.
+
+At its core, U Invite is a full-stack application, blending front-end usability with robust back-end functionality. It's designed to handle everything from small-scale, personal events to large, corporate gatherings. While the emphasis is on intimate event planning, the functionality scales effectively, providing a versatile tool for any event size.
+
+With U Invite, we're revolutionizing the event planning process by integrating it with the dynamic, interactive features of social media, thereby enhancing the overall event experience.
 
 # Collaboration 
 
