@@ -1,5 +1,6 @@
 # UInvite
-This is a web project for CS 546 Web programming Fall2022
+This is a web project for CS 546 Web Programming Fall2022
+[Live here](https://uinvite.social/)
 
 # Description
 UInvite, our full-stack web application, bridges the gap between event planning and social media, creating an experience reminiscent of Instagram, yet focused on event RSVPs.
@@ -12,7 +13,7 @@ With UInvite, we're revolutionizing the event planning process by integrating it
 
 # Collaboration 
 
-1. Make sure you checkout the dev branch.
+1. Make sure you check out the dev branch.
 
 2. Create a new branch off of the dev branch with a descriptive name.
 
